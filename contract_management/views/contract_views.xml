@@ -238,17 +238,16 @@
                                     <group string="Body (English)">
                                         <field name="description"
                                                nolabel="1"
-                                               widget="html"
                                                readonly="is_readonly"
-                                               options="{'collaborative': false}"/>
+                                               options="{'resizable': true}"/>
                                     </group>
                                     <group string="Body (Arabic — RTL)"
                                            invisible="language != 'bilingual'">
                                         <field name="description_ar"
                                                nolabel="1"
-                                               widget="html"
                                                readonly="is_readonly"
-                                               options="{'collaborative': false}"/>
+                                               style="direction: rtl; text-align: right;"
+                                            options="{'resizable': true}"/>
                                     </group>
 
                                     <field name="is_readonly" invisible="1"/>
@@ -281,7 +280,6 @@
                         <!-- ── Notes Tab ──────────────────────────────── -->
                         <page string="Internal Notes" name="notes">
                             <field name="notes"
-                                   widget="html"
                                    nolabel="1"
                                    placeholder="Internal notes (not printed on the PDF)…"/>
                         </page>

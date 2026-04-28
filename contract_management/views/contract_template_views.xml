@@ -106,16 +106,15 @@
                                     <group string="Body (English)">
                                         <field name="description"
                                                nolabel="1"
-                                               widget="html"
-                                               options="{'collaborative': false}"
+                                               options="{'resizable': true}"
                                                placeholder="Enter clause body text…"/>
                                     </group>
                                     <group string="Body (Arabic — RTL)"
                                            invisible="language != 'bilingual'">
                                         <field name="description_ar"
                                                nolabel="1"
-                                               widget="html"
-                                               options="{'collaborative': false}"
+                                               style="direction: rtl; text-align: right;"
+                                            options="{'resizable': true}"
                                                placeholder="أدخل نص البند هنا…"/>
                                     </group>
                                 </form>
@@ -125,7 +124,6 @@
                         <!-- Description Tab -->
                         <page string="Description / Purpose" name="description">
                             <field name="description"
-                                   widget="html"
                                    nolabel="1"
                                    placeholder="Describe the purpose and usage of this template…"/>
                         </page>
