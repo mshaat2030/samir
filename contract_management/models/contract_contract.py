@@ -257,7 +257,7 @@ class ContractContract(models.Model):
         for tc in self.template_id.clause_ids.sorted('sequence'):
             new_lines.append((0, 0, {
                 'sequence': tc.sequence,
-                'title': tc.title,
+                'title': tc.title or tc.title_ar or '',
                 'title_ar': tc.title_ar or '',
                 'description': tc.description or '',
                 'description_ar': tc.description_ar or '',

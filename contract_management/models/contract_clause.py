@@ -38,7 +38,7 @@ class ContractClause(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
 
     # ── English content ───────────────────────────────────────────────────────
-    title = fields.Char(string='Title (EN)', required=True)
+    title = fields.Char(string="Title (EN)")
     description = fields.Html(
         string='Body (EN)',
         sanitize_attributes=False,
