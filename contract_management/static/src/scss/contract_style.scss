@@ -1,0 +1,50 @@
+// Contract Management — Backend UI Styles
+// Odoo 19 SCSS
+
+// ── Clause list: colour-code by type ─────────────────────────────────────
+.o_list_view .o_data_row {
+    &[class*="clause"] {
+        // Visual cue for fixed clauses inside list view
+    }
+}
+
+// ── Fixed clause lock icon in list view ──────────────────────────────────
+.contract_clause_fixed_icon::before {
+    font-family: FontAwesome;
+    content: "\f023"; // fa-lock
+    color: #3949ab;
+    margin-right: 4px;
+    font-size: 0.85em;
+}
+
+// ── Kanban card: contract state badge colours ────────────────────────────
+.o_kanban_view .o_kanban_record {
+    .badge-contract-draft   { background-color: #78909c; color: #fff; }
+    .badge-contract-active  { background-color: #2e7d32; color: #fff; }
+    .badge-contract-expired { background-color: #e65100; color: #fff; }
+    .badge-contract-cancelled { background-color: #b71c1c; color: #fff; }
+}
+
+// ── Expired warning banner in form view ──────────────────────────────────
+.o_form_view .contract-expired-banner {
+    background: #fff3e0;
+    border-left: 4px solid #ff6f00;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #e65100;
+    margin-bottom: 12px;
+}
+
+// ── Clause form: bilingual layout hint ───────────────────────────────────
+.o_form_view .clause-bilingual-hint {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+// ── Version history tab ───────────────────────────────────────────────────
+.o_form_view .o_field_one2many .o_list_view .o_data_row:first-child td {
+    font-weight: 600;
+}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Actions (referenced by menu items — defined before the menuitems)
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <record id="action_contract_contract" model="ir.actions.act_window">
+        <field name="name">Contracts</field>
+        <field name="res_model">contract.contract</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first contract
+            </p>
+            <p>
+                Select a template, link a customer and the system will
+                auto-load all clauses for you.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_contract_template" model="ir.actions.act_window">
+        <field name="name">Contract Templates</field>
+        <field name="res_model">contract.template</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first template
+            </p>
+            <p>
+                Templates define the standard clauses for each type of contract
+                (NDA, Service Agreement, etc.).
+            </p>
+        </field>
+    </record>
+
+    <record id="action_contract_draft" model="ir.actions.act_window">
+        <field name="name">Draft Contracts</field>
+        <field name="res_model">contract.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'draft')]</field>
+        <field name="context">{'search_default_state': 'draft'}</field>
+    </record>
+
+    <record id="action_contract_active" model="ir.actions.act_window">
+        <field name="name">Active Contracts</field>
+        <field name="res_model">contract.contract</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('state', '=', 'active')]</field>
+    </record>
+
+    <record id="action_contract_expired" model="ir.actions.act_window">
+        <field name="name">Expired / Cancelled Contracts</field>
+        <field name="res_model">contract.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', 'in', ['expired', 'cancelled'])]</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Menu Structure
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Root -->
+    <menuitem
+        id="menu_contract_root"
+        name="Contracts"
+        web_icon="contract_management,static/description/icon.png"
+        sequence="55"/>
+
+    <!-- ── Contracts ──────────────────────────────────────────────────── -->
+    <menuitem
+        id="menu_contract_contracts"
+        name="Contracts"
+        parent="menu_contract_root"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_all_contracts"
+        name="All Contracts"
+        parent="menu_contract_contracts"
+        action="action_contract_contract"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_draft_contracts"
+        name="Draft"
+        parent="menu_contract_contracts"
+        action="action_contract_draft"
+        sequence="20"/>
+
+    <menuitem
+        id="menu_active_contracts"
+        name="Active"
+        parent="menu_contract_contracts"
+        action="action_contract_active"
+        sequence="30"/>
+
+    <menuitem
+        id="menu_expired_contracts"
+        name="Expired / Cancelled"
+        parent="menu_contract_contracts"
+        action="action_contract_expired"
+        sequence="40"/>
+
+    <!-- ── Configuration (managers only) ─────────────────────────────── -->
+    <menuitem
+        id="menu_contract_configuration"
+        name="Configuration"
+        parent="menu_contract_root"
+        groups="contract_management.group_contract_manager"
+        sequence="90"/>
+
+    <menuitem
+        id="menu_contract_templates"
+        name="Contract Templates"
+        parent="menu_contract_configuration"
+        action="action_contract_template"
+        sequence="10"/>
+
+</odoo>

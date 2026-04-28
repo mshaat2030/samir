@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Contract — Form View
+         ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_contract_form" model="ir.ui.view">
+        <field name="name">contract.contract.form</field>
+        <field name="model">contract.contract</field>
+        <field name="arch" type="xml">
+            <form string="Contract">
+
+                <!-- Status Bar -->
+                <header>
+                    <button name="action_confirm"
+                            string="Activate Contract"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="This will activate the contract and create a version snapshot. Continue?"/>
+                    <button name="action_save_version"
+                            string="Save Version"
+                            type="object"
+                            invisible="state != 'active'"
+                            groups="contract_management.group_contract_manager"/>
+                    <button name="action_attach_to_quotation"
+                            string="Attach PDF to Quotation"
+                            type="object"
+                            invisible="not sale_order_id or state == 'draft'"/>
+                    <button name="action_export_pdf"
+                            string="Print / Preview PDF"
+                            type="object"
+                            icon="fa-print"/>
+                    <button name="action_send_by_email"
+                            string="Send by Email"
+                            type="object"
+                            icon="fa-envelope"
+                            invisible="state == 'draft'"/>
+                    <button name="action_cancel"
+                            string="Cancel"
+                            type="object"
+                            invisible="state in ('cancelled', 'draft')"
+                            confirm="Are you sure you want to cancel this contract?"
+                            groups="contract_management.group_contract_manager"/>
+                    <button name="action_reset_to_draft"
+                            string="Reset to Draft"
+                            type="object"
+                            invisible="state not in ('cancelled', 'expired')"
+                            groups="contract_management.group_contract_manager"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,active,expired"/>
+                </header>
+
+                <sheet>
+                    <!-- Smart Buttons Row -->
+                    <div class="oe_button_box" name="button_box">
+
+                        <!-- CRM Opportunity -->
+                        <button name="action_view_opportunity"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-handshake-o"
+                                invisible="not opportunity_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Opportunity</span>
+                            </div>
+                        </button>
+
+                        <!-- Sale Order -->
+                        <button name="action_view_sale_order"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart"
+                                invisible="not sale_order_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Quotation</span>
+                            </div>
+                        </button>
+
+                        <!-- Versions -->
+                        <button name="action_view_versions"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-history">
+                            <field name="version_count" widget="statinfo" string="Versions"/>
+                        </button>
+
+                        <!-- Attachments -->
+                        <button name="action_view_attachments"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-paperclip">
+                            <field name="attachment_count" widget="statinfo" string="Files"/>
+                        </button>
+
+                    </div>
+
+                    <!-- Expired Banner -->
+                    <div class="alert alert-warning o_form_no_print"
+                         role="alert"
+                         invisible="not is_expired">
+                        <strong>This contract has expired.</strong>
+                        Please renew or mark as Expired.
+                    </div>
+
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"
+                                   placeholder="Contract Name…"
+                                   readonly="state == 'active'"/>
+                        </h1>
+                        <h4 class="text-muted">
+                            <field name="reference" readonly="1"/>
+                            ·
+                            <field name="current_version_number"
+                                   readonly="1"
+                                   nolabel="1"
+                                   widget="integer"/>
+                            <span class="text-muted"> version(s)</span>
+                        </h4>
+                    </div>
+
+                    <!-- Main Fields -->
+                    <group>
+                        <group string="Contract Details">
+                            <field name="template_id"
+                                   required="1"
+                                   readonly="state != 'draft'"
+                                   options="{'no_create': True}"
+                                   help="Selecting a template loads all clauses automatically."/>
+                            <field name="contract_type" readonly="1"/>
+                            <field name="language" readonly="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="Customer">
+                            <field name="partner_id"
+                                   required="1"
+                                   readonly="state != 'draft'"
+                                   widget="many2one"
+                                   options="{'no_create': True}"/>
+                            <field name="partner_contact_id"
+                                   domain="[('parent_id', '=', partner_id)]"
+                                   invisible="not partner_id"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Dates">
+                            <field name="date_start" required="1"/>
+                            <field name="date_end"/>
+                            <field name="signed_date"/>
+                            <field name="signed_by"/>
+                        </group>
+                        <group string="Linked Records">
+                            <field name="opportunity_id"
+                                   domain="[('type', '=', 'opportunity')]"
+                                   options="{'no_create': True}"/>
+                            <field name="sale_order_id"
+                                   domain="[('partner_id', 'child_of', partner_id)]"
+                                   options="{'no_create': True}"
+                                   invisible="not partner_id"/>
+                        </group>
+                    </group>
+
+                    <!-- Customer Logo Upload -->
+                    <group string="Customer Logo (optional — shown on cover page)">
+                        <field name="customer_logo"
+                               widget="image"
+                               nolabel="1"
+                               options="{'size': [200, 80]}"
+                               class="o_field_image_inset"/>
+                        <field name="customer_logo_filename" invisible="1"/>
+                    </group>
+
+                    <notebook>
+
+                        <!-- ── Clauses Tab ─────────────────────────────── -->
+                        <page string="Contract Clauses" name="clauses">
+                            <div class="alert alert-info o_form_no_print mb-3"
+                                 invisible="clause_count != 0">
+                                <i class="fa fa-info-circle me-2"/>
+                                Select a template to automatically load clauses.
+                            </div>
+                            <field name="clause_ids"
+                                   nolabel="1"
+                                   context="{'default_contract_id': active_id}"
+                                   readonly="state == 'active'">
+                                <list editable="bottom"
+                                      string="Clauses"
+                                      default_order="sequence">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="clause_type" readonly="1" optional="show"/>
+                                    <field name="title" string="Title (EN)" required="1"
+                                           readonly="clause_type == 'fixed' or contract_state == 'active'"/>
+                                    <field name="title_ar"
+                                           string="Title (AR)"
+                                           invisible="language != 'bilingual'"
+                                           readonly="clause_type == 'fixed' or contract_state == 'active'"/>
+                                    <field name="language" column_invisible="1"/>
+                                    <field name="contract_state" column_invisible="1"/>
+                                    <field name="is_readonly" column_invisible="1"/>
+                                    <field name="template_clause_id" column_invisible="1"/>
+                                </list>
+                                <form string="Clause">
+                                    <group>
+                                        <group string="English">
+                                            <field name="sequence"/>
+                                            <field name="clause_type" readonly="1"/>
+                                            <field name="template_clause_id" readonly="1"
+                                                   optional="show"/>
+                                            <field name="title"
+                                                   string="Title (EN)"
+                                                   required="1"
+                                                   readonly="is_readonly"/>
+                                        </group>
+                                        <group string="Arabic"
+                                               invisible="language != 'bilingual'">
+                                            <field name="title_ar"
+                                                   string="Title (AR)"
+                                                   readonly="is_readonly"/>
+                                            <field name="language" invisible="1"/>
+                                        </group>
+                                    </group>
+
+                                    <!-- Fixed clause notice -->
+                                    <div class="alert alert-warning o_form_no_print"
+                                         invisible="not is_readonly">
+                                        <i class="fa fa-lock me-2"/>
+                                        <strong>Fixed Clause</strong> — this body is protected
+                                        and cannot be edited.
+                                    </div>
+
+                                    <group string="Body (English)">
+                                        <field name="description"
+                                               nolabel="1"
+                                               widget="html"
+                                               readonly="is_readonly"
+                                               options="{'collaborative': false}"/>
+                                    </group>
+                                    <group string="Body (Arabic — RTL)"
+                                           invisible="language != 'bilingual'">
+                                        <field name="description_ar"
+                                               nolabel="1"
+                                               widget="html"
+                                               readonly="is_readonly"
+                                               options="{'collaborative': false}"/>
+                                    </group>
+
+                                    <field name="is_readonly" invisible="1"/>
+                                </form>
+                            </field>
+                        </page>
+
+                        <!-- ── Versioning Tab ──────────────────────────── -->
+                        <page string="Version History" name="versions"
+                              groups="contract_management.group_contract_manager">
+                            <field name="version_ids"
+                                   nolabel="1"
+                                   readonly="1">
+                                <list string="Versions" default_order="version_number desc">
+                                    <field name="version_number" string="Version"/>
+                                    <field name="create_date" string="Date"/>
+                                    <field name="user_id" string="By"/>
+                                    <field name="clause_count" string="Clauses"/>
+                                    <field name="notes"/>
+                                    <button name="action_restore_version"
+                                            string="Restore"
+                                            type="object"
+                                            icon="fa-undo"
+                                            confirm="This will overwrite the current clauses with this version. Continue?"
+                                            groups="contract_management.group_contract_manager"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- ── Notes Tab ──────────────────────────────── -->
+                        <page string="Internal Notes" name="notes">
+                            <field name="notes"
+                                   widget="html"
+                                   nolabel="1"
+                                   placeholder="Internal notes (not printed on the PDF)…"/>
+                        </page>
+
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Contract — List View
+         ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_contract_list" model="ir.ui.view">
+        <field name="name">contract.contract.list</field>
+        <field name="model">contract.contract</field>
+        <field name="arch" type="xml">
+            <list string="Contracts"
+                  decoration-success="state == 'active'"
+                  decoration-warning="is_expired"
+                  decoration-muted="state in ('cancelled', 'expired')"
+                  multi_edit="1">
+                <field name="reference" string="Ref"/>
+                <field name="name"/>
+                <field name="partner_id" string="Customer"/>
+                <field name="contract_type" optional="show"/>
+                <field name="language" optional="hide"/>
+                <field name="template_id" optional="hide"/>
+                <field name="date_start"/>
+                <field name="date_end" optional="show"/>
+                <field name="user_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'expired'"
+                       decoration-danger="state == 'cancelled'"/>
+                <field name="is_expired" column_invisible="1"/>
+                <field name="opportunity_id" optional="hide"/>
+                <field name="sale_order_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Contract — Kanban View
+         ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_contract_kanban" model="ir.ui.view">
+        <field name="name">contract.contract.kanban</field>
+        <field name="model">contract.contract</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1">
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="partner_id"/>
+                <field name="contract_type"/>
+                <field name="state"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="is_expired"/>
+                <field name="user_id"/>
+                <field name="clause_count"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <small class="o_kanban_record_subtitle text-muted">
+                                        <field name="reference"/>
+                                    </small>
+                                </div>
+                                <span t-attf-class="badge rounded-pill #{
+                                    record.state.raw_value == 'active' ? 'text-bg-success' :
+                                    record.state.raw_value == 'draft' ? 'text-bg-secondary' :
+                                    record.state.raw_value == 'expired' ? 'text-bg-warning' : 'text-bg-danger'}">
+                                    <field name="state"/>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div><i class="fa fa-user me-1 text-muted"/>
+                                    <field name="partner_id"/>
+                                </div>
+                                <div class="text-muted mt-1">
+                                    <i class="fa fa-calendar me-1"/>
+                                    <field name="date_start"/> →
+                                    <span invisible="not date_end"><field name="date_end"/></span>
+                                    <span invisible="date_end">Open-ended</span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left text-muted">
+                                    <field name="contract_type"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="user_id" widget="many2one_avatar_user"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Contract — Search View
+         ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_contract_search" model="ir.ui.view">
+        <field name="name">contract.contract.search</field>
+        <field name="model">contract.contract</field>
+        <field name="arch" type="xml">
+            <search string="Search Contracts">
+                <field name="name" string="Contract Name"/>
+                <field name="reference"/>
+                <field name="partner_id" string="Customer"/>
+                <field name="user_id" string="Responsible"/>
+                <field name="template_id" string="Template"/>
+                <separator/>
+                <!-- Status filters -->
+                <filter name="filter_draft" string="Draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_active" string="Active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter name="filter_expired" string="Expired"
+                        domain="[('state', '=', 'expired')]"/>
+                <filter name="filter_cancelled" string="Cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter name="filter_expiring_soon" string="Expiring This Month"
+                        domain="[
+                            ('state', '=', 'active'),
+                            ('date_end', '&lt;=', (context_today() + relativedelta(months=1)).strftime('%Y-%m-%d')),
+                            ('date_end', '&gt;=', context_today().strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="filter_bilingual" string="Bilingual"
+                        domain="[('language', '=', 'bilingual')]"/>
+                <separator/>
+                <filter name="filter_my_contracts" string="My Contracts"
+                        domain="[('user_id', '=', uid)]"/>
+                <!-- Default filter -->
+                <filter name="search_default_active"
+                        string="Active Contracts"
+                        domain="[('state', '=', 'active')]"
+                        invisible="1"/>
+                <!-- Groupings -->
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_partner" string="Customer"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_type" string="Contract Type"
+                            context="{'group_by': 'contract_type'}"/>
+                    <filter name="group_template" string="Template"
+                            context="{'group_by': 'template_id'}"/>
+                    <filter name="group_user" string="Responsible"
+                            context="{'group_by': 'user_id'}"/>
+                    <filter name="group_month" string="Start Month"
+                            context="{'group_by': 'date_start:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Contract Version — List View (embedded in contract form)
+         ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_contract_version_list" model="ir.ui.view">
+        <field name="name">contract.version.list</field>
+        <field name="model">contract.version</field>
+        <field name="arch" type="xml">
+            <list string="Contract Versions" default_order="version_number desc">
+                <field name="version_number" string="Version"/>
+                <field name="display_name" string="Label"/>
+                <field name="create_date" string="Created"/>
+                <field name="user_id" string="By"/>
+                <field name="clause_count" string="Clauses"/>
+                <field name="notes" string="Notes"/>
+                <button name="action_restore_version"
+                        string="Restore"
+                        type="object"
+                        icon="fa-undo"
+                        confirm="Restore this version? Current clauses will be replaced."
+                        groups="contract_management.group_contract_manager"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_contract_version_form" model="ir.ui.view">
+        <field name="name">contract.version.form</field>
+        <field name="model">contract.version</field>
+        <field name="arch" type="xml">
+            <form string="Contract Version" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="contract_id" readonly="1"/>
+                            <field name="version_number" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="clause_count" readonly="1"/>
+                            <field name="notes" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Clause Snapshot (JSON)">
+                        <field name="clause_data" readonly="1" nolabel="1" widget="code"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

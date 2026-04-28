@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_contract_document">
+<t t-call="web.html_container">
+<t t-foreach="docs" t-as="doc">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     EMBEDDED CSS
+     ═══════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Page setup ───────────────────────────────────────────────────── */
+@page {
+    size: A4;
+    margin: 0;
+}
+@page cover {
+    margin: 0;
+}
+@page content {
+    margin-top: 90px;
+    margin-bottom: 70px;
+    margin-left: 55px;
+    margin-right: 55px;
+    @top-center { content: element(header-running); }
+    @bottom-center { content: element(footer-running); }
+}
+
+/* ── Reset ────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    font-size: 10.5pt;
+    color: #1a1a2e;
+    line-height: 1.6;
+}
+
+/* ── Cover page ───────────────────────────────────────────────────── */
+.cover-page {
+    page: cover;
+    page-break-after: always;
+    width: 210mm;
+    min-height: 297mm;
+    position: relative;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+.cover-top-bar {
+    background: #1a2e4a;
+    height: 12mm;
+    width: 100%;
+}
+
+.cover-accent-bar {
+    background: linear-gradient(90deg, #c0392b 0%, #e74c3c 50%, #f39c12 100%);
+    height: 4mm;
+    width: 100%;
+}
+
+.cover-body {
+    flex: 1;
+    padding: 18mm 18mm 10mm 18mm;
+    display: flex;
+    flex-direction: column;
+}
+
+.cover-logos {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20mm;
+}
+
+.cover-company-logo img {
+    max-height: 20mm;
+    max-width: 65mm;
+    object-fit: contain;
+}
+
+.cover-customer-logo img {
+    max-height: 18mm;
+    max-width: 55mm;
+    object-fit: contain;
+    border: 1px solid #e0e0e0;
+    padding: 3mm;
+    border-radius: 3px;
+}
+
+.cover-divider {
+    border: none;
+    border-top: 2px solid #1a2e4a;
+    margin: 8mm 0 6mm 0;
+    width: 40mm;
+}
+
+.cover-contract-type {
+    font-size: 10pt;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c0392b;
+    margin-bottom: 4mm;
+}
+
+.cover-title {
+    font-size: 26pt;
+    font-weight: 700;
+    color: #1a2e4a;
+    line-height: 1.2;
+    margin-bottom: 3mm;
+}
+
+.cover-subtitle {
+    font-size: 12pt;
+    color: #555;
+    margin-bottom: 16mm;
+}
+
+.cover-parties {
+    display: flex;
+    gap: 10mm;
+    margin-top: auto;
+    margin-bottom: 10mm;
+}
+
+.cover-party-box {
+    flex: 1;
+    border: 1px solid #dde3ea;
+    border-radius: 5px;
+    padding: 6mm;
+    background: #f7f9fc;
+}
+
+.cover-party-label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #1a2e4a;
+    margin-bottom: 2mm;
+    border-bottom: 1px solid #dde3ea;
+    padding-bottom: 2mm;
+}
+
+.cover-party-name {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 1mm;
+}
+
+.cover-party-detail {
+    font-size: 9pt;
+    color: #666;
+    line-height: 1.4;
+}
+
+.cover-meta {
+    display: flex;
+    gap: 12mm;
+    font-size: 9pt;
+    color: #666;
+    border-top: 1px solid #dde3ea;
+    padding-top: 5mm;
+    margin-top: 5mm;
+}
+
+.cover-meta-item strong {
+    display: block;
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #1a2e4a;
+    margin-bottom: 1mm;
+}
+
+.cover-bottom-bar {
+    background: #1a2e4a;
+    height: 8mm;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 18mm;
+    color: #8aa0bf;
+    font-size: 8pt;
+    letter-spacing: 0.5px;
+}
+
+/* ── Running header (content pages) ──────────────────────────────── */
+#running-header {
+    position: running(header-running);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #1a2e4a;
+    padding-bottom: 3mm;
+    width: 100%;
+}
+
+.running-header-logo img {
+    max-height: 10mm;
+    max-width: 40mm;
+    object-fit: contain;
+}
+
+.running-header-title {
+    font-size: 9pt;
+    font-weight: 600;
+    color: #1a2e4a;
+    text-align: center;
+}
+
+.running-header-ref {
+    font-size: 8pt;
+    color: #888;
+    text-align: right;
+}
+
+/* ── Running footer (content pages) ──────────────────────────────── */
+#running-footer {
+    position: running(footer-running);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #dde3ea;
+    padding-top: 2mm;
+    width: 100%;
+}
+
+.footer-left {
+    font-size: 8pt;
+    color: #888;
+}
+
+.footer-center {
+    font-size: 8pt;
+    color: #aaa;
+    text-align: center;
+}
+
+.footer-right {
+    font-size: 8pt;
+    color: #888;
+    text-align: right;
+}
+
+.page-number:before { content: counter(page); }
+.page-total:before  { content: counter(pages); }
+
+/* ── Content pages ────────────────────────────────────────────────── */
+.content-page {
+    page: content;
+}
+
+/* ── Preamble block ───────────────────────────────────────────────── */
+.preamble-block {
+    background: #f7f9fc;
+    border-left: 4px solid #1a2e4a;
+    border-radius: 0 5px 5px 0;
+    padding: 6mm 8mm;
+    margin-bottom: 8mm;
+    font-size: 10pt;
+    color: #333;
+    line-height: 1.65;
+}
+
+/* ── Section: clauses ─────────────────────────────────────────────── */
+.clause-section {
+    margin-bottom: 8mm;
+    page-break-inside: avoid;
+}
+
+.clause-number {
+    display: inline-block;
+    background: #1a2e4a;
+    color: white;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 1mm 3mm;
+    border-radius: 3px;
+    margin-right: 3mm;
+    vertical-align: middle;
+}
+
+.clause-title-en {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #1a2e4a;
+    margin-bottom: 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid #eef1f5;
+    display: flex;
+    align-items: center;
+}
+
+.clause-title-ar {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #1a2e4a;
+    margin-bottom: 2mm;
+    text-align: right;
+    direction: rtl;
+    font-family: 'Noto Naskh Arabic', 'Amiri', 'Scheherazade New',
+                 'Arabic Typesetting', Arial, sans-serif;
+}
+
+.clause-body-en {
+    font-size: 10pt;
+    color: #2c2c3e;
+    line-height: 1.7;
+    text-align: justify;
+}
+
+.clause-body-ar {
+    font-size: 11pt;
+    color: #2c2c3e;
+    line-height: 1.8;
+    text-align: right;
+    direction: rtl;
+    font-family: 'Noto Naskh Arabic', 'Amiri', 'Scheherazade New',
+                 'Arabic Typesetting', Arial, sans-serif;
+}
+
+/* ── Bilingual layout ─────────────────────────────────────────────── */
+.bilingual-wrapper {
+    display: flex;
+    gap: 6mm;
+    margin-top: 2mm;
+}
+
+.bilingual-en {
+    flex: 1;
+    border-right: 1px solid #eef1f5;
+    padding-right: 4mm;
+}
+
+.bilingual-ar {
+    flex: 1;
+    padding-left: 4mm;
+    direction: rtl;
+    text-align: right;
+}
+
+/* ── Signature block ──────────────────────────────────────────────── */
+.signature-section {
+    margin-top: 15mm;
+    page-break-inside: avoid;
+}
+
+.signature-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1a2e4a;
+    border-bottom: 2px solid #1a2e4a;
+    padding-bottom: 2mm;
+    margin-bottom: 8mm;
+}
+
+.signature-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.signature-table td {
+    width: 50%;
+    vertical-align: top;
+    padding: 0 6mm 0 0;
+}
+
+.sig-label {
+    font-size: 8.5pt;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12mm;
+}
+
+.sig-line {
+    border-top: 1px solid #333;
+    margin-top: 15mm;
+    padding-top: 2mm;
+    font-size: 9pt;
+    color: #555;
+}
+
+/* ── Confidentiality notice ───────────────────────────────────────── */
+.confidential-notice {
+    margin-top: 10mm;
+    padding: 4mm 6mm;
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    color: #6d4c1f;
+    text-align: center;
+}
+
+/* ── Badge chips ──────────────────────────────────────────────────── */
+.type-badge {
+    display: inline-block;
+    background: #1a2e4a;
+    color: white;
+    font-size: 8pt;
+    font-weight: 600;
+    padding: 1.5mm 4mm;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+.fixed-badge {
+    display: inline-block;
+    background: #e8eaf6;
+    color: #3949ab;
+    font-size: 7.5pt;
+    padding: 0.5mm 2.5mm;
+    border-radius: 3px;
+    margin-left: 2mm;
+    vertical-align: middle;
+}
+
+/* ── Utility ──────────────────────────────────────────────────────── */
+.text-muted-pdf { color: #888; }
+.mt-4mm { margin-top: 4mm; }
+.mb-4mm { margin-bottom: 4mm; }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     RUNNING HEADER  (referenced by @top-center on content pages)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="running-header">
+    <div class="running-header-logo">
+        <t t-if="doc.company_id.logo">
+            <img t-att-src="'data:image/png;base64,' + doc.company_id.logo.decode('utf-8')"
+                 alt="Company Logo"/>
+        </t>
+    </div>
+    <div class="running-header-title">
+        <t t-esc="doc.name"/>
+    </div>
+    <div class="running-header-ref">
+        <span t-esc="doc.reference"/>
+        <br/>
+        <span class="text-muted-pdf" style="font-size:7.5pt;">CONFIDENTIAL</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     RUNNING FOOTER
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="running-footer">
+    <div class="footer-left">
+        <t t-esc="doc.company_id.name"/> ·
+        <t t-if="doc.company_id.email"><t t-esc="doc.company_id.email"/></t>
+    </div>
+    <div class="footer-center">
+        Page <span class="page-number"/> of <span class="page-total"/>
+    </div>
+    <div class="footer-right">
+        <t t-esc="doc.reference"/>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PAGE 1 — CUSTOM COVER PAGE  (no header / footer)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="cover-page">
+
+    <!-- Top colour bar -->
+    <div class="cover-top-bar"/>
+    <div class="cover-accent-bar"/>
+
+    <!-- Main body -->
+    <div class="cover-body">
+
+        <!-- Logos row -->
+        <div class="cover-logos">
+            <div class="cover-company-logo">
+                <t t-if="doc.company_id.logo">
+                    <img t-att-src="'data:image/png;base64,' + doc.company_id.logo.decode('utf-8')"
+                         alt="Company Logo"/>
+                </t>
+                <t t-else="">
+                    <strong style="font-size:14pt; color:#1a2e4a;">
+                        <t t-esc="doc.company_id.name"/>
+                    </strong>
+                </t>
+            </div>
+            <div class="cover-customer-logo" t-if="doc.customer_logo">
+                <img t-att-src="'data:image/png;base64,' + doc.customer_logo.decode('utf-8')"
+                     alt="Customer Logo"/>
+            </div>
+        </div>
+
+        <!-- Contract type label -->
+        <div class="cover-contract-type">
+            <t t-esc="dict(doc.fields_get(['contract_type'])['contract_type']['selection']).get(doc.contract_type, doc.contract_type or 'Contract')"/>
+        </div>
+
+        <hr class="cover-divider"/>
+
+        <!-- Contract title -->
+        <div class="cover-title">
+            <t t-esc="doc.name"/>
+        </div>
+        <div class="cover-subtitle text-muted-pdf">
+            Reference: <strong><t t-esc="doc.reference"/></strong>
+            <t t-if="doc.language == 'bilingual'">
+                &#160;·&#160;
+                <span class="type-badge">Bilingual EN / AR</span>
+            </t>
+        </div>
+
+        <!-- Parties -->
+        <div class="cover-parties">
+            <!-- First Party (Company) -->
+            <div class="cover-party-box">
+                <div class="cover-party-label">First Party (Service Provider)</div>
+                <div class="cover-party-name">
+                    <t t-esc="doc.company_id.name"/>
+                </div>
+                <div class="cover-party-detail">
+                    <t t-if="doc.company_id.street">
+                        <t t-esc="doc.company_id.street"/><br/>
+                    </t>
+                    <t t-if="doc.company_id.city">
+                        <t t-esc="doc.company_id.city"/>,
+                        <t t-esc="doc.company_id.country_id.name or ''"/>
+                    </t>
+                    <t t-if="doc.company_id.phone">
+                        <br/>Tel: <t t-esc="doc.company_id.phone"/>
+                    </t>
+                    <t t-if="doc.company_id.email">
+                        <br/><t t-esc="doc.company_id.email"/>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Second Party (Customer) -->
+            <div class="cover-party-box">
+                <div class="cover-party-label">Second Party (Client)</div>
+                <div class="cover-party-name">
+                    <t t-esc="doc.partner_id.name"/>
+                </div>
+                <div class="cover-party-detail">
+                    <t t-if="doc.partner_id.street">
+                        <t t-esc="doc.partner_id.street"/><br/>
+                    </t>
+                    <t t-if="doc.partner_id.city">
+                        <t t-esc="doc.partner_id.city"/>,
+                        <t t-esc="doc.partner_id.country_id.name or ''"/>
+                    </t>
+                    <t t-if="doc.partner_id.phone">
+                        <br/>Tel: <t t-esc="doc.partner_id.phone"/>
+                    </t>
+                    <t t-if="doc.partner_id.email">
+                        <br/><t t-esc="doc.partner_id.email"/>
+                    </t>
+                    <t t-if="doc.partner_contact_id">
+                        <br/>Attn: <t t-esc="doc.partner_contact_id.name"/>
+                    </t>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meta info (dates, ref) -->
+        <div class="cover-meta">
+            <div class="cover-meta-item">
+                <strong>Contract Ref.</strong>
+                <t t-esc="doc.reference"/>
+            </div>
+            <div class="cover-meta-item">
+                <strong>Effective Date</strong>
+                <t t-esc="doc.date_start and doc.date_start.strftime('%d %B %Y') or '—'"/>
+            </div>
+            <div class="cover-meta-item" t-if="doc.date_end">
+                <strong>Expiry Date</strong>
+                <t t-esc="doc.date_end.strftime('%d %B %Y')"/>
+            </div>
+            <div class="cover-meta-item" t-if="doc.signed_date">
+                <strong>Signed</strong>
+                <t t-esc="doc.signed_date.strftime('%d %B %Y')"/>
+            </div>
+        </div>
+
+    </div><!-- /cover-body -->
+
+    <!-- Bottom bar -->
+    <div class="cover-bottom-bar">
+        <span>CONFIDENTIAL &amp; PROPRIETARY</span>
+    </div>
+
+</div><!-- /cover-page -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PAGE 2+ — CONTRACT BODY  (with running header &amp; footer)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="content-page">
+
+    <!-- Preamble / intro -->
+    <div class="preamble-block">
+        This Agreement (<strong>"Contract"</strong>) is entered into as of
+        <strong><t t-esc="doc.date_start and doc.date_start.strftime('%d %B %Y') or '___________'"/></strong>
+        by and between
+        <strong><t t-esc="doc.company_id.name"/></strong>
+        ("Service Provider") and
+        <strong><t t-esc="doc.partner_id.name"/></strong>
+        ("Client"). Both parties agree to the terms and conditions set forth in
+        this document.
+        <t t-if="doc.language == 'bilingual'">
+            <br/><br/>
+            <span dir="rtl" style="direction:rtl; text-align:right; display:block;
+                  font-family:'Noto Naskh Arabic', Arial, sans-serif; font-size:11pt;">
+                تُبرم هذه الاتفاقية اعتباراً من
+                <strong><t t-esc="doc.date_start and doc.date_start.strftime('%d %B %Y') or '___________'"/></strong>
+                بين <strong><t t-esc="doc.company_id.name"/></strong> ("مزود الخدمة")
+                و<strong><t t-esc="doc.partner_id.name"/></strong> ("العميل").
+                يوافق الطرفان على الشروط والأحكام المنصوص عليها في هذه الوثيقة.
+            </span>
+        </t>
+    </div>
+
+    <!-- ── Clause loop ─────────────────────────────────────────────── -->
+    <t t-set="clause_index" t-value="0"/>
+    <t t-foreach="doc.clause_ids.sorted('sequence')" t-as="clause">
+        <t t-set="clause_index" t-value="clause_index + 1"/>
+
+        <div class="clause-section">
+
+            <!-- English Only layout -->
+            <t t-if="doc.language == 'en'">
+                <div class="clause-title-en">
+                    <span class="clause-number">
+                        <t t-esc="'%02d' % clause_index"/>
+                    </span>
+                    <t t-esc="clause.title"/>
+                    <t t-if="clause.clause_type == 'fixed'">
+                        <span class="fixed-badge">FIXED</span>
+                    </t>
+                </div>
+                <div class="clause-body-en mt-4mm">
+                    <t t-out="clause.description or ''"/>
+                </div>
+            </t>
+
+            <!-- Bilingual layout (side-by-side columns) -->
+            <t t-if="doc.language == 'bilingual'">
+                <!-- Header row with both titles -->
+                <div style="display:flex; gap:6mm; border-bottom:1px solid #eef1f5; margin-bottom:3mm;">
+                    <div class="clause-title-en" style="flex:1; border-bottom:none;">
+                        <span class="clause-number">
+                            <t t-esc="'%02d' % clause_index"/>
+                        </span>
+                        <t t-esc="clause.title"/>
+                        <t t-if="clause.clause_type == 'fixed'">
+                            <span class="fixed-badge">FIXED</span>
+                        </t>
+                    </div>
+                    <div class="clause-title-ar"
+                         style="flex:1; direction:rtl; text-align:right;
+                                font-family:'Noto Naskh Arabic', Arial, sans-serif;">
+                        <t t-esc="clause.title_ar or clause.title"/>
+                    </div>
+                </div>
+
+                <!-- Body columns -->
+                <div class="bilingual-wrapper">
+                    <div class="bilingual-en">
+                        <div class="clause-body-en">
+                            <t t-out="clause.description or ''"/>
+                        </div>
+                    </div>
+                    <div class="bilingual-ar">
+                        <div class="clause-body-ar">
+                            <t t-out="clause.description_ar or clause.description or ''"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+        </div><!-- /clause-section -->
+    </t><!-- /foreach clause -->
+
+    <!-- ── Signature Block ─────────────────────────────────────────── -->
+    <div class="signature-section">
+        <div class="signature-title">Authorised Signatures / التوقيعات المعتمدة</div>
+        <table class="signature-table">
+            <tr>
+                <!-- Company signature -->
+                <td>
+                    <div class="sig-label">
+                        First Party — Service Provider<br/>
+                        <strong><t t-esc="doc.company_id.name"/></strong>
+                    </div>
+                    <div class="sig-line">
+                        Signature: _________________________
+                        <br/>
+                        Name: _______________________________
+                        <br/>
+                        Title: _______________________________
+                        <br/>
+                        Date: ________________________________
+                    </div>
+                </td>
+
+                <!-- Customer signature -->
+                <td>
+                    <div class="sig-label">
+                        Second Party — Client<br/>
+                        <strong><t t-esc="doc.partner_id.name"/></strong>
+                    </div>
+                    <div class="sig-line">
+                        <t t-if="doc.signed_by">
+                            Signature: _________________________
+                            <br/>
+                            Name: <t t-esc="doc.signed_by"/>
+                            <br/>
+                            Date: <t t-esc="doc.signed_date and doc.signed_date.strftime('%d %B %Y') or '_____________'"/>
+                        </t>
+                        <t t-else="">
+                            Signature: _________________________
+                            <br/>
+                            Name: _______________________________
+                            <br/>
+                            Date: ________________________________
+                        </t>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ── Confidentiality Notice ──────────────────────────────────── -->
+    <div class="confidential-notice">
+        ⚠ This document is CONFIDENTIAL and PROPRIETARY to
+        <strong><t t-esc="doc.company_id.name"/></strong>.
+        Unauthorised disclosure, reproduction or distribution is strictly prohibited.
+        <t t-if="doc.language == 'bilingual'">
+            <br/>
+            <span dir="rtl" style="font-family:'Noto Naskh Arabic', Arial, sans-serif;">
+                هذه الوثيقة سرية وخاصة. يُحظر الإفصاح أو النسخ أو التوزيع غير المصرح به.
+            </span>
+        </t>
+    </div>
+
+</div><!-- /content-page -->
+
+</t><!-- /foreach doc -->
+</t><!-- /html_container -->
+</template>
+</odoo>

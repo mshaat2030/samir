@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_contract_send_wizard_form" model="ir.ui.view">
+        <field name="name">contract.send.wizard.form</field>
+        <field name="model">contract.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Send Contract by Email">
+                <sheet>
+                    <group string="Contract">
+                        <field name="contract_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                    </group>
+                    <group string="Recipients">
+                        <field name="email_to" required="1" placeholder="customer@example.com"/>
+                        <field name="email_cc" placeholder="cc@example.com, cc2@example.com"/>
+                    </group>
+                    <group string="Message">
+                        <field name="subject" required="1"/>
+                        <field name="include_pdf" widget="boolean_toggle"/>
+                    </group>
+                    <group string="Body" col="1">
+                        <field name="body_html" nolabel="1" widget="html"
+                               options="{'collaborative': false}"
+                               style="min-height:120px;"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_send"
+                            string="Send Email"
+                            type="object"
+                            class="btn-primary"
+                            data-hotkey="q"/>
+                    <button name="action_cancel"
+                            string="Cancel"
+                            type="object"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

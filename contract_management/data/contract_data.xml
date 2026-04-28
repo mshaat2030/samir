@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ══════════════════════════════════════════════════════════════
+         IR Sequences
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="seq_contract_template" model="ir.sequence">
+        <field name="name">Contract Template Reference</field>
+        <field name="code">contract.template</field>
+        <field name="prefix">TPL-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_contract_contract" model="ir.sequence">
+        <field name="name">Contract Reference</field>
+        <field name="code">contract.contract</field>
+        <field name="prefix">CTR-%(year)s-</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Sample Template 1 — Non-Disclosure Agreement (English)
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="sample_template_nda" model="contract.template">
+        <field name="name">Non-Disclosure Agreement (NDA)</field>
+        <field name="contract_type">nda</field>
+        <field name="language">en</field>
+        <field name="description">&lt;p&gt;Standard Non-Disclosure Agreement template for protecting confidential business information shared between parties.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_nda_01" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_nda"/>
+        <field name="sequence">10</field>
+        <field name="title">Definition of Confidential Information</field>
+        <field name="clause_type">fixed</field>
+        <field name="description">&lt;p&gt;"Confidential Information" means any data or information that is proprietary to the Disclosing Party and not generally known to the public, whether in tangible or intangible form, whenever and however disclosed, including but not limited to: (i) any marketing strategies, plans, financial information, or projections, operations, sales estimates, business plans and performance results relating to the past, present or future business activities of such party; (ii) plans for products or services, and customer or supplier lists; (iii) any scientific or technical information, invention, design, process, procedure, formula, improvement, technology or method; (iv) any concepts, reports, data, know-how, works-in-progress, designs, development tools, specifications, computer software, source code, object code, flow charts, databases, inventions, information and trade secrets.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_nda_02" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_nda"/>
+        <field name="sequence">20</field>
+        <field name="title">Obligations of Receiving Party</field>
+        <field name="clause_type">fixed</field>
+        <field name="description">&lt;p&gt;The Receiving Party agrees to: (a) hold the Confidential Information in strict confidence and take all reasonable precautions to protect such Confidential Information; (b) not disclose the Confidential Information to any third parties without the prior written consent of the Disclosing Party; (c) not use any Confidential Information for any purpose except to evaluate and engage in discussions concerning a potential business relationship between the parties; (d) limit access to Confidential Information to those of its employees, contractors or agents who need such access for purposes consistent with this Agreement and who have signed confidentiality agreements with the Receiving Party containing protections no less stringent than those in this Agreement.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_nda_03" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_nda"/>
+        <field name="sequence">30</field>
+        <field name="title">Term of Agreement</field>
+        <field name="clause_type">variable</field>
+        <field name="description">&lt;p&gt;This Agreement shall remain in effect for a period of &lt;strong&gt;[INSERT DURATION — e.g., two (2) years]&lt;/strong&gt; from the Effective Date, unless earlier terminated by either party upon &lt;strong&gt;[INSERT NOTICE PERIOD — e.g., thirty (30) days]&lt;/strong&gt; written notice to the other party.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_nda_04" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_nda"/>
+        <field name="sequence">40</field>
+        <field name="title">Governing Law</field>
+        <field name="clause_type">variable</field>
+        <field name="description">&lt;p&gt;This Agreement shall be governed by and construed in accordance with the laws of &lt;strong&gt;[INSERT JURISDICTION]&lt;/strong&gt;, without regard to its conflict of law provisions. The parties consent to the exclusive jurisdiction of the courts of &lt;strong&gt;[INSERT JURISDICTION]&lt;/strong&gt; for the resolution of any disputes arising out of or relating to this Agreement.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_nda_05" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_nda"/>
+        <field name="sequence">50</field>
+        <field name="title">Remedies</field>
+        <field name="clause_type">fixed</field>
+        <field name="description">&lt;p&gt;The Receiving Party acknowledges that any breach of this Agreement may cause irreparable harm to the Disclosing Party for which monetary damages may be an inadequate remedy, and that, in addition to any other remedies available at law or in equity, the Disclosing Party shall be entitled to seek injunctive or other equitable relief to enforce the terms of this Agreement, without the necessity of proving actual damages or posting bond or other security.&lt;/p&gt;</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Sample Template 2 — Service Agreement (Bilingual EN+AR)
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="sample_template_service" model="contract.template">
+        <field name="name">Service Agreement — Bilingual</field>
+        <field name="contract_type">service</field>
+        <field name="language">bilingual</field>
+        <field name="description">&lt;p&gt;Standard service agreement template with bilingual (English and Arabic) clause rendering, suitable for GCC-region contracts.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_svc_01" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_service"/>
+        <field name="sequence">10</field>
+        <field name="title">Scope of Services</field>
+        <field name="title_ar">نطاق الخدمات</field>
+        <field name="clause_type">variable</field>
+        <field name="description">&lt;p&gt;The Service Provider agrees to deliver the following services to the Client: &lt;strong&gt;[DESCRIBE SERVICES IN DETAIL]&lt;/strong&gt;. The services shall be performed in a professional and workmanlike manner, consistent with industry standards.&lt;/p&gt;</field>
+        <field name="description_ar">&lt;p&gt;يوافق مزود الخدمة على تقديم الخدمات التالية للعميل: &lt;strong&gt;[وصف الخدمات بالتفصيل]&lt;/strong&gt;. يجب تقديم الخدمات بطريقة مهنية وبما يتوافق مع معايير الصناعة.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_svc_02" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_service"/>
+        <field name="sequence">20</field>
+        <field name="title">Payment Terms</field>
+        <field name="title_ar">شروط الدفع</field>
+        <field name="clause_type">variable</field>
+        <field name="description">&lt;p&gt;The Client shall pay the Service Provider the agreed fee of &lt;strong&gt;[AMOUNT]&lt;/strong&gt; per &lt;strong&gt;[BILLING PERIOD]&lt;/strong&gt;. Payment is due within &lt;strong&gt;[NUMBER]&lt;/strong&gt; days of invoice. Late payments shall accrue interest at &lt;strong&gt;[RATE]&lt;/strong&gt;% per month.&lt;/p&gt;</field>
+        <field name="description_ar">&lt;p&gt;يلتزم العميل بدفع الرسوم المتفق عليها البالغة &lt;strong&gt;[المبلغ]&lt;/strong&gt; لكل &lt;strong&gt;[فترة الفوترة]&lt;/strong&gt;. يحل موعد الدفع خلال &lt;strong&gt;[العدد]&lt;/strong&gt; يومًا من تاريخ الفاتورة. تترتب على المدفوعات المتأخرة فائدة بنسبة &lt;strong&gt;[المعدل]&lt;/strong&gt;٪ شهريًا.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_svc_03" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_service"/>
+        <field name="sequence">30</field>
+        <field name="title">Intellectual Property</field>
+        <field name="title_ar">الملكية الفكرية</field>
+        <field name="clause_type">fixed</field>
+        <field name="description">&lt;p&gt;All intellectual property created by the Service Provider in the performance of services under this Agreement shall remain the exclusive property of the Service Provider unless otherwise agreed in writing. The Client is granted a non-exclusive, non-transferable licence to use deliverables solely for the Client's internal business purposes.&lt;/p&gt;</field>
+        <field name="description_ar">&lt;p&gt;تظل جميع حقوق الملكية الفكرية التي ينشئها مزود الخدمة في أداء الخدمات بموجب هذه الاتفاقية ملكًا حصريًا لمزود الخدمة ما لم يُتفق على خلاف ذلك كتابيًا. يُمنح العميل ترخيصًا غير حصري وغير قابل للنقل لاستخدام المُخرجات للأغراض التجارية الداخلية للعميل فقط.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_svc_04" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_service"/>
+        <field name="sequence">40</field>
+        <field name="title">Limitation of Liability</field>
+        <field name="title_ar">تحديد المسؤولية</field>
+        <field name="clause_type">fixed</field>
+        <field name="description">&lt;p&gt;In no event shall either party be liable to the other for any indirect, incidental, special, exemplary, consequential or punitive damages, regardless of the cause of action or the theory of liability, even if such party has been advised of the possibility of such damages. Each party's total aggregate liability under this Agreement shall not exceed the total fees paid or payable by the Client to the Service Provider in the twelve (12) months preceding the event giving rise to the claim.&lt;/p&gt;</field>
+        <field name="description_ar">&lt;p&gt;لن يكون أي من الطرفين مسؤولاً تجاه الآخر عن أي أضرار غير مباشرة أو عرضية أو خاصة أو تبعية أو عقابية، بغض النظر عن سبب الدعوى أو نظرية المسؤولية، حتى لو أُبلغ هذا الطرف باحتمال وقوع مثل هذه الأضرار. لا يتجاوز إجمالي مسؤولية كل طرف بموجب هذه الاتفاقية إجمالي الرسوم المدفوعة أو المستحقة من العميل لمزود الخدمة خلال الاثني عشر (12) شهرًا السابقة للحدث المؤدي إلى المطالبة.&lt;/p&gt;</field>
+    </record>
+
+    <record id="sample_clause_svc_05" model="contract.template.clause">
+        <field name="template_id" ref="sample_template_service"/>
+        <field name="sequence">50</field>
+        <field name="title">Termination</field>
+        <field name="title_ar">الإنهاء</field>
+        <field name="clause_type">variable</field>
+        <field name="description">&lt;p&gt;Either party may terminate this Agreement upon &lt;strong&gt;[NOTICE PERIOD]&lt;/strong&gt; days' written notice to the other party. Either party may terminate this Agreement immediately if the other party materially breaches this Agreement and fails to cure such breach within &lt;strong&gt;[CURE PERIOD]&lt;/strong&gt; days after written notice.&lt;/p&gt;</field>
+        <field name="description_ar">&lt;p&gt;يجوز لأي من الطرفين إنهاء هذه الاتفاقية بإشعار كتابي مدته &lt;strong&gt;[مدة الإشعار]&lt;/strong&gt; يومًا للطرف الآخر. يجوز لأي من الطرفين إنهاء هذه الاتفاقية فورًا إذا أخل الطرف الآخر بشكل جوهري بهذه الاتفاقية وأخفق في معالجة هذا الإخلال خلال &lt;strong&gt;[فترة المعالجة]&lt;/strong&gt; يومًا من الإشعار الكتابي.&lt;/p&gt;</field>
+    </record>
+
+</odoo>
