@@ -510,6 +510,12 @@ body {
                 &#160;·&#160;
                 <span class="type-badge">Bilingual EN / AR</span>
             </t>
+            <t t-elif="doc.language == 'ar'">
+                &#160;·&#160;
+                <span class="type-badge" style="direction:rtl; font-family:'Noto Naskh Arabic',Arial,sans-serif;">
+                    عربي
+                </span>
+            </t>
         </div>
 
         <!-- Parties -->
@@ -601,16 +607,7 @@ body {
 
     <!-- Preamble / intro -->
     <div class="preamble-block">
-        This Agreement (<strong>"Contract"</strong>) is entered into as of
-        <strong><t t-esc="doc.date_start and doc.date_start.strftime('%d %B %Y') or '___________'"/></strong>
-        by and between
-        <strong><t t-esc="doc.company_id.name"/></strong>
-        ("Service Provider") and
-        <strong><t t-esc="doc.partner_id.name"/></strong>
-        ("Client"). Both parties agree to the terms and conditions set forth in
-        this document.
-        <t t-if="doc.language == 'bilingual'">
-            <br/><br/>
+        <t t-if="doc.language == 'ar'">
             <span dir="rtl" style="direction:rtl; text-align:right; display:block;
                   font-family:'Noto Naskh Arabic', Arial, sans-serif; font-size:11pt;">
                 تُبرم هذه الاتفاقية اعتباراً من
@@ -619,6 +616,27 @@ body {
                 و<strong><t t-esc="doc.partner_id.name"/></strong> ("العميل").
                 يوافق الطرفان على الشروط والأحكام المنصوص عليها في هذه الوثيقة.
             </span>
+        </t>
+        <t t-else="">
+            This Agreement (<strong>"Contract"</strong>) is entered into as of
+            <strong><t t-esc="doc.date_start and doc.date_start.strftime('%d %B %Y') or '___________'"/></strong>
+            by and between
+            <strong><t t-esc="doc.company_id.name"/></strong>
+            ("Service Provider") and
+            <strong><t t-esc="doc.partner_id.name"/></strong>
+            ("Client"). Both parties agree to the terms and conditions set forth in
+            this document.
+            <t t-if="doc.language == 'bilingual'">
+                <br/><br/>
+                <span dir="rtl" style="direction:rtl; text-align:right; display:block;
+                      font-family:'Noto Naskh Arabic', Arial, sans-serif; font-size:11pt;">
+                    تُبرم هذه الاتفاقية اعتباراً من
+                    <strong><t t-esc="doc.date_start and doc.date_start.strftime('%d %B %Y') or '___________'"/></strong>
+                    بين <strong><t t-esc="doc.company_id.name"/></strong> ("مزود الخدمة")
+                    و<strong><t t-esc="doc.partner_id.name"/></strong> ("العميل").
+                    يوافق الطرفان على الشروط والأحكام المنصوص عليها في هذه الوثيقة.
+                </span>
+            </t>
         </t>
     </div>
 
@@ -642,6 +660,24 @@ body {
                 </div>
                 <div class="clause-body-en mt-4mm">
                     <t t-out="clause.description or ''"/>
+                </div>
+            </t>
+
+            <!-- Arabic Only layout (full RTL) -->
+            <t t-if="doc.language == 'ar'">
+                <div class="clause-title-ar" style="display:flex; align-items:center; gap:6px;
+                     justify-content:flex-end; border-bottom:1px solid #eef1f5; margin-bottom:3mm;
+                     padding-bottom:2mm; font-family:'Noto Naskh Arabic','Amiri',Arial,sans-serif;">
+                    <t t-esc="clause.title_ar or ''"/>
+                    <span class="clause-number">
+                        <t t-esc="'%02d' % clause_index"/>
+                    </span>
+                    <t t-if="clause.clause_type == 'fixed'">
+                        <span class="fixed-badge">ثابت</span>
+                    </t>
+                </div>
+                <div class="clause-body-ar mt-4mm">
+                    <t t-out="clause.description_ar or ''"/>
                 </div>
             </t>
 
@@ -734,14 +770,22 @@ body {
 
     <!-- ── Confidentiality Notice ──────────────────────────────────── -->
     <div class="confidential-notice">
-        ⚠ This document is CONFIDENTIAL and PROPRIETARY to
-        <strong><t t-esc="doc.company_id.name"/></strong>.
-        Unauthorised disclosure, reproduction or distribution is strictly prohibited.
-        <t t-if="doc.language == 'bilingual'">
-            <br/>
-            <span dir="rtl" style="font-family:'Noto Naskh Arabic', Arial, sans-serif;">
-                هذه الوثيقة سرية وخاصة. يُحظر الإفصاح أو النسخ أو التوزيع غير المصرح به.
+        <t t-if="doc.language == 'ar'">
+            <span dir="rtl" style="font-family:'Noto Naskh Arabic', Arial, sans-serif; direction:rtl; display:block;">
+                ⚠ هذه الوثيقة سرية وخاصة بـ <strong><t t-esc="doc.company_id.name"/></strong>.
+                يُحظر الإفصاح أو النسخ أو التوزيع غير المصرح به.
             </span>
+        </t>
+        <t t-else="">
+            ⚠ This document is CONFIDENTIAL and PROPRIETARY to
+            <strong><t t-esc="doc.company_id.name"/></strong>.
+            Unauthorised disclosure, reproduction or distribution is strictly prohibited.
+            <t t-if="doc.language == 'bilingual'">
+                <br/>
+                <span dir="rtl" style="font-family:'Noto Naskh Arabic', Arial, sans-serif;">
+                    هذه الوثيقة سرية وخاصة. يُحظر الإفصاح أو النسخ أو التوزيع غير المصرح به.
+                </span>
+            </t>
         </t>
     </div>
 

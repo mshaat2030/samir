@@ -39,6 +39,7 @@ Key Features Samir:
         # Data
         'data/contract_data.xml',
         # Views
+        'views/contract_dashboard_views.xml',
         'views/contract_menu.xml',
         'views/contract_template_views.xml',
         'views/contract_views.xml',
@@ -52,6 +53,9 @@ Key Features Samir:
     'assets': {
         'web.assets_backend': [
             'contract_management/static/src/scss/contract_style.scss',
+            'contract_management/static/src/scss/dashboard.scss',
+            'contract_management/static/src/xml/contract_dashboard.xml',
+            'contract_management/static/src/js/contract_dashboard.js',
         ],
     },
     'images': ['static/description/icon.png'],

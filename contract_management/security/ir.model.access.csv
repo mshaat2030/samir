@@ -15,3 +15,4 @@ access_contract_version_user,contract.version user,model_contract_version,contra
 access_contract_version_manager,contract.version manager,model_contract_version,contract_management.group_contract_manager,1,1,1,0
 access_contract_version_admin,contract.version admin,model_contract_version,contract_management.group_contract_admin,1,1,1,1
 access_contract_send_wizard_user,contract.send.wizard user,model_contract_send_wizard,contract_management.group_contract_user,1,1,1,1
+access_contract_dashboard_user,contract.dashboard user,model_contract_dashboard,contract_management.group_contract_user,1,0,0,0

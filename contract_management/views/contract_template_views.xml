@@ -77,44 +77,65 @@
                                       string="Template Clauses"
                                       default_order="sequence">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="title" string="Title (EN)" required="1"/>
+                                    <field name="title"
+                                           string="Title (EN)"
+                                           required="language != 'ar'"
+                                           invisible="language == 'ar'"/>
+                                    <field name="description"
+                                           string="Content (EN)"
+                                           widget="html"
+                                           optional="show"
+                                           invisible="language == 'ar'"/>
                                     <field name="title_ar"
                                            string="Title (AR)"
-                                           invisible="language != 'bilingual'"/>
+                                           required="language in ('bilingual', 'ar')"
+                                           invisible="language not in ('bilingual', 'ar')"/>
+                                    <field name="description_ar"
+                                           string="Content (AR)"
+                                           widget="html"
+                                           optional="show"
+                                           invisible="language not in ('bilingual', 'ar')"/>
                                     <field name="clause_type" required="1"/>
                                     <field name="language" column_invisible="1"/>
                                     <field name="active" optional="hide"/>
                                 </list>
                                 <form string="Clause">
                                     <group>
-                                        <group string="English">
+                                        <group string="English"
+                                               invisible="language == 'ar'">
                                             <field name="sequence"/>
                                             <field name="clause_type" required="1"/>
                                             <field name="title"
                                                    string="Title (EN)"
-                                                   required="1"
+                                                   required="language != 'ar'"
                                                    placeholder="Clause heading…"/>
                                         </group>
                                         <group string="Arabic"
-                                               invisible="language != 'bilingual'">
+                                               invisible="language not in ('bilingual', 'ar')">
+                                            <field name="sequence"
+                                                   invisible="language != 'ar'"/>
+                                            <field name="clause_type" required="1"
+                                                   invisible="language != 'ar'"/>
                                             <field name="title_ar"
                                                    string="Title (AR)"
+                                                   required="language in ('bilingual', 'ar')"
                                                    placeholder="عنوان البند…"/>
                                             <field name="language" invisible="1"/>
                                         </group>
                                     </group>
-                                    <group string="Body (English)">
+                                    <group string="Body (English)"
+                                           invisible="language == 'ar'">
                                         <field name="description"
                                                nolabel="1"
                                                options="{'resizable': true}"
                                                placeholder="Enter clause body text…"/>
                                     </group>
                                     <group string="Body (Arabic — RTL)"
-                                           invisible="language != 'bilingual'">
+                                           invisible="language not in ('bilingual', 'ar')">
                                         <field name="description_ar"
                                                nolabel="1"
                                                style="direction: rtl; text-align: right;"
-                                            options="{'resizable': true}"
+                                               options="{'resizable': true}"
                                                placeholder="أدخل نص البند هنا…"/>
                                     </group>
                                 </form>
@@ -223,10 +244,12 @@
                 <field name="reference"/>
                 <field name="user_id"/>
                 <separator/>
-                <filter name="bilingual" string="Bilingual"
-                        domain="[('language', '=', 'bilingual')]"/>
                 <filter name="english" string="English Only"
                         domain="[('language', '=', 'en')]"/>
+                <filter name="arabic_only" string="Arabic Only"
+                        domain="[('language', '=', 'ar')]"/>
+                <filter name="bilingual" string="Bilingual"
+                        domain="[('language', '=', 'bilingual')]"/>
                 <separator/>
                 <filter name="archived" string="Archived"
                         domain="[('active', '=', False)]"/>

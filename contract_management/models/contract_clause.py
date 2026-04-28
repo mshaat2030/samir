@@ -95,6 +95,7 @@ class ContractClause(models.Model):
     def name_get(self):
         result = []
         for rec in self:
-            display = '[%02d] %s' % (rec.sequence, rec.title)
+            label = rec.title or rec.title_ar or 'Untitled'
+            display = '[%02d] %s' % (rec.sequence, label)
             result.append((rec.id, display))
         return result

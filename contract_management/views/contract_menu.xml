@@ -69,6 +69,14 @@
         web_icon="contract_management,static/description/icon.png"
         sequence="55"/>
 
+    <!-- ── Dashboard ──────────────────────────────────────────────────── -->
+    <menuitem
+        id="menu_contract_dashboard"
+        name="Dashboard"
+        parent="menu_contract_root"
+        action="action_contract_dashboard"
+        sequence="5"/>
+
     <!-- ── Contracts ──────────────────────────────────────────────────── -->
     <menuitem
         id="menu_contract_contracts"

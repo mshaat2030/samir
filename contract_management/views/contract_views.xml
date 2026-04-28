@@ -194,11 +194,27 @@
                                       default_order="sequence">
                                     <field name="sequence" widget="handle"/>
                                     <field name="clause_type" readonly="1" optional="show"/>
-                                    <field name="title" string="Title (EN)" required="1"
+                                    <field name="title"
+                                           string="Title (EN)"
+                                           required="language != 'ar'"
+                                           invisible="language == 'ar'"
+                                           readonly="clause_type == 'fixed' or contract_state == 'active'"/>
+                                    <field name="description"
+                                           string="Content (EN)"
+                                           widget="html"
+                                           optional="show"
+                                           invisible="language == 'ar'"
                                            readonly="clause_type == 'fixed' or contract_state == 'active'"/>
                                     <field name="title_ar"
                                            string="Title (AR)"
-                                           invisible="language != 'bilingual'"
+                                           required="language in ('bilingual', 'ar')"
+                                           invisible="language not in ('bilingual', 'ar')"
+                                           readonly="clause_type == 'fixed' or contract_state == 'active'"/>
+                                    <field name="description_ar"
+                                           string="Content (AR)"
+                                           widget="html"
+                                           optional="show"
+                                           invisible="language not in ('bilingual', 'ar')"
                                            readonly="clause_type == 'fixed' or contract_state == 'active'"/>
                                     <field name="language" column_invisible="1"/>
                                     <field name="contract_state" column_invisible="1"/>
@@ -207,20 +223,26 @@
                                 </list>
                                 <form string="Clause">
                                     <group>
-                                        <group string="English">
+                                        <group string="English"
+                                               invisible="language == 'ar'">
                                             <field name="sequence"/>
                                             <field name="clause_type" readonly="1"/>
                                             <field name="template_clause_id" readonly="1"
                                                    optional="show"/>
                                             <field name="title"
                                                    string="Title (EN)"
-                                                   required="1"
+                                                   required="language != 'ar'"
                                                    readonly="is_readonly"/>
                                         </group>
                                         <group string="Arabic"
-                                               invisible="language != 'bilingual'">
+                                               invisible="language not in ('bilingual', 'ar')">
+                                            <field name="sequence"
+                                                   invisible="language != 'ar'"/>
+                                            <field name="clause_type" readonly="1"
+                                                   invisible="language != 'ar'"/>
                                             <field name="title_ar"
                                                    string="Title (AR)"
+                                                   required="language in ('bilingual', 'ar')"
                                                    readonly="is_readonly"/>
                                             <field name="language" invisible="1"/>
                                         </group>
@@ -235,19 +257,20 @@
                                         and cannot be edited.
                                     </div>
 
-                                    <group string="Body (English)">
+                                    <group string="Body (English)"
+                                           invisible="language == 'ar'">
                                         <field name="description"
                                                nolabel="1"
                                                readonly="is_readonly"
                                                options="{'resizable': true}"/>
                                     </group>
                                     <group string="Body (Arabic — RTL)"
-                                           invisible="language != 'bilingual'">
+                                           invisible="language not in ('bilingual', 'ar')">
                                         <field name="description_ar"
                                                nolabel="1"
                                                readonly="is_readonly"
                                                style="direction: rtl; text-align: right;"
-                                            options="{'resizable': true}"/>
+                                               options="{'resizable': true}"/>
                                     </group>
 
                                     <field name="is_readonly" invisible="1"/>

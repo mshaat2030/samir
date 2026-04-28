@@ -1,0 +1,600 @@
+// ═══════════════════════════════════════════════════════════════
+// Contract Management — Dashboard Styles
+// ═══════════════════════════════════════════════════════════════
+
+// ── Tokens ──────────────────────────────────────────────────────
+$cm-navy:     #1a2e4a;
+$cm-teal:     #0d9488;
+$cm-indigo:   #4f46e5;
+$cm-blue:     #2563eb;
+$cm-purple:   #7c3aed;
+$cm-orange:   #ea580c;
+$cm-green:    #16a34a;
+$cm-amber:    #d97706;
+$cm-red:      #dc2626;
+$cm-slate:    #64748b;
+$cm-border:   #e2e8f0;
+$cm-bg:       #f8fafc;
+$cm-card-bg:  #ffffff;
+$cm-radius:   12px;
+$cm-radius-sm: 8px;
+$cm-shadow:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+$cm-shadow-md: 0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+
+// ── Root container ───────────────────────────────────────────────
+.cm_dash {
+    background: $cm-bg;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: $cm-navy;
+}
+
+// ── Loading ──────────────────────────────────────────────────────
+.cm_dash_loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+
+    .cm_spinner_wrap {
+        text-align: center;
+    }
+
+    .cm_spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid $cm-border;
+        border-top-color: $cm-indigo;
+        border-radius: 50%;
+        animation: cm_spin 0.8s linear infinite;
+        margin: 0 auto 16px;
+    }
+
+    .cm_spinner_text {
+        color: $cm-slate;
+        font-size: 14px;
+    }
+}
+
+@keyframes cm_spin {
+    to { transform: rotate(360deg); }
+}
+
+// ── Error ────────────────────────────────────────────────────────
+.cm_dash_error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+
+    .cm_error_box {
+        text-align: center;
+        padding: 40px;
+        background: $cm-card-bg;
+        border-radius: $cm-radius;
+        border: 1px solid $cm-border;
+        max-width: 400px;
+
+        .cm_error_icon { font-size: 40px; display: block; margin-bottom: 16px; }
+        h3 { margin-bottom: 8px; color: $cm-navy; }
+        p  { color: $cm-slate; margin-bottom: 20px; }
+    }
+}
+
+// ── Hero header ──────────────────────────────────────────────────
+.cm_hero {
+    background: linear-gradient(135deg, $cm-navy 0%, #243b55 60%, #1a3a5c 100%);
+    padding: 28px 32px;
+    color: #fff;
+
+    .cm_hero_inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .cm_hero_left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .cm_hero_icon {
+        font-size: 40px;
+        line-height: 1;
+    }
+
+    .cm_hero_title {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0;
+        color: #fff;
+    }
+
+    .cm_hero_sub {
+        font-size: 13px;
+        color: rgba(255,255,255,.65);
+        margin: 4px 0 0;
+    }
+
+    .cm_hero_right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+}
+
+// health pill
+.cm_health_pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+
+    &.cm_health_good {
+        background: rgba(#16a34a,.25);
+        color: #86efac;
+        border: 1px solid rgba(#16a34a,.4);
+    }
+    &.cm_health_warn {
+        background: rgba($cm-amber,.25);
+        color: #fcd34d;
+        border: 1px solid rgba($cm-amber,.4);
+    }
+    &.cm_health_bad {
+        background: rgba($cm-red,.25);
+        color: #fca5a5;
+        border: 1px solid rgba($cm-red,.4);
+    }
+
+    .cm_health_pct {
+        font-size: 18px;
+        font-weight: 800;
+    }
+}
+
+// ── Buttons ──────────────────────────────────────────────────────
+.cm_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: $cm-radius-sm;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s, transform 0.1s;
+
+    &:active { transform: scale(0.97); }
+
+    &.cm_btn_primary {
+        background: $cm-indigo;
+        color: #fff;
+        &:hover { background: darken($cm-indigo, 8%); }
+    }
+    &.cm_btn_ghost {
+        background: rgba(255,255,255,.12);
+        color: rgba(255,255,255,.85);
+        border: 1px solid rgba(255,255,255,.2);
+        &:hover { background: rgba(255,255,255,.20); }
+    }
+}
+
+// ── KPI strip ────────────────────────────────────────────────────
+.cm_kpi_strip {
+    display: flex;
+    gap: 0;
+    padding: 0 32px;
+    max-width: 1400px;
+    margin: 24px auto 0;
+}
+
+.cm_kpi {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 22px;
+    background: $cm-card-bg;
+    border: 1px solid $cm-border;
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.1s;
+    position: relative;
+
+    &:first-child { border-radius: $cm-radius 0 0 $cm-radius; }
+    &:last-child  { border-radius: 0 $cm-radius $cm-radius 0; }
+    & + & { border-left: none; }
+
+    &:hover {
+        z-index: 1;
+        box-shadow: $cm-shadow-md;
+        transform: translateY(-2px);
+    }
+
+    .cm_kpi_icon_wrap {
+        font-size: 28px;
+        line-height: 1;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .cm_kpi_body {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .cm_kpi_num {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+    .cm_kpi_lbl {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: $cm-slate;
+        margin-top: 2px;
+        white-space: nowrap;
+    }
+
+    .cm_kpi_arrow {
+        margin-left: auto;
+        color: $cm-border;
+        font-size: 20px;
+    }
+
+    // colour variants
+    &.cm_kpi_total   { .cm_kpi_icon_wrap { background: #eef2ff; } .cm_kpi_num { color: $cm-indigo; } }
+    &.cm_kpi_active  { .cm_kpi_icon_wrap { background: #f0fdf4; } .cm_kpi_num { color: $cm-green; } }
+    &.cm_kpi_draft   { .cm_kpi_icon_wrap { background: #f8fafc; } .cm_kpi_num { color: $cm-slate; } }
+    &.cm_kpi_closed  { .cm_kpi_icon_wrap { background: #fef2f2; } .cm_kpi_num { color: $cm-red; } }
+    &.cm_kpi_expiring{ .cm_kpi_icon_wrap { background: #fffbeb; } .cm_kpi_num { color: $cm-amber; } }
+}
+
+// ── Two-column layout ────────────────────────────────────────────
+.cm_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 24px 32px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cm_col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+// ── Cards ─────────────────────────────────────────────────────────
+.cm_card {
+    background: $cm-card-bg;
+    border: 1px solid $cm-border;
+    border-radius: $cm-radius;
+    overflow: hidden;
+    box-shadow: $cm-shadow;
+
+    &.cm_card_ai {
+        border-top: 3px solid $cm-indigo;
+    }
+    &.cm_card_warn {
+        border-top: 3px solid $cm-amber;
+    }
+}
+
+.cm_card_head {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid $cm-border;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cm_card_title {
+    font-size: 14px;
+    font-weight: 700;
+    color: $cm-navy;
+    margin: 0;
+    flex: 1;
+}
+
+.cm_card_sub {
+    font-size: 11px;
+    color: $cm-slate;
+}
+
+.cm_card_body {
+    padding: 16px 20px;
+}
+
+.cm_nop { padding: 0 !important; }
+.cm_pad { padding: 20px !important; }
+
+// ── AI badge ─────────────────────────────────────────────────────
+.cm_ai_label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: $cm-indigo;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    flex-shrink: 0;
+
+    .cm_ai_dot {
+        font-size: 8px;
+        animation: cm_pulse 1.5s infinite;
+    }
+}
+
+@keyframes cm_pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+// ── Insight cards ─────────────────────────────────────────────────
+.cm_insight {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: $cm-radius-sm;
+    margin-bottom: 10px;
+    border-left: 3px solid transparent;
+
+    &:last-child { margin-bottom: 0; }
+
+    .cm_ins_icon {
+        font-size: 20px;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .cm_ins_text { flex: 1; }
+
+    .cm_ins_title {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 3px;
+    }
+
+    .cm_ins_body {
+        font-size: 12px;
+        line-height: 1.5;
+        margin: 0;
+        opacity: 0.85;
+    }
+
+    &.cm_insight_success {
+        background: #f0fdf4;
+        border-color: $cm-green;
+        .cm_ins_title { color: darken($cm-green, 10%); }
+    }
+    &.cm_insight_warning {
+        background: #fffbeb;
+        border-color: $cm-amber;
+        .cm_ins_title { color: darken($cm-amber, 10%); }
+    }
+    &.cm_insight_danger {
+        background: #fef2f2;
+        border-color: $cm-red;
+        .cm_ins_title { color: $cm-red; }
+    }
+    &.cm_insight_info {
+        background: #eff6ff;
+        border-color: $cm-blue;
+        .cm_ins_title { color: $cm-blue; }
+    }
+}
+
+// ── Bar charts ────────────────────────────────────────────────────
+.cm_bar_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+
+    &:last-child { margin-bottom: 0; }
+}
+
+.cm_bar_lbl {
+    font-size: 11.5px;
+    color: $cm-slate;
+    white-space: nowrap;
+    width: 90px;
+    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cm_bar_track {
+    flex: 1;
+    height: 10px;
+    background: $cm-bg;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid $cm-border;
+}
+
+.cm_bar_fill {
+    height: 100%;
+    border-radius: 5px;
+    min-width: 4px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+
+    &.cm_bar_blue   { background: $cm-blue; }
+    &.cm_bar_teal   { background: $cm-teal; }
+    &.cm_bar_indigo { background: $cm-indigo; }
+    &.cm_bar_purple { background: $cm-purple; }
+    &.cm_bar_orange { background: $cm-orange; }
+    &.cm_bar_green  { background: $cm-green; }
+}
+
+.cm_bar_val {
+    font-size: 12px;
+    font-weight: 700;
+    color: $cm-navy;
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+// ── Language grid ─────────────────────────────────────────────────
+.cm_lang_grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cm_lang_tile {
+    flex: 1;
+    min-width: 110px;
+    padding: 16px;
+    background: $cm-bg;
+    border: 1px solid $cm-border;
+    border-radius: $cm-radius-sm;
+    text-align: center;
+
+    .cm_lang_num {
+        display: block;
+        font-size: 28px;
+        font-weight: 800;
+        color: $cm-indigo;
+        line-height: 1;
+    }
+
+    .cm_lang_lbl {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: $cm-slate;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+// ── Tables ────────────────────────────────────────────────────────
+.cm_tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    thead tr {
+        background: $cm-bg;
+        border-bottom: 1px solid $cm-border;
+    }
+
+    thead th {
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: $cm-slate;
+        white-space: nowrap;
+    }
+
+    .cm_tbl_row {
+        border-bottom: 1px solid $cm-border;
+        cursor: pointer;
+        transition: background 0.1s;
+
+        &:last-child { border-bottom: none; }
+        &:hover { background: #f8fafc; }
+
+        td {
+            padding: 10px 14px;
+            vertical-align: middle;
+        }
+    }
+}
+
+.cm_ref {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: $cm-indigo;
+    background: #eef2ff;
+    border-radius: 4px;
+    padding: 2px 5px;
+    margin-right: 5px;
+}
+
+.cm_name {
+    font-weight: 500;
+    color: $cm-navy;
+    font-size: 12.5px;
+}
+
+// ── Status badges ─────────────────────────────────────────────────
+.cm_badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+
+    &.cm_badge_active    { background: #dcfce7; color: #15803d; }
+    &.cm_badge_draft     { background: #f1f5f9; color: $cm-slate; }
+    &.cm_badge_expired   { background: #fef3c7; color: #92400e; }
+    &.cm_badge_cancelled { background: #fee2e2; color: #991b1b; }
+}
+
+// ── Days-left colours ─────────────────────────────────────────────
+.cm_days_critical { color: $cm-red;   font-weight: 800; font-size: 13px; }
+.cm_days_warning  { color: $cm-amber; font-weight: 700; font-size: 13px; }
+.cm_days_ok       { color: $cm-slate; font-size: 13px; }
+
+// ── Count badge ───────────────────────────────────────────────────
+.cm_count_badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 700;
+
+    &.cm_count_warn { background: #fef3c7; color: #92400e; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────
+.cm_empty {
+    display: block;
+    text-align: center;
+    padding: 20px;
+    color: $cm-slate;
+    font-size: 13px;
+}

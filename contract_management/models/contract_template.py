@@ -52,6 +52,7 @@ class ContractTemplate(models.Model):
     language = fields.Selection(
         selection=[
             ('en', 'English Only'),
+            ('ar', 'Arabic Only'),
             ('bilingual', 'Bilingual (English + Arabic)'),
         ],
         string='Language',
@@ -59,7 +60,8 @@ class ContractTemplate(models.Model):
         default='en',
         tracking=True,
         help='Controls how the PDF report renders. '
-             'Bilingual templates display English and Arabic side-by-side.',
+             'Arabic Only renders a full RTL document. '
+             'Bilingual displays English and Arabic side-by-side.',
     )
     contract_type = fields.Selection(
         selection=[
@@ -148,15 +150,28 @@ class ContractTemplate(models.Model):
     # Constraints
     # ─────────────────────────────────────────────────────────────────────────
     @api.constrains('clause_ids', 'language')
-    def _check_bilingual_clauses(self):
+    def _check_language_clauses(self):
         for rec in self:
-            if rec.language == 'bilingual':
-                missing = rec.clause_ids.filtered(lambda c: not c.title_ar)
-                if missing:
+            if rec.language in ('bilingual', 'ar'):
+                missing_ar = rec.clause_ids.filtered(lambda c: not c.title_ar)
+                if missing_ar:
+                    titles = ', '.join(
+                        t for t in missing_ar.mapped('title') if t
+                    ) or _('(untitled)')
                     raise ValidationError(_(
-                        'Bilingual templates require an Arabic title for every clause. '
-                        'Missing Arabic title on: %s'
-                    ) % ', '.join(missing.mapped('title')))
+                        'Arabic and Bilingual templates require an Arabic title for every '
+                        'clause. Missing on: %s'
+                    ) % titles)
+            if rec.language in ('en', 'bilingual'):
+                missing_en = rec.clause_ids.filtered(lambda c: not c.title)
+                if missing_en:
+                    titles_ar = ', '.join(
+                        t for t in missing_en.mapped('title_ar') if t
+                    ) or _('(untitled)')
+                    raise ValidationError(_(
+                        'English and Bilingual templates require an English title for every '
+                        'clause. Missing on: %s'
+                    ) % titles_ar)
 
     # ─────────────────────────────────────────────────────────────────────────
     # Actions

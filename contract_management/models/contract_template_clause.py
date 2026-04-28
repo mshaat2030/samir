@@ -34,8 +34,8 @@ class ContractTemplateClause(models.Model):
     # ── English content ───────────────────────────────────────────────────────
     title = fields.Char(
         string='Title (EN)',
-        required=True,
         translate=False,
+        help='Required for English and Bilingual templates.',
     )
     description = fields.Html(
         string='Body (EN)',
@@ -82,14 +82,20 @@ class ContractTemplateClause(models.Model):
     # ─────────────────────────────────────────────────────────────────────────
     # Constraints
     # ─────────────────────────────────────────────────────────────────────────
-    @api.constrains('title_ar', 'template_id')
-    def _check_bilingual_arabic(self):
+    @api.constrains('title', 'title_ar', 'template_id')
+    def _check_language_titles(self):
         for rec in self:
-            if rec.template_id.language == 'bilingual' and not rec.title_ar:
+            lang = rec.template_id.language
+            if lang in ('en', 'bilingual') and not rec.title:
                 raise ValidationError(_(
-                    'Clause "%s" is missing an Arabic title. '
-                    'All clauses in a bilingual template must have an Arabic title.'
-                ) % rec.title)
+                    'An English title is required for English and Bilingual templates. '
+                    'Please fill in the Title (EN) field.'
+                ))
+            if lang in ('ar', 'bilingual') and not rec.title_ar:
+                raise ValidationError(_(
+                    'An Arabic title is required for Arabic and Bilingual templates. '
+                    'Please fill in the Title (AR) field.'
+                ))
 
     # ─────────────────────────────────────────────────────────────────────────
     # Display name
@@ -97,6 +103,7 @@ class ContractTemplateClause(models.Model):
     def name_get(self):
         result = []
         for rec in self:
-            display = '[%s] %s' % (rec.sequence, rec.title)
+            label = rec.title or rec.title_ar or _('Untitled')
+            display = '[%s] %s' % (rec.sequence, label)
             result.append((rec.id, display))
         return result

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="contract_management.Dashboard">
+<div class="cm_dash">
+
+    <!-- ══════════════════ LOADING ══════════════════ -->
+    <t t-if="state.loading">
+        <div class="cm_dash_loader">
+            <div class="cm_spinner_wrap">
+                <div class="cm_spinner"/>
+                <p class="cm_spinner_text">Loading dashboard…</p>
+            </div>
+        </div>
+    </t>
+
+    <!-- ══════════════════ ERROR ══════════════════ -->
+    <t t-elif="state.error">
+        <div class="cm_dash_error">
+            <div class="cm_error_box">
+                <span class="cm_error_icon">⚠️</span>
+                <h3>Unable to load dashboard</h3>
+                <p t-esc="state.error"/>
+                <button class="cm_btn cm_btn_primary" t-on-click="_loadData">Retry</button>
+            </div>
+        </div>
+    </t>
+
+    <!-- ══════════════════ MAIN ══════════════════ -->
+    <t t-else="">
+
+        <!-- ── Hero header ─────────────────────────────────────────── -->
+        <div class="cm_hero">
+            <div class="cm_hero_inner">
+                <div class="cm_hero_left">
+                    <div class="cm_hero_icon">📋</div>
+                    <div>
+                        <h1 class="cm_hero_title">Contract Dashboard</h1>
+                        <p class="cm_hero_sub">Real-time overview · AI-powered insights</p>
+                    </div>
+                </div>
+                <div class="cm_hero_right">
+                    <div t-attf-class="cm_health_pill {{ healthColor }}">
+                        <span class="cm_health_pct" t-esc="healthPct + '%'"/>
+                        <span class="cm_health_lbl" t-esc="'Health: ' + healthLabel"/>
+                    </div>
+                    <button class="cm_btn cm_btn_ghost" t-on-click="_loadData">
+                        ↻ Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── KPI strip ──────────────────────────────────────────── -->
+        <div class="cm_kpi_strip">
+
+            <div class="cm_kpi cm_kpi_total" t-on-click="openAllContracts">
+                <div class="cm_kpi_icon_wrap">📋</div>
+                <div class="cm_kpi_body">
+                    <span class="cm_kpi_num" t-esc="state.data.kpi.total"/>
+                    <span class="cm_kpi_lbl">Total</span>
+                </div>
+                <div class="cm_kpi_arrow">›</div>
+            </div>
+
+            <div class="cm_kpi cm_kpi_active" t-on-click="openActive">
+                <div class="cm_kpi_icon_wrap">✅</div>
+                <div class="cm_kpi_body">
+                    <span class="cm_kpi_num" t-esc="state.data.kpi.active"/>
+                    <span class="cm_kpi_lbl">Active</span>
+                </div>
+                <div class="cm_kpi_arrow">›</div>
+            </div>
+
+            <div class="cm_kpi cm_kpi_draft" t-on-click="openDraft">
+                <div class="cm_kpi_icon_wrap">📝</div>
+                <div class="cm_kpi_body">
+                    <span class="cm_kpi_num" t-esc="state.data.kpi.draft"/>
+                    <span class="cm_kpi_lbl">Draft</span>
+                </div>
+                <div class="cm_kpi_arrow">›</div>
+            </div>
+
+            <div class="cm_kpi cm_kpi_closed" t-on-click="openClosedContracts">
+                <div class="cm_kpi_icon_wrap">⛔</div>
+                <div class="cm_kpi_body">
+                    <span class="cm_kpi_num"
+                          t-esc="state.data.kpi.expired + state.data.kpi.cancelled"/>
+                    <span class="cm_kpi_lbl">Expired / Cancelled</span>
+                </div>
+                <div class="cm_kpi_arrow">›</div>
+            </div>
+
+            <div class="cm_kpi cm_kpi_expiring" t-on-click="openExpiringSoon">
+                <div class="cm_kpi_icon_wrap">⏰</div>
+                <div class="cm_kpi_body">
+                    <span class="cm_kpi_num" t-esc="state.data.kpi.expiring_30"/>
+                    <span class="cm_kpi_lbl">Expiring ≤ 30 days</span>
+                </div>
+                <div class="cm_kpi_arrow">›</div>
+            </div>
+
+        </div><!-- /kpi_strip -->
+
+        <!-- ── Two-column grid ───────────────────────────────────── -->
+        <div class="cm_grid">
+
+            <!-- ════════ LEFT COLUMN ════════ -->
+            <div class="cm_col">
+
+                <!-- AI Insights card -->
+                <div class="cm_card cm_card_ai">
+                    <div class="cm_card_head">
+                        <div class="cm_ai_label">
+                            <span class="cm_ai_dot">●</span>
+                            AI
+                        </div>
+                        <h3 class="cm_card_title">Smart Insights</h3>
+                        <span class="cm_card_sub">Contract portfolio analysis</span>
+                    </div>
+                    <div class="cm_card_body">
+                        <t t-if="state.data.insights.length === 0">
+                            <div class="cm_empty">
+                                No insights yet — add more contracts to see AI analysis.
+                            </div>
+                        </t>
+                        <t t-foreach="state.data.insights" t-as="ins" t-key="ins_index">
+                            <div t-attf-class="cm_insight {{ insightClass(ins.type) }}">
+                                <span class="cm_ins_icon" t-esc="ins.icon"/>
+                                <div class="cm_ins_text">
+                                    <strong class="cm_ins_title" t-esc="ins.title"/>
+                                    <p class="cm_ins_body" t-esc="ins.body"/>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Monthly Trend chart -->
+                <div class="cm_card">
+                    <div class="cm_card_head">
+                        <h3 class="cm_card_title">📈 Monthly Activity</h3>
+                        <span class="cm_card_sub">Contracts started · last 6 months</span>
+                    </div>
+                    <div class="cm_card_body">
+                        <t t-foreach="state.data.monthly_trend" t-as="m" t-key="m.label">
+                            <div class="cm_bar_row">
+                                <span class="cm_bar_lbl" t-esc="m.label"/>
+                                <div class="cm_bar_track">
+                                    <div t-attf-class="cm_bar_fill cm_bar_blue"
+                                         t-attf-style="width:{{ barPct(m.count, state.data.monthly_trend) }}%"/>
+                                </div>
+                                <span class="cm_bar_val" t-esc="m.count"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Language distribution -->
+                <div class="cm_card">
+                    <div class="cm_card_head">
+                        <h3 class="cm_card_title">🌐 Language Distribution</h3>
+                    </div>
+                    <div class="cm_card_body cm_lang_grid">
+                        <t t-if="state.data.lang_distribution.length === 0">
+                            <span class="cm_empty">No data yet.</span>
+                        </t>
+                        <t t-foreach="state.data.lang_distribution" t-as="l" t-key="l.lang">
+                            <div class="cm_lang_tile">
+                                <span class="cm_lang_num" t-esc="l.count"/>
+                                <span class="cm_lang_lbl" t-esc="l.label"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+            </div><!-- /col left -->
+
+            <!-- ════════ RIGHT COLUMN ════════ -->
+            <div class="cm_col">
+
+                <!-- Contract Type Distribution -->
+                <div class="cm_card">
+                    <div class="cm_card_head">
+                        <h3 class="cm_card_title">📊 By Contract Type</h3>
+                        <span class="cm_card_sub">Distribution across all contracts</span>
+                    </div>
+                    <div class="cm_card_body">
+                        <t t-if="state.data.type_distribution.length === 0">
+                            <div class="cm_empty">No contracts yet.</div>
+                        </t>
+                        <t t-foreach="state.data.type_distribution" t-as="item" t-key="item.type">
+                            <div class="cm_bar_row">
+                                <span class="cm_bar_lbl" t-esc="item.label"/>
+                                <div class="cm_bar_track">
+                                    <div t-attf-class="cm_bar_fill {{ barColor(item_index) }}"
+                                         t-attf-style="width:{{ barPct(item.count, state.data.type_distribution) }}%"/>
+                                </div>
+                                <span class="cm_bar_val" t-esc="item.count"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Expiring contracts alert -->
+                <div class="cm_card cm_card_warn"
+                     t-if="state.data.expiring_contracts.length > 0">
+                    <div class="cm_card_head">
+                        <h3 class="cm_card_title">⚠️ Expiring Within 30 Days</h3>
+                        <span t-attf-class="cm_count_badge cm_count_warn"
+                              t-esc="state.data.expiring_contracts.length"/>
+                    </div>
+                    <div class="cm_card_body cm_nop">
+                        <table class="cm_tbl">
+                            <thead>
+                                <tr>
+                                    <th>Contract</th>
+                                    <th>Customer</th>
+                                    <th>Expires</th>
+                                    <th>Days</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.data.expiring_contracts"
+                                   t-as="c" t-key="c.id">
+                                    <tr class="cm_tbl_row"
+                                        t-on-click="() => this.openContract(c.id)">
+                                        <td>
+                                            <span class="cm_ref" t-esc="c.reference"/>
+                                            <span class="cm_name" t-esc="c.name"/>
+                                        </td>
+                                        <td t-esc="c.partner"/>
+                                        <td t-esc="c.date_end"/>
+                                        <td>
+                                            <span t-attf-class="{{ daysClass(c.days_left) }}"
+                                                  t-esc="c.days_left + 'd'"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent contracts -->
+                <div class="cm_card">
+                    <div class="cm_card_head">
+                        <h3 class="cm_card_title">🕐 Recent Contracts</h3>
+                        <span class="cm_card_sub">Latest active &amp; draft</span>
+                    </div>
+                    <div class="cm_card_body cm_nop">
+                        <t t-if="state.data.recent_contracts.length === 0">
+                            <div class="cm_empty cm_pad">No contracts yet.</div>
+                        </t>
+                        <table class="cm_tbl" t-if="state.data.recent_contracts.length > 0">
+                            <thead>
+                                <tr>
+                                    <th>Ref</th>
+                                    <th>Name</th>
+                                    <th>Customer</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.data.recent_contracts"
+                                   t-as="c" t-key="c.id">
+                                    <tr class="cm_tbl_row"
+                                        t-on-click="() => this.openContract(c.id)">
+                                        <td><span class="cm_ref" t-esc="c.reference"/></td>
+                                        <td class="cm_name" t-esc="c.name"/>
+                                        <td t-esc="c.partner"/>
+                                        <td>
+                                            <span t-attf-class="cm_badge {{ stateClass(c.state) }}"
+                                                  t-esc="c.state"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div><!-- /col right -->
+
+        </div><!-- /grid -->
+
+    </t><!-- /main -->
+
+</div><!-- /cm_dash -->
+</t>
+
+</templates>
