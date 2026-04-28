@@ -4,5 +4,6 @@
     <record id="action_contract_dashboard" model="ir.actions.client">
         <field name="name">Contract Dashboard</field>
         <field name="tag">contract_management.dashboard</field>
+        <field name="path">contract-dashboard</field>
     </record>
 </odoo>
