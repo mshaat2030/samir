@@ -3,10 +3,11 @@
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { registry } from "@web/core/registry";
+import { standardActionServiceProps } from "@web/webclient/actions/action_service";
 
 export class ContractDashboard extends Component {
     static template = "contract_management.Dashboard";
-    static props = {};
+    static props = { ...standardActionServiceProps };
 
     setup() {
         this.orm    = useService("orm");
