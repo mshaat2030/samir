@@ -179,21 +179,37 @@
 
                         <!-- ── Clauses Tab ─────────────────────────────── -->
                         <page string="Contract Clauses" name="clauses">
-                            <div class="alert alert-info o_form_no_print mb-3"
-                                 role="status"
+
+                            <!-- Enhanced empty-state banner -->
+                            <div class="cm_clause_empty_state o_form_no_print"
                                  invisible="clause_count != 0">
-                                <i class="fa fa-info-circle me-2" title="Info"/>
-                                Select a template to automatically load clauses.
+                                <div class="cm_clause_empty_ico">
+                                    <i class="fa fa-list-ul" title="Clauses"/>
+                                </div>
+                                <div class="cm_clause_empty_text">
+                                    <strong>No clauses yet</strong>
+                                    <p>Select a template above to automatically import all
+                                       clauses, or add them manually using the button below.</p>
+                                </div>
                             </div>
+
                             <field name="clause_ids"
                                    nolabel="1"
                                    context="{'default_contract_id': id}"
                                    readonly="state == 'active'">
                                 <list editable="bottom"
                                       string="Clauses"
-                                      default_order="sequence">
+                                      class="cm_clause_list"
+                                      default_order="sequence"
+                                      decoration-info="clause_type == 'fixed'"
+                                      decoration-success="clause_type == 'variable'">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="clause_type" readonly="1" optional="show"/>
+                                    <field name="clause_type"
+                                           widget="badge"
+                                           decoration-info="clause_type == 'fixed'"
+                                           decoration-success="clause_type == 'variable'"
+                                           readonly="1"
+                                           optional="show"/>
                                     <field name="title"
                                            string="Title (EN)"
                                            required="language != 'ar'"
@@ -221,7 +237,27 @@
                                     <field name="is_readonly" column_invisible="1"/>
                                     <field name="template_clause_id" column_invisible="1"/>
                                 </list>
+
                                 <form string="Clause">
+                                    <!-- ── Fixed clause banner ── -->
+                                    <div class="cm_clause_fixed_banner o_form_no_print"
+                                         invisible="clause_type != 'fixed'">
+                                        <i class="fa fa-lock" title="Fixed"/>
+                                        <span>
+                                            <strong>Fixed Clause</strong> —
+                                            body is protected and cannot be edited on contracts.
+                                        </span>
+                                    </div>
+                                    <!-- ── Variable clause banner ── -->
+                                    <div class="cm_clause_variable_banner o_form_no_print"
+                                         invisible="clause_type != 'variable'">
+                                        <i class="fa fa-pencil" title="Variable"/>
+                                        <span>
+                                            <strong>Variable Clause</strong> —
+                                            body can be customised per contract.
+                                        </span>
+                                    </div>
+
                                     <group>
                                         <group string="English"
                                                invisible="language == 'ar'">
@@ -248,15 +284,6 @@
                                         </group>
                                     </group>
 
-                                    <!-- Fixed clause notice -->
-                                    <div class="alert alert-warning o_form_no_print"
-                                         role="alert"
-                                         invisible="not is_readonly">
-                                        <i class="fa fa-lock me-2" title="Locked"/>
-                                        <strong>Fixed Clause</strong> — this body is protected
-                                        and cannot be edited.
-                                    </div>
-
                                     <group string="Body (English)"
                                            invisible="language == 'ar'">
                                         <field name="description"
@@ -274,6 +301,7 @@
                                     </group>
 
                                     <field name="is_readonly" invisible="1"/>
+                                    <field name="clause_type" invisible="1"/>
                                 </form>
                             </field>
                         </page>

@@ -75,8 +75,16 @@
                                    nolabel="1">
                                 <list editable="bottom"
                                       string="Template Clauses"
-                                      default_order="sequence">
+                                      class="cm_clause_list"
+                                      default_order="sequence"
+                                      decoration-info="clause_type == 'fixed'"
+                                      decoration-success="clause_type == 'variable'">
                                     <field name="sequence" widget="handle"/>
+                                    <field name="clause_type"
+                                           widget="badge"
+                                           decoration-info="clause_type == 'fixed'"
+                                           decoration-success="clause_type == 'variable'"
+                                           required="1"/>
                                     <field name="title"
                                            string="Title (EN)"
                                            required="language != 'ar'"
@@ -95,11 +103,30 @@
                                            widget="html"
                                            optional="show"
                                            invisible="language not in ('bilingual', 'ar')"/>
-                                    <field name="clause_type" required="1"/>
                                     <field name="language" column_invisible="1"/>
                                     <field name="active" optional="hide"/>
                                 </list>
+
                                 <form string="Clause">
+                                    <!-- ── Fixed clause banner ── -->
+                                    <div class="cm_clause_fixed_banner o_form_no_print"
+                                         invisible="clause_type != 'fixed'">
+                                        <i class="fa fa-lock" title="Fixed"/>
+                                        <span>
+                                            <strong>Fixed Clause</strong> —
+                                            body will be read-only on all contracts using this template.
+                                        </span>
+                                    </div>
+                                    <!-- ── Variable clause banner ── -->
+                                    <div class="cm_clause_variable_banner o_form_no_print"
+                                         invisible="clause_type != 'variable'">
+                                        <i class="fa fa-pencil" title="Variable"/>
+                                        <span>
+                                            <strong>Variable Clause</strong> —
+                                            body can be tailored for each contract.
+                                        </span>
+                                    </div>
+
                                     <group>
                                         <group string="English"
                                                invisible="language == 'ar'">
@@ -123,6 +150,7 @@
                                             <field name="language" invisible="1"/>
                                         </group>
                                     </group>
+
                                     <group string="Body (English)"
                                            invisible="language == 'ar'">
                                         <field name="description"
@@ -138,6 +166,8 @@
                                                options="{'resizable': true}"
                                                placeholder="أدخل نص البند هنا…"/>
                                     </group>
+
+                                    <field name="clause_type" invisible="1"/>
                                 </form>
                             </field>
                         </page>

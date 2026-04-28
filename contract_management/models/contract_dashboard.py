@@ -128,7 +128,7 @@ class ContractDashboard(models.Model):
             health = round(active / total * 100)
             if health >= 70:
                 insights.append({
-                    'type': 'success', 'icon': '✅',
+                    'type': 'success', 'icon': 'fa-check-circle',
                     'title': f'Portfolio Health: Excellent ({health}%)',
                     'body': (
                         f'{active} of {total} contracts are active. '
@@ -137,7 +137,7 @@ class ContractDashboard(models.Model):
                 })
             elif health >= 40:
                 insights.append({
-                    'type': 'warning', 'icon': '⚠️',
+                    'type': 'warning', 'icon': 'fa-exclamation-triangle',
                     'title': f'Portfolio Health: Moderate ({health}%)',
                     'body': (
                         f'{active} of {total} contracts are active. '
@@ -146,7 +146,7 @@ class ContractDashboard(models.Model):
                 })
             else:
                 insights.append({
-                    'type': 'danger', 'icon': '🔴',
+                    'type': 'danger', 'icon': 'fa-times-circle',
                     'title': f'Portfolio Health: Needs Attention ({health}%)',
                     'body': (
                         f'Only {active} of {total} contracts are active. '
@@ -157,7 +157,7 @@ class ContractDashboard(models.Model):
         # 2. Expiry risk
         if len(exp30) > 0:
             insights.append({
-                'type': 'warning', 'icon': '⏰',
+                'type': 'warning', 'icon': 'fa-clock-o',
                 'title': f'{len(exp30)} Contract(s) Expiring Within 30 Days',
                 'body': (
                     'Initiate renewal discussions now to avoid service interruptions '
@@ -167,7 +167,7 @@ class ContractDashboard(models.Model):
         upcoming = len(exp60) - len(exp30)
         if upcoming > 0:
             insights.append({
-                'type': 'info', 'icon': '📅',
+                'type': 'info', 'icon': 'fa-calendar',
                 'title': f'{upcoming} More Contract(s) Expiring in 31–60 Days',
                 'body': (
                     f'Plan ahead: {upcoming} contract(s) expire in the next 31–60 days.'
@@ -177,7 +177,7 @@ class ContractDashboard(models.Model):
         # 3. Draft pipeline
         if draft > 0:
             insights.append({
-                'type': 'info', 'icon': '📝',
+                'type': 'info', 'icon': 'fa-pencil-square-o',
                 'title': f'{draft} Draft Contract(s) Awaiting Activation',
                 'body': (
                     f'You have {draft} contract(s) pending activation. '
@@ -190,7 +190,7 @@ class ContractDashboard(models.Model):
             top = type_distribution[0]
             pct = round(top['count'] / total * 100)
             insights.append({
-                'type': 'info', 'icon': '📊',
+                'type': 'info', 'icon': 'fa-pie-chart',
                 'title': f'Dominant Type: {top["label"]}',
                 'body': (
                     f'{top["label"]} accounts for {pct}% '
@@ -204,7 +204,7 @@ class ContractDashboard(models.Model):
         if total > 0 and (bilingual_count + arabic_count) > 0:
             ar_pct = round((bilingual_count + arabic_count) / total * 100)
             insights.append({
-                'type': 'info', 'icon': '🌐',
+                'type': 'info', 'icon': 'fa-globe',
                 'title': f'{ar_pct}% of Contracts Include Arabic',
                 'body': (
                     f'{bilingual_count} bilingual and {arabic_count} Arabic-only '
@@ -216,7 +216,7 @@ class ContractDashboard(models.Model):
         open_ended = sum(1 for c in all_recs if c.state == 'active' and not c.date_end)
         if open_ended > 0:
             insights.append({
-                'type': 'warning', 'icon': '♾️',
+                'type': 'warning', 'icon': 'fa-arrows-h',
                 'title': f'{open_ended} Open-Ended Active Contract(s)',
                 'body': (
                     f'{open_ended} active contract(s) have no end date. '

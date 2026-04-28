@@ -18,10 +18,12 @@
     <t t-elif="state.error">
         <div class="cm_dash_error">
             <div class="cm_error_box">
-                <span class="cm_error_icon">⚠️</span>
+                <i class="fa fa-exclamation-triangle cm_error_icon"/>
                 <h3>Unable to load dashboard</h3>
                 <p t-esc="state.error"/>
-                <button class="cm_btn cm_btn_primary" t-on-click="_loadData">Retry</button>
+                <button class="cm_btn cm_btn_primary" t-on-click="_loadData">
+                    <i class="fa fa-refresh me-1"/> Retry
+                </button>
             </div>
         </div>
     </t>
@@ -33,19 +35,51 @@
         <div class="cm_hero">
             <div class="cm_hero_inner">
                 <div class="cm_hero_left">
-                    <div class="cm_hero_icon">📋</div>
+                    <div class="cm_hero_icon">
+                        <i class="fa fa-file-text"/>
+                    </div>
                     <div>
                         <h1 class="cm_hero_title">Contract Dashboard</h1>
-                        <p class="cm_hero_sub">Real-time overview · AI-powered insights</p>
+                        <p class="cm_hero_sub">
+                            <i class="fa fa-circle cm_hero_dot"/> Real-time overview
+                            <span class="cm_hero_sep">·</span>
+                            <i class="fa fa-magic"/> AI-powered insights
+                        </p>
                     </div>
                 </div>
                 <div class="cm_hero_right">
                     <div t-attf-class="cm_health_pill {{ healthColor }}">
+                        <i class="fa fa-heartbeat cm_health_beat"/>
                         <span class="cm_health_pct" t-esc="healthPct + '%'"/>
-                        <span class="cm_health_lbl" t-esc="'Health: ' + healthLabel"/>
+                        <span class="cm_health_lbl" t-esc="healthLabel"/>
                     </div>
                     <button class="cm_btn cm_btn_ghost" t-on-click="_loadData">
-                        ↻ Refresh
+                        <i class="fa fa-refresh"/> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Quick Actions bar ─────────────────────────────────── -->
+        <div class="cm_actions_bar">
+            <div class="cm_actions_inner">
+                <span class="cm_actions_label">
+                    <i class="fa fa-bolt me-1"/> Quick Actions
+                </span>
+                <div class="cm_actions_btns">
+                    <button class="cm_qa_btn cm_qa_primary" t-on-click="createContract">
+                        <i class="fa fa-plus-circle"/> New Contract
+                    </button>
+                    <button class="cm_qa_btn cm_qa_outline" t-on-click="openTemplates">
+                        <i class="fa fa-copy"/> Templates
+                    </button>
+                    <button class="cm_qa_btn cm_qa_outline" t-on-click="openAllContracts">
+                        <i class="fa fa-list"/> All Contracts
+                    </button>
+                    <button t-if="state.data.kpi.expiring_30 > 0"
+                            class="cm_qa_btn cm_qa_warn" t-on-click="openExpiringSoon">
+                        <i class="fa fa-clock-o"/>
+                        <t t-esc="state.data.kpi.expiring_30"/> Expiring Soon
                     </button>
                 </div>
             </div>
@@ -55,49 +89,59 @@
         <div class="cm_kpi_strip">
 
             <div class="cm_kpi cm_kpi_total" t-on-click="openAllContracts">
-                <div class="cm_kpi_icon_wrap">📋</div>
+                <div class="cm_kpi_icon_wrap">
+                    <i class="fa fa-file-text-o"/>
+                </div>
                 <div class="cm_kpi_body">
                     <span class="cm_kpi_num" t-esc="state.data.kpi.total"/>
                     <span class="cm_kpi_lbl">Total</span>
                 </div>
-                <div class="cm_kpi_arrow">›</div>
+                <i class="fa fa-chevron-right cm_kpi_arrow"/>
             </div>
 
             <div class="cm_kpi cm_kpi_active" t-on-click="openActive">
-                <div class="cm_kpi_icon_wrap">✅</div>
+                <div class="cm_kpi_icon_wrap">
+                    <i class="fa fa-check-circle"/>
+                </div>
                 <div class="cm_kpi_body">
                     <span class="cm_kpi_num" t-esc="state.data.kpi.active"/>
                     <span class="cm_kpi_lbl">Active</span>
                 </div>
-                <div class="cm_kpi_arrow">›</div>
+                <i class="fa fa-chevron-right cm_kpi_arrow"/>
             </div>
 
             <div class="cm_kpi cm_kpi_draft" t-on-click="openDraft">
-                <div class="cm_kpi_icon_wrap">📝</div>
+                <div class="cm_kpi_icon_wrap">
+                    <i class="fa fa-pencil-square-o"/>
+                </div>
                 <div class="cm_kpi_body">
                     <span class="cm_kpi_num" t-esc="state.data.kpi.draft"/>
                     <span class="cm_kpi_lbl">Draft</span>
                 </div>
-                <div class="cm_kpi_arrow">›</div>
+                <i class="fa fa-chevron-right cm_kpi_arrow"/>
             </div>
 
             <div class="cm_kpi cm_kpi_closed" t-on-click="openClosedContracts">
-                <div class="cm_kpi_icon_wrap">⛔</div>
+                <div class="cm_kpi_icon_wrap">
+                    <i class="fa fa-ban"/>
+                </div>
                 <div class="cm_kpi_body">
                     <span class="cm_kpi_num"
                           t-esc="state.data.kpi.expired + state.data.kpi.cancelled"/>
                     <span class="cm_kpi_lbl">Expired / Cancelled</span>
                 </div>
-                <div class="cm_kpi_arrow">›</div>
+                <i class="fa fa-chevron-right cm_kpi_arrow"/>
             </div>
 
             <div class="cm_kpi cm_kpi_expiring" t-on-click="openExpiringSoon">
-                <div class="cm_kpi_icon_wrap">⏰</div>
+                <div class="cm_kpi_icon_wrap">
+                    <i class="fa fa-clock-o"/>
+                </div>
                 <div class="cm_kpi_body">
                     <span class="cm_kpi_num" t-esc="state.data.kpi.expiring_30"/>
                     <span class="cm_kpi_lbl">Expiring ≤ 30 days</span>
                 </div>
-                <div class="cm_kpi_arrow">›</div>
+                <i class="fa fa-chevron-right cm_kpi_arrow"/>
             </div>
 
         </div><!-- /kpi_strip -->
@@ -121,12 +165,15 @@
                     <div class="cm_card_body">
                         <t t-if="state.data.insights.length === 0">
                             <div class="cm_empty">
-                                No insights yet — add more contracts to see AI analysis.
+                                <i class="fa fa-lightbulb-o cm_empty_ico"/>
+                                <span>No insights yet — add more contracts to see AI analysis.</span>
                             </div>
                         </t>
                         <t t-foreach="state.data.insights" t-as="ins" t-key="ins_index">
                             <div t-attf-class="cm_insight {{ insightClass(ins.type) }}">
-                                <span class="cm_ins_icon" t-esc="ins.icon"/>
+                                <div class="cm_ins_icon_wrap">
+                                    <i t-attf-class="fa {{ ins.icon }}"/>
+                                </div>
                                 <div class="cm_ins_text">
                                     <strong class="cm_ins_title" t-esc="ins.title"/>
                                     <p class="cm_ins_body" t-esc="ins.body"/>
@@ -139,8 +186,13 @@
                 <!-- Monthly Trend chart -->
                 <div class="cm_card">
                     <div class="cm_card_head">
-                        <h3 class="cm_card_title">📈 Monthly Activity</h3>
-                        <span class="cm_card_sub">Contracts started · last 6 months</span>
+                        <div class="cm_card_ico cm_ico_blue">
+                            <i class="fa fa-line-chart"/>
+                        </div>
+                        <div class="cm_card_head_text">
+                            <h3 class="cm_card_title">Monthly Activity</h3>
+                            <span class="cm_card_sub">Contracts started · last 6 months</span>
+                        </div>
                     </div>
                     <div class="cm_card_body">
                         <t t-foreach="state.data.monthly_trend" t-as="m" t-key="m.label">
@@ -159,7 +211,13 @@
                 <!-- Language distribution -->
                 <div class="cm_card">
                     <div class="cm_card_head">
-                        <h3 class="cm_card_title">🌐 Language Distribution</h3>
+                        <div class="cm_card_ico cm_ico_teal">
+                            <i class="fa fa-globe"/>
+                        </div>
+                        <div class="cm_card_head_text">
+                            <h3 class="cm_card_title">Language Distribution</h3>
+                            <span class="cm_card_sub">Contracts by language</span>
+                        </div>
                     </div>
                     <div class="cm_card_body cm_lang_grid">
                         <t t-if="state.data.lang_distribution.length === 0">
@@ -182,12 +240,20 @@
                 <!-- Contract Type Distribution -->
                 <div class="cm_card">
                     <div class="cm_card_head">
-                        <h3 class="cm_card_title">📊 By Contract Type</h3>
-                        <span class="cm_card_sub">Distribution across all contracts</span>
+                        <div class="cm_card_ico cm_ico_purple">
+                            <i class="fa fa-bar-chart"/>
+                        </div>
+                        <div class="cm_card_head_text">
+                            <h3 class="cm_card_title">By Contract Type</h3>
+                            <span class="cm_card_sub">Distribution across all contracts</span>
+                        </div>
                     </div>
                     <div class="cm_card_body">
                         <t t-if="state.data.type_distribution.length === 0">
-                            <div class="cm_empty">No contracts yet.</div>
+                            <div class="cm_empty">
+                                <i class="fa fa-inbox cm_empty_ico"/>
+                                <span>No contracts yet.</span>
+                            </div>
                         </t>
                         <t t-foreach="state.data.type_distribution" t-as="item" t-key="item.type">
                             <div class="cm_bar_row">
@@ -206,7 +272,12 @@
                 <div class="cm_card cm_card_warn"
                      t-if="state.data.expiring_contracts.length > 0">
                     <div class="cm_card_head">
-                        <h3 class="cm_card_title">⚠️ Expiring Within 30 Days</h3>
+                        <div class="cm_card_ico cm_ico_amber">
+                            <i class="fa fa-exclamation-triangle"/>
+                        </div>
+                        <div class="cm_card_head_text">
+                            <h3 class="cm_card_title">Expiring Within 30 Days</h3>
+                        </div>
                         <span t-attf-class="cm_count_badge cm_count_warn"
                               t-esc="state.data.expiring_contracts.length"/>
                     </div>
@@ -214,10 +285,10 @@
                         <table class="cm_tbl">
                             <thead>
                                 <tr>
-                                    <th>Contract</th>
-                                    <th>Customer</th>
-                                    <th>Expires</th>
-                                    <th>Days</th>
+                                    <th><i class="fa fa-file-text-o me-1"/>Contract</th>
+                                    <th><i class="fa fa-user me-1"/>Customer</th>
+                                    <th><i class="fa fa-calendar me-1"/>Expires</th>
+                                    <th><i class="fa fa-clock-o me-1"/>Days</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -245,12 +316,20 @@
                 <!-- Recent contracts -->
                 <div class="cm_card">
                     <div class="cm_card_head">
-                        <h3 class="cm_card_title">🕐 Recent Contracts</h3>
-                        <span class="cm_card_sub">Latest active &amp; draft</span>
+                        <div class="cm_card_ico cm_ico_indigo">
+                            <i class="fa fa-history"/>
+                        </div>
+                        <div class="cm_card_head_text">
+                            <h3 class="cm_card_title">Recent Contracts</h3>
+                            <span class="cm_card_sub">Latest active &amp; draft</span>
+                        </div>
                     </div>
                     <div class="cm_card_body cm_nop">
                         <t t-if="state.data.recent_contracts.length === 0">
-                            <div class="cm_empty cm_pad">No contracts yet.</div>
+                            <div class="cm_empty cm_pad">
+                                <i class="fa fa-folder-open-o cm_empty_ico"/>
+                                <span>No contracts yet.</span>
+                            </div>
                         </t>
                         <table class="cm_tbl" t-if="state.data.recent_contracts.length > 0">
                             <thead>

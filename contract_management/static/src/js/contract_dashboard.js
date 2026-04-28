@@ -70,6 +70,27 @@ export class ContractDashboard extends Component {
         });
     }
 
+    /** Open new contract form */
+    createContract() {
+        this.action.doAction({
+            type:      "ir.actions.act_window",
+            name:      "New Contract",
+            res_model: "contract.contract",
+            view_mode: "form",
+            views:     [[false, "form"]],
+        });
+    }
+
+    /** Open contract templates list */
+    openTemplates() {
+        this.action.doAction({
+            type:      "ir.actions.act_window",
+            name:      "Contract Templates",
+            res_model: "contract.template",
+            view_mode: "list,kanban,form",
+        });
+    }
+
     // ─── chart helpers ─────────────────────────────────────────────────────────
     /** Return bar width % relative to the maximum value in an array of {count}. */
     barPct(count, items) {

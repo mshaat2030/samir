@@ -1,50 +1,213 @@
-// Contract Management — Backend UI Styles
-// Odoo 19 SCSS
+// ═══════════════════════════════════════════════════════════════
+// Contract Management — Backend UI Styles  (Odoo 19)
+// ═══════════════════════════════════════════════════════════════
 
-// ── Clause list: colour-code by type ─────────────────────────────────────
-.o_list_view .o_data_row {
-    &[class*="clause"] {
-        // Visual cue for fixed clauses inside list view
+// ── Tokens (mirrors dashboard palette) ───────────────────────────
+$cm-indigo:  #4f46e5;
+$cm-green:   #16a34a;
+$cm-amber:   #d97706;
+$cm-red:     #dc2626;
+$cm-blue:    #2563eb;
+$cm-slate:   #64748b;
+$cm-navy:    #1a2e4a;
+$cm-border:  #e2e8f0;
+$cm-bg:      #f8fafc;
+
+// ═══════════════════════════════════════════════════════════════
+// CLAUSE TYPE — Visual Differentiation
+// Applies to embedded one2many list views (clauses tab)
+// ═══════════════════════════════════════════════════════════════
+
+// The list tag carries class="cm_clause_list" set in the view XML
+// Odoo adds text-info / text-success to <tr> via decoration-* attrs
+
+.cm_clause_list {
+    // Fixed clause rows  → very subtle indigo tint + left accent
+    .o_data_row.text-info {
+        color: $cm-navy !important;   // override Bootstrap text-info color
+        background: rgba($cm-indigo, 0.035) !important;
+        border-left: 3px solid rgba($cm-indigo, 0.40) !important;
+
+        td { color: $cm-navy !important; }
+    }
+
+    // Variable clause rows → very subtle green tint + left accent
+    .o_data_row.text-success {
+        color: $cm-navy !important;
+        background: rgba($cm-green, 0.03) !important;
+        border-left: 3px solid rgba($cm-green, 0.35) !important;
+
+        td { color: $cm-navy !important; }
+    }
+
+    // Hover states
+    .o_data_row.text-info:hover {
+        background: rgba($cm-indigo, 0.07) !important;
+    }
+    .o_data_row.text-success:hover {
+        background: rgba($cm-green, 0.06) !important;
     }
 }
 
-// ── Fixed clause lock icon in list view ──────────────────────────────────
-.contract_clause_fixed_icon::before {
-    font-family: FontAwesome;
-    content: "\f023"; // fa-lock
-    color: #3949ab;
-    margin-right: 4px;
-    font-size: 0.85em;
+// ── Clause-type badge colours (widget="badge") ────────────────────
+// Odoo badge widget renders <span class="badge o_tag_color_X">
+// We override the fixed/variable colours by targeting the badge text
+.o_field_badge {
+    .o_tag[title*="Fixed"],
+    .o_tag[data-value="fixed"] {
+        background: #eef2ff !important;
+        color: $cm-indigo !important;
+        border-color: rgba($cm-indigo, .3) !important;
+
+        &::before {
+            font-family: FontAwesome;
+            content: "\f023 ";   // fa-lock
+            font-size: .75em;
+            margin-right: 3px;
+        }
+    }
+
+    .o_tag[title*="Variable"],
+    .o_tag[data-value="variable"] {
+        background: #f0fdf4 !important;
+        color: $cm-green !important;
+        border-color: rgba($cm-green, .3) !important;
+
+        &::before {
+            font-family: FontAwesome;
+            content: "\f040 ";   // fa-pencil
+            font-size: .75em;
+            margin-right: 3px;
+        }
+    }
 }
 
-// ── Kanban card: contract state badge colours ────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// CLAUSE FORM DIALOG — Type banners
+// ═══════════════════════════════════════════════════════════════
+
+.cm_clause_fixed_banner,
+.cm_clause_variable_banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.45;
+
+    .fa { font-size: 16px; flex-shrink: 0; }
+    strong { font-weight: 700; }
+}
+
+.cm_clause_fixed_banner {
+    background: #eef2ff;
+    border-left: 4px solid $cm-indigo;
+    color: darken($cm-indigo, 12%);
+    .fa { color: $cm-indigo; }
+}
+
+.cm_clause_variable_banner {
+    background: #f0fdf4;
+    border-left: 4px solid $cm-green;
+    color: darken($cm-green, 10%);
+    .fa { color: $cm-green; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CLAUSE EMPTY STATE — Clauses tab when no clauses exist
+// ═══════════════════════════════════════════════════════════════
+
+.cm_clause_empty_state {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 20px 20px 16px;
+    background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+    border: 1px dashed rgba($cm-indigo, .35);
+    border-radius: 10px;
+    margin-bottom: 16px;
+
+    .cm_clause_empty_ico {
+        width: 44px;
+        height: 44px;
+        background: #fff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 1px 4px rgba(0,0,0,.08);
+
+        .fa {
+            font-size: 20px;
+            color: $cm-indigo;
+        }
+    }
+
+    .cm_clause_empty_text {
+        strong {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: $cm-navy;
+            margin-bottom: 4px;
+        }
+        p {
+            font-size: 12.5px;
+            color: $cm-slate;
+            margin: 0;
+            line-height: 1.5;
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// KANBAN — contract state badge colours
+// ═══════════════════════════════════════════════════════════════
+
 .o_kanban_view .o_kanban_record {
-    .badge-contract-draft   { background-color: #78909c; color: #fff; }
-    .badge-contract-active  { background-color: #2e7d32; color: #fff; }
-    .badge-contract-expired { background-color: #e65100; color: #fff; }
+    .badge-contract-draft     { background-color: #78909c; color: #fff; }
+    .badge-contract-active    { background-color: #2e7d32; color: #fff; }
+    .badge-contract-expired   { background-color: #e65100; color: #fff; }
     .badge-contract-cancelled { background-color: #b71c1c; color: #fff; }
 }
 
-// ── Expired warning banner in form view ──────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// FORM VIEW — expired banner
+// ═══════════════════════════════════════════════════════════════
+
 .o_form_view .contract-expired-banner {
     background: #fff3e0;
     border-left: 4px solid #ff6f00;
-    border-radius: 4px;
-    padding: 8px 12px;
+    border-radius: 6px;
+    padding: 10px 14px;
     font-weight: 600;
     color: #e65100;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-// ── Clause form: bilingual layout hint ───────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// VERSION HISTORY — emphasise the latest row
+// ═══════════════════════════════════════════════════════════════
+
+.o_form_view .o_field_one2many .o_list_view .o_data_row:first-child td {
+    font-weight: 600;
+    color: $cm-navy;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BILINGUAL hint
+// ═══════════════════════════════════════════════════════════════
+
 .o_form_view .clause-bilingual-hint {
-    font-size: 0.8rem;
+    font-size: .8rem;
     color: #888;
     font-style: italic;
     margin-top: 4px;
-}
-
-// ── Version history tab ───────────────────────────────────────────────────
-.o_form_view .o_field_one2many .o_list_view .o_data_row:first-child td {
-    font-weight: 600;
 }
