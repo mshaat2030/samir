@@ -71,7 +71,7 @@
                         <!-- Clauses Tab -->
                         <page string="Clauses" name="clauses">
                             <field name="clause_ids"
-                                   context="{'default_template_id': active_id}"
+                                   context="{'default_template_id': id}"
                                    nolabel="1">
                                 <list editable="bottom"
                                       string="Template Clauses"
@@ -198,11 +198,11 @@
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left text-muted">
-                                    <i class="fa fa-list-ol me-1"/>
+                                    <i class="fa fa-list-ol me-1" title="Clauses"/>
                                     <field name="clause_count"/> clauses
                                 </div>
                                 <div class="oe_kanban_bottom_right text-muted">
-                                    <i class="fa fa-file-text-o me-1"/>
+                                    <i class="fa fa-file-text-o me-1" title="Contracts"/>
                                     <field name="contract_count"/> contracts
                                 </div>
                             </div>
@@ -232,7 +232,7 @@
                 <separator/>
                 <filter name="archived" string="Archived"
                         domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_type" string="Contract Type"
                             context="{'group_by': 'contract_type'}"/>
                     <filter name="group_language" string="Language"

@@ -15,8 +15,8 @@
                         type="action"
                         class="oe_stat_button"
                         icon="fa-file-text-o"
-                        context="{'search_default_partner_id': active_id, 'default_partner_id': active_id}"
-                        domain="[('partner_id', 'child_of', active_id)]">
+                        context="{'search_default_partner_id': id, 'default_partner_id': id}"
+                        domain="[('partner_id', 'child_of', id)]">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Contracts</span>
                     </div>

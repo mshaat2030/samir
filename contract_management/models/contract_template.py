@@ -101,7 +101,7 @@ class ContractTemplate(models.Model):
     # ── Computed stats ────────────────────────────────────────────────────────
     clause_count = fields.Integer(
         compute='_compute_clause_count',
-        string='Clauses',
+        string='Clause Count',
     )
     contract_count = fields.Integer(
         compute='_compute_contract_count',

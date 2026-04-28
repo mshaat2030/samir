@@ -180,13 +180,14 @@
                         <!-- ── Clauses Tab ─────────────────────────────── -->
                         <page string="Contract Clauses" name="clauses">
                             <div class="alert alert-info o_form_no_print mb-3"
+                                 role="status"
                                  invisible="clause_count != 0">
-                                <i class="fa fa-info-circle me-2"/>
+                                <i class="fa fa-info-circle me-2" title="Info"/>
                                 Select a template to automatically load clauses.
                             </div>
                             <field name="clause_ids"
                                    nolabel="1"
-                                   context="{'default_contract_id': active_id}"
+                                   context="{'default_contract_id': id}"
                                    readonly="state == 'active'">
                                 <list editable="bottom"
                                       string="Clauses"
@@ -227,8 +228,9 @@
 
                                     <!-- Fixed clause notice -->
                                     <div class="alert alert-warning o_form_no_print"
+                                         role="alert"
                                          invisible="not is_readonly">
-                                        <i class="fa fa-lock me-2"/>
+                                        <i class="fa fa-lock me-2" title="Locked"/>
                                         <strong>Fixed Clause</strong> — this body is protected
                                         and cannot be edited.
                                     </div>
@@ -363,11 +365,11 @@
                                 </span>
                             </div>
                             <div class="o_kanban_record_body">
-                                <div><i class="fa fa-user me-1 text-muted"/>
+                                <div><i class="fa fa-user me-1 text-muted" title="Customer"/>
                                     <field name="partner_id"/>
                                 </div>
                                 <div class="text-muted mt-1">
-                                    <i class="fa fa-calendar me-1"/>
+                                    <i class="fa fa-calendar me-1" title="Dates"/>
                                     <field name="date_start"/> →
                                     <span invisible="not date_end"><field name="date_end"/></span>
                                     <span invisible="date_end">Open-ended</span>
@@ -429,7 +431,7 @@
                         domain="[('state', '=', 'active')]"
                         invisible="1"/>
                 <!-- Groupings -->
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_state" string="Status"
                             context="{'group_by': 'state'}"/>
                     <filter name="group_partner" string="Customer"

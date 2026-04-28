@@ -78,10 +78,6 @@ class ContractContract(models.Model):
         readonly=True,
     )
     language = fields.Selection(
-        selection=[
-            ('en', 'English Only'),
-            ('bilingual', 'Bilingual (EN + AR)'),
-        ],
         related='template_id.language',
         string='Language',
         store=True,
