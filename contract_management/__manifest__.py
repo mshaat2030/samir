@@ -9,7 +9,7 @@ Contract Management
 ===================
 A fully featured contract management module for Odoo 19 Enterprise.
 
-Key Features:
+Key Features Samir:
 - Contract Templates with reusable clause libraries
 - Fixed (read-only) and Variable (editable) clause types
 - Bilingual support: English + Arabic (RTL) rendering
