@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_commission_adjustment_form" model="ir.ui.view">
+        <field name="name">commission.adjustment.form</field>
+        <field name="model">commission.adjustment</field>
+        <field name="arch" type="xml">
+            <form string="Commission Adjustment">
+                <header>
+                    <button name="action_submit" type="object"
+                        string="Submit" class="btn-primary"
+                        invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object"
+                        string="Approve" class="btn-success"
+                        invisible="state != 'submitted'"
+                        groups="advanced_commission_engine.group_commission_manager"/>
+                    <button name="action_apply" type="object"
+                        string="Apply" class="btn-primary"
+                        invisible="state != 'approved'"
+                        groups="advanced_commission_engine.group_commission_finance"/>
+                    <button name="action_reject" type="object"
+                        string="Reject"
+                        invisible="state not in ('submitted', 'approved')"
+                        class="btn-danger"
+                        groups="advanced_commission_engine.group_commission_manager"/>
+                    <button name="action_reset_draft" type="object"
+                        string="Reset to Draft"
+                        invisible="state not in ('rejected', 'submitted')"/>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,submitted,approved,applied"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" required="1"/>
+                            <field name="date" required="1"/>
+                            <field name="adjustment_type"/>
+                            <field name="period_id"/>
+                            <field name="plan_id"/>
+                        </group>
+                        <group>
+                            <field name="sign" widget="radio"/>
+                            <field name="amount" required="1"/>
+                            <field name="effective_amount" readonly="1" class="fw-bold"/>
+                        </group>
+                    </group>
+                    <group string="Retroactive" invisible="not is_retroactive">
+                        <field name="is_retroactive"/>
+                        <field name="retroactive_period_id" invisible="not is_retroactive"/>
+                    </group>
+                    <group string="Approval">
+                        <field name="approved_by" readonly="1"/>
+                        <field name="approved_date" readonly="1"/>
+                        <field name="resulting_line_id" readonly="1"/>
+                    </group>
+                    <field name="reason" required="1" placeholder="Reason for adjustment..."/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commission_adjustment_list" model="ir.ui.view">
+        <field name="name">commission.adjustment.list</field>
+        <field name="model">commission.adjustment</field>
+        <field name="arch" type="xml">
+            <list string="Commission Adjustments"
+                decoration-success="state == 'applied'"
+                decoration-warning="state in ('submitted', 'approved')"
+                decoration-muted="state == 'rejected'">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="date"/>
+                <field name="adjustment_type" widget="badge"/>
+                <field name="amount"/>
+                <field name="sign" widget="badge"
+                    decoration-success="sign == 'positive'"
+                    decoration-danger="sign == 'negative'"/>
+                <field name="effective_amount" class="fw-bold"/>
+                <field name="period_id"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'applied'"
+                    decoration-info="state == 'approved'"
+                    decoration-warning="state == 'submitted'"
+                    decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_commission_adjustment" model="ir.actions.act_window">
+        <field name="name">Commission Adjustments</field>
+        <field name="res_model">commission.adjustment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No adjustments yet.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══ Settlement Report ════════════════════════════════════════════ -->
+    <record id="action_report_commission_settlement" model="ir.actions.report">
+        <field name="name">Commission Settlement</field>
+        <field name="model">commission.settlement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">advanced_commission_engine.report_settlement</field>
+        <field name="report_file">advanced_commission_engine.report_settlement</field>
+        <field name="print_report_name">'Commission Settlement - %s' % object.name</field>
+        <field name="binding_model_id" ref="model_commission_settlement"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_settlement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="settlement">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <h2>Commission Settlement</h2>
+                                <h3 t-esc="settlement.name"/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Status:</strong>
+                                <span t-esc="dict(settlement._fields['state'].selection).get(settlement.state)"/>
+                                <br/>
+                                <strong>Date:</strong>
+                                <span t-esc="settlement.date"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong>Employee:</strong>
+                                <span t-esc="settlement.employee_id.name"/>
+                                <br/>
+                                <strong>Department:</strong>
+                                <span t-esc="settlement.department_id.name or '-'"/>
+                                <br/>
+                                <strong>Period:</strong>
+                                <span t-esc="settlement.period_id.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Plan:</strong>
+                                <span t-esc="settlement.plan_id.name or '-'"/>
+                                <br/>
+                                <strong>Settlement Method:</strong>
+                                <span t-esc="dict(settlement._fields['settlement_method'].selection).get(settlement.settlement_method)"/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Source</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Base Amount</th>
+                                    <th class="text-end">Rate %</th>
+                                    <th class="text-end">Commission</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="settlement.line_ids.filtered(lambda l: l.state != 'cancelled')" t-as="line">
+                                    <tr>
+                                        <td t-esc="line.name"/>
+                                        <td t-esc="line.line_type"/>
+                                        <td t-esc="line.source_type"/>
+                                        <td t-esc="line.date"/>
+                                        <td class="text-end">
+                                            <span t-esc="'{:,.2f}'.format(line.base_amount)"/>
+                                            <small t-esc="' ' + line.currency_id.symbol"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-esc="'{:.2f}'.format(line.rate)"/>%
+                                        </td>
+                                        <td class="text-end fw-bold">
+                                            <span t-esc="'{:,.2f}'.format(line.commission_amount)"/>
+                                            <small t-esc="' ' + line.currency_id.symbol"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-secondary">
+                                    <th colspan="6" class="text-end">Gross Commission:</th>
+                                    <th class="text-end">
+                                        <span t-esc="'{:,.2f}'.format(settlement.gross_commission)"/>
+                                        <small t-esc="' ' + settlement.currency_id.symbol"/>
+                                    </th>
+                                </tr>
+                                <t t-if="settlement.adjustment_amount">
+                                    <tr>
+                                        <th colspan="6" class="text-end">Adjustments:</th>
+                                        <th class="text-end">
+                                            <span t-esc="'{:,.2f}'.format(settlement.adjustment_amount)"/>
+                                        </th>
+                                    </tr>
+                                </t>
+                                <t t-if="settlement.clawback_amount">
+                                    <tr class="text-danger">
+                                        <th colspan="6" class="text-end">Clawbacks:</th>
+                                        <th class="text-end">
+                                            <span t-esc="'{:,.2f}'.format(-abs(settlement.clawback_amount))"/>
+                                        </th>
+                                    </tr>
+                                </t>
+                                <tr class="table-success">
+                                    <th colspan="6" class="text-end fs-5">NET COMMISSION:</th>
+                                    <th class="text-end fs-5">
+                                        <strong t-esc="'{:,.2f}'.format(settlement.net_commission)"/>
+                                        <strong t-esc="' ' + settlement.currency_id.symbol"/>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="row mt-4" t-if="settlement.note">
+                            <div class="col-12">
+                                <strong>Notes:</strong>
+                                <p t-esc="settlement.note"/>
+                            </div>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-4 text-center">
+                                <div class="border-top mt-5 pt-2">
+                                    <span t-esc="settlement.employee_id.name"/><br/>
+                                    <small>Employee</small>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="border-top mt-5 pt-2">
+                                    <span t-esc="settlement.manager_approved_by.name or '___________'"/><br/>
+                                    <small>Manager</small>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="border-top mt-5 pt-2">
+                                    <span t-esc="settlement.finance_approved_by.name or '___________'"/><br/>
+                                    <small>Finance</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

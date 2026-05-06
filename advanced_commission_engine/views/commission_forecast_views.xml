@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_commission_forecast_form" model="ir.ui.view">
+        <field name="name">commission.forecast.form</field>
+        <field name="model">commission.forecast</field>
+        <field name="arch" type="xml">
+            <form string="Commission Forecast">
+                <header>
+                    <button name="action_refresh_ai_prediction" type="object"
+                        string="Refresh AI Prediction"
+                        class="btn-secondary"
+                        groups="advanced_commission_engine.group_commission_manager"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="employee_id" required="1"/>
+                            <field name="period_id" required="1"/>
+                            <field name="plan_id" required="1"/>
+                            <field name="forecast_method"/>
+                            <field name="forecast_date"/>
+                        </group>
+                        <group string="Inputs">
+                            <field name="forecasted_revenue"
+                                invisible="forecast_method not in ('manual', 'blended')"/>
+                            <field name="pipeline_value" readonly="1"/>
+                            <field name="pipeline_probability" readonly="1"/>
+                            <field name="historical_avg" readonly="1"/>
+                            <field name="confidence_level"/>
+                        </group>
+                    </group>
+                    <group string="Forecast Results">
+                        <group>
+                            <field name="pessimistic_commission" readonly="1"/>
+                            <field name="forecasted_commission" readonly="1" class="fw-bold text-info"/>
+                            <field name="optimistic_commission" readonly="1"/>
+                        </group>
+                        <group string="AI Prediction" invisible="not ai_prediction">
+                            <field name="ai_prediction" readonly="1" class="fw-bold text-success"/>
+                            <field name="ai_confidence" readonly="1"/>
+                            <field name="ai_last_updated" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Actuals vs Forecast">
+                        <group>
+                            <field name="actual_commission" readonly="1"/>
+                            <field name="variance" readonly="1"/>
+                            <field name="variance_percent" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commission_forecast_list" model="ir.ui.view">
+        <field name="name">commission.forecast.list</field>
+        <field name="model">commission.forecast</field>
+        <field name="arch" type="xml">
+            <list string="Commission Forecasts"
+                decoration-success="variance_percent &gt;= 0"
+                decoration-warning="variance_percent &lt; 0">
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="plan_id"/>
+                <field name="forecast_method" widget="badge"/>
+                <field name="forecasted_commission" class="fw-bold"/>
+                <field name="actual_commission"/>
+                <field name="variance"/>
+                <field name="variance_percent"/>
+                <field name="ai_prediction"/>
+                <field name="confidence_level"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_commission_forecast" model="ir.actions.act_window">
+        <field name="name">Commission Forecasts</field>
+        <field name="res_model">commission.forecast</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

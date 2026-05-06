@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Commission Payslip Input Type -->
+        <record id="commission_payslip_input_type" model="hr.payslip.input.type">
+            <field name="name">Commission</field>
+            <field name="code">COMMISSION</field>
+            <field name="country_id" eval="False"/>
+        </record>
+
+        <!-- Commission Bonus Input Type -->
+        <record id="commission_bonus_payslip_input_type" model="hr.payslip.input.type">
+            <field name="name">Commission Bonus</field>
+            <field name="code">COMM_BONUS</field>
+            <field name="country_id" eval="False"/>
+        </record>
+
+        <!-- Commission Clawback Input Type (deduction) -->
+        <record id="commission_clawback_payslip_input_type" model="hr.payslip.input.type">
+            <field name="name">Commission Clawback</field>
+            <field name="code">COMM_CLAWBACK</field>
+            <field name="country_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

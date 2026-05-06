@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══ Commission Plan Form ══════════════════════════════════════════ -->
+    <record id="view_commission_plan_form" model="ir.ui.view">
+        <field name="name">commission.plan.form</field>
+        <field name="model">commission.plan</field>
+        <field name="arch" type="xml">
+            <form string="Commission Plan">
+                <header>
+                    <button name="action_new_version" type="object"
+                        string="Create New Version"
+                        class="btn-secondary"
+                        groups="advanced_commission_engine.group_commission_manager"
+                        confirm="This will archive the current plan and create a new version. Continue?"/>
+                    <field name="is_active_now" widget="boolean_button"
+                        options="{'terminology': 'active'}" readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_rules" type="object"
+                            class="oe_stat_button" icon="fa-list">
+                            <field name="rule_count" widget="statinfo" string="Rules"/>
+                        </button>
+                        <button name="action_view_settlements" type="object"
+                            class="oe_stat_button" icon="fa-check-circle">
+                            <field name="settlement_count" widget="statinfo" string="Settlements"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-users" type="object"
+                            name="action_view_settlements">
+                            <field name="employee_count" widget="statinfo" string="Employees"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
+                        invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Plan Name..." required="1"/>
+                        </h1>
+                        <div>
+                            <field name="code" class="oe_inline" placeholder="Code"/>
+                            <span class="mx-1">·</span>
+                            <field name="plan_type" class="oe_inline"/>
+                            <span class="mx-1">·</span>
+                            <span class="text-muted">v</span>
+                            <field name="version" class="oe_inline" readonly="1"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Plan Configuration">
+                            <field name="plan_type" widget="radio" options="{'horizontal': true}"/>
+                            <field name="base_metric"/>
+                            <field name="commission_base"/>
+                            <field name="trigger_type"/>
+                            <field name="settlement_method"/>
+                        </group>
+                        <group string="Validity">
+                            <field name="date_from" required="1"/>
+                            <field name="date_to"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="rates" string="Rates &amp; Limits">
+                            <group>
+                                <group string="Commission Rate"
+                                    invisible="plan_type not in ['fixed_percent', 'margin', 'profit', 'revenue', 'kpi']">
+                                    <field name="fixed_rate"
+                                        string="Commission Rate (%)"
+                                        invisible="plan_type not in ['fixed_percent', 'margin', 'profit', 'revenue', 'kpi']"/>
+                                    <field name="payment_delay_days"/>
+                                </group>
+                                <group string="Cap &amp; Floor">
+                                    <field name="has_cap"/>
+                                    <field name="cap_type" invisible="not has_cap"/>
+                                    <field name="cap_amount" invisible="not has_cap"/>
+                                    <field name="has_floor"/>
+                                    <field name="floor_amount" invisible="not has_floor"/>
+                                </group>
+                            </group>
+                            <group string="Formula" invisible="plan_type != 'formula'">
+                                <field name="formula" widget="code"
+                                    placeholder="amount * rate / 100"
+                                    options="{'mode': 'python'}"/>
+                                <field name="formula_test_amount"/>
+                                <field name="formula_test_result" readonly="1"/>
+                            </group>
+                        </page>
+                        <page name="rules" string="Commission Rules">
+                            <field name="rule_ids"
+                                context="{'default_plan_id': id}"
+                                widget="one2many">
+                                <list editable="bottom" decoration-muted="not active">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="rule_type"/>
+                                    <field name="rate"/>
+                                    <field name="flat_amount"/>
+                                    <field name="from_amount"/>
+                                    <field name="to_amount"/>
+                                    <field name="condition_type"/>
+                                    <field name="priority"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page name="assignment" string="Assignment">
+                            <group>
+                                <field name="assignment_type" widget="radio"/>
+                            </group>
+                            <field name="employee_ids"
+                                invisible="assignment_type != 'employee'"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"/>
+                            <field name="team_ids"
+                                invisible="assignment_type != 'team'"
+                                widget="many2many_tags"/>
+                            <field name="department_ids"
+                                invisible="assignment_type != 'department'"
+                                widget="many2many_tags"/>
+                            <field name="job_ids"
+                                invisible="assignment_type != 'job_position'"
+                                widget="many2many_tags"/>
+                        </page>
+                        <page name="kpi" string="KPIs"
+                            invisible="plan_type != 'kpi'">
+                            <group>
+                                <field name="kpi_aggregation"/>
+                            </group>
+                            <field name="kpi_ids" context="{'default_plan_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="kpi_type"/>
+                                    <field name="target_value"/>
+                                    <field name="weight"/>
+                                    <field name="measurement_method"/>
+                                    <field name="payout_cap"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page name="clawback" string="Clawback">
+                            <group>
+                                <group>
+                                    <field name="has_clawback"/>
+                                    <field name="clawback_days" invisible="not has_clawback"/>
+                                    <field name="clawback_rate" invisible="not has_clawback"/>
+                                </group>
+                                <group>
+                                    <field name="allow_split"/>
+                                    <field name="split_method" invisible="not allow_split"/>
+                                    <field name="allow_retroactive"/>
+                                    <field name="retroactive_months" invisible="not allow_retroactive"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="accounting" string="Accounting">
+                            <group>
+                                <group string="Accounts">
+                                    <field name="debit_account_id"
+                                        domain="[('account_type', '=', 'expense')]"/>
+                                    <field name="credit_account_id"
+                                        domain="[('account_type', 'in', ['liability_payable', 'liability_current'])]"/>
+                                    <field name="journal_id"/>
+                                    <field name="analytic_account_id"/>
+                                </group>
+                                <group string="Payroll">
+                                    <field name="payroll_input_type_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="versioning" string="Versioning">
+                            <group>
+                                <field name="version" readonly="1"/>
+                                <field name="parent_plan_id" readonly="1"/>
+                            </group>
+                            <field name="child_plan_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="version"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page name="description" string="Description">
+                            <field name="description" widget="html"/>
+                            <group>
+                                <field name="tag_ids" widget="many2many_tags"
+                                    options="{'color_field': 'color'}"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══ Commission Plan List ══════════════════════════════════════════ -->
+    <record id="view_commission_plan_list" model="ir.ui.view">
+        <field name="name">commission.plan.list</field>
+        <field name="model">commission.plan</field>
+        <field name="arch" type="xml">
+            <list string="Commission Plans"
+                decoration-muted="not active"
+                decoration-success="is_active_now"
+                decoration-warning="not is_active_now and active">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="plan_type" widget="badge"
+                    decoration-info="plan_type == 'fixed_percent'"
+                    decoration-warning="plan_type in ['tiered', 'slab']"
+                    decoration-success="plan_type == 'kpi'"/>
+                <field name="trigger_type" widget="badge"/>
+                <field name="fixed_rate" string="Rate (%)"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="settlement_method"/>
+                <field name="rule_count" string="Rules"/>
+                <field name="employee_count" string="Employees"/>
+                <field name="total_commission_paid" string="Total Paid"/>
+                <field name="is_active_now" invisible="1"/>
+                <field name="active" invisible="1"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══ Commission Plan Kanban ════════════════════════════════════════ -->
+    <record id="view_commission_plan_kanban" model="ir.ui.view">
+        <field name="name">commission.plan.kanban</field>
+        <field name="model">commission.plan</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="plan_type"/>
+                <field name="fixed_rate"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="is_active_now"/>
+                <field name="color"/>
+                <field name="settlement_count"/>
+                <field name="employee_count"/>
+                <field name="total_commission_paid"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div t-att-class="'oe_kanban_card oe_kanban_global_click o_kanban_record_has_image_fill o_commission_plan_kanban ' + (record.is_active_now.raw_value ? 'border-success' : 'border-warning')">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="text-muted">
+                                        <field name="plan_type" widget="badge"/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span t-if="record.is_active_now.raw_value" class="badge text-bg-success">Active</span>
+                                    <span t-else="" class="badge text-bg-warning">Inactive</span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rate: <strong><field name="fixed_rate"/>%</strong></span>
+                                    <span><field name="employee_count"/> employees</span>
+                                </div>
+                                <div class="text-muted mt-1">
+                                    <field name="date_from"/> → <field name="date_to"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span class="fw-bold">
+                                        Paid: <field name="total_commission_paid" widget="monetary"/>
+                                    </span>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="settlement_count"/> settlements
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ═══ Commission Plan Search ════════════════════════════════════════ -->
+    <record id="view_commission_plan_search" model="ir.ui.view">
+        <field name="name">commission.plan.search</field>
+        <field name="model">commission.plan</field>
+        <field name="arch" type="xml">
+            <search string="Commission Plans">
+                <field name="name" string="Plan"/>
+                <field name="code"/>
+                <field name="plan_type"/>
+                <filter name="active_plans" string="Active Now"
+                    domain="[('is_active_now', '=', True)]"/>
+                <filter name="inactive" string="Archived"
+                    domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="fixed" string="Fixed Rate"
+                    domain="[('plan_type', '=', 'fixed_percent')]"/>
+                <filter name="tiered" string="Tiered"
+                    domain="[('plan_type', 'in', ['tiered', 'slab'])]"/>
+                <filter name="formula" string="Formula"
+                    domain="[('plan_type', '=', 'formula')]"/>
+                <filter name="kpi" string="KPI-Based"
+                    domain="[('plan_type', '=', 'kpi')]"/>
+                <separator/>
+                <group>
+                    <filter name="group_type" string="Plan Type"
+                        context="{'group_by': 'plan_type'}"/>
+                    <filter name="group_trigger" string="Trigger"
+                        context="{'group_by': 'trigger_type'}"/>
+                    <filter name="group_company" string="Company"
+                        context="{'group_by': 'company_id'}"
+                        groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══ Commission Plan Action ════════════════════════════════════════ -->
+    <record id="action_commission_plan" model="ir.actions.act_window">
+        <field name="name">Commission Plans</field>
+        <field name="res_model">commission.plan</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_commission_plan_search"/>
+        <field name="context">{'search_default_active_plans': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first commission plan!
+            </p>
+            <p>
+                Commission plans define how your team earns commissions.
+                Choose from fixed rates, tiered structures, or custom formulas.
+            </p>
+        </field>
+    </record>
+
+</odoo>

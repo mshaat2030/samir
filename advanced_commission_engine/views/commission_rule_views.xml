@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_commission_rule_form" model="ir.ui.view">
+        <field name="name">commission.rule.form</field>
+        <field name="model">commission.rule</field>
+        <field name="arch" type="xml">
+            <form string="Commission Rule">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Rule Name..."/></h1>
+                    </div>
+                    <group>
+                        <group string="Rule Configuration">
+                            <field name="plan_id"/>
+                            <field name="rule_type"/>
+                            <field name="priority"/>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Rate / Amount">
+                            <field name="rate"
+                                invisible="rule_type not in ['rate_override', 'tier', 'slab', 'accelerator', 'decelerator']"/>
+                            <field name="flat_amount"
+                                invisible="rule_type != 'flat_bonus'"/>
+                            <field name="multiplier"
+                                invisible="rule_type not in ['multiplier', 'accelerator', 'decelerator']"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Tier / Slab Range"
+                            invisible="rule_type not in ['tier', 'slab']">
+                            <field name="from_amount"/>
+                            <field name="to_amount"/>
+                            <field name="from_percent"/>
+                            <field name="to_percent"/>
+                        </group>
+                        <group string="Validity">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="conditions" string="Conditions">
+                            <group>
+                                <field name="condition_type"/>
+                                <field name="condition_value"
+                                    invisible="condition_type not in ['amount_gte', 'amount_lte', 'target_percent']"/>
+                                <field name="condition_formula" widget="code"
+                                    invisible="condition_type != 'formula'"
+                                    placeholder="amount > 5000 and employee.department_id.name == 'Sales'"/>
+                            </group>
+                            <group string="Applicable To"
+                                invisible="condition_type not in ['product_category', 'region', 'team']">
+                                <field name="product_category_ids" widget="many2many_tags"
+                                    invisible="condition_type != 'product_category'"/>
+                                <field name="country_ids" widget="many2many_tags"
+                                    invisible="condition_type != 'region'"/>
+                                <field name="team_ids" widget="many2many_tags"
+                                    invisible="condition_type != 'team'"/>
+                            </group>
+                            <field name="condition_ids"
+                                invisible="condition_type != 'always'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="field_name"/>
+                                    <field name="operator"/>
+                                    <field name="value"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page name="formula" string="Formula"
+                            invisible="rule_type != 'formula'">
+                            <field name="formula" widget="code"
+                                placeholder="commission * 1.1  # 10% bonus"/>
+                        </page>
+                        <page name="description" string="Notes">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commission_rule_list" model="ir.ui.view">
+        <field name="name">commission.rule.list</field>
+        <field name="model">commission.rule</field>
+        <field name="arch" type="xml">
+            <list string="Commission Rules" editable="bottom"
+                decoration-muted="not active">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="plan_id"/>
+                <field name="rule_type" widget="badge"/>
+                <field name="rate" string="Rate (%)"/>
+                <field name="flat_amount"/>
+                <field name="from_amount"/>
+                <field name="to_amount"/>
+                <field name="condition_type" widget="badge"/>
+                <field name="priority"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_commission_rule" model="ir.actions.act_window">
+        <field name="name">Commission Rules</field>
+        <field name="res_model">commission.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

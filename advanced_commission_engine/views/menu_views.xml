@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══ Top-Level Menu ════════════════════════════════════════════════ -->
+    <menuitem id="menu_commission_root"
+        name="Commissions"
+        web_icon="advanced_commission_engine,static/description/icon.png"
+        sequence="55"
+        groups="advanced_commission_engine.group_commission_user"/>
+
+    <!-- ═══ Dashboard ════════════════════════════════════════════════════ -->
+    <menuitem id="menu_commission_dashboard"
+        name="Dashboard"
+        parent="menu_commission_root"
+        action="action_commission_dashboard"
+        sequence="1"
+        groups="advanced_commission_engine.group_commission_user"/>
+
+    <!-- ═══ My Commissions (Employee Portal via Backend) ════════════════ -->
+    <menuitem id="menu_commission_my"
+        name="My Commissions"
+        parent="menu_commission_root"
+        sequence="5"
+        groups="advanced_commission_engine.group_commission_user"/>
+
+    <menuitem id="menu_commission_my_lines"
+        name="My Statements"
+        parent="menu_commission_my"
+        action="action_commission_line"
+        sequence="1"
+        groups="advanced_commission_engine.group_commission_user"/>
+
+    <menuitem id="menu_commission_my_settlements"
+        name="My Settlements"
+        parent="menu_commission_my"
+        action="action_commission_settlement"
+        sequence="2"
+        groups="advanced_commission_engine.group_commission_user"/>
+
+    <menuitem id="menu_commission_my_disputes"
+        name="My Disputes"
+        parent="menu_commission_my"
+        action="action_commission_dispute"
+        sequence="3"
+        groups="advanced_commission_engine.group_commission_user"/>
+
+    <!-- ═══ Plans & Rules ════════════════════════════════════════════════ -->
+    <menuitem id="menu_commission_plans"
+        name="Plans &amp; Rules"
+        parent="menu_commission_root"
+        sequence="10"
+        groups="advanced_commission_engine.group_commission_manager"/>
+
+    <menuitem id="menu_commission_plan"
+        name="Commission Plans"
+        parent="menu_commission_plans"
+        action="action_commission_plan"
+        sequence="1"/>
+
+    <menuitem id="menu_commission_rule"
+        name="Commission Rules"
+        parent="menu_commission_plans"
+        action="action_commission_rule"
+        sequence="2"/>
+
+    <menuitem id="menu_commission_kpi"
+        name="KPI Definitions"
+        parent="menu_commission_plans"
+        action="action_commission_kpi"
+        sequence="3"/>
+
+    <!-- ═══ Operations ═══════════════════════════════════════════════════ -->
+    <menuitem id="menu_commission_operations"
+        name="Operations"
+        parent="menu_commission_root"
+        sequence="20"
+        groups="advanced_commission_engine.group_commission_manager"/>
+
+    <menuitem id="menu_commission_period"
+        name="Periods"
+        parent="menu_commission_operations"
+        action="action_commission_period"
+        sequence="1"/>
+
+    <menuitem id="menu_commission_line_all"
+        name="Commission Lines"
+        parent="menu_commission_operations"
+        action="action_commission_line"
+        sequence="2"
+        groups="advanced_commission_engine.group_commission_manager"/>
+
+    <menuitem id="menu_commission_settlement_all"
+        name="Settlements"
+        parent="menu_commission_operations"
+        action="action_commission_settlement"
+        sequence="3"/>
+
+    <menuitem id="menu_commission_adjustment"
+        name="Adjustments"
+        parent="menu_commission_operations"
+        action="action_commission_adjustment"
+        sequence="4"/>
+
+    <menuitem id="menu_commission_dispute_all"
+        name="Disputes"
+        parent="menu_commission_operations"
+        action="action_commission_dispute"
+        sequence="5"/>
+
+    <!-- ═══ Targets & KPIs ═══════════════════════════════════════════════ -->
+    <menuitem id="menu_commission_targets"
+        name="Targets &amp; KPIs"
+        parent="menu_commission_root"
+        sequence="30"
+        groups="advanced_commission_engine.group_commission_manager"/>
+
+    <menuitem id="menu_commission_target"
+        name="Targets"
+        parent="menu_commission_targets"
+        action="action_commission_target"
+        sequence="1"/>
+
+    <menuitem id="menu_commission_leaderboard"
+        name="Leaderboard"
+        parent="menu_commission_targets"
+        action="action_commission_leaderboard"
+        sequence="2"/>
+
+    <!-- ═══ Analytics ════════════════════════════════════════════════════ -->
+    <menuitem id="menu_commission_analytics"
+        name="Analytics"
+        parent="menu_commission_root"
+        sequence="40"
+        groups="advanced_commission_engine.group_commission_manager"/>
+
+    <menuitem id="menu_commission_analytics_lines"
+        name="Commission Analytics"
+        parent="menu_commission_analytics"
+        action="action_commission_analytics"
+        sequence="1"/>
+
+    <menuitem id="menu_commission_analytics_settlements"
+        name="Settlement Analytics"
+        parent="menu_commission_analytics"
+        action="action_commission_settlement_pivot"
+        sequence="2"/>
+
+    <menuitem id="menu_commission_forecast"
+        name="Forecasts"
+        parent="menu_commission_analytics"
+        action="action_commission_forecast"
+        sequence="3"/>
+
+    <menuitem id="menu_commission_simulation"
+        name="Simulations"
+        parent="menu_commission_analytics"
+        action="action_commission_simulation"
+        sequence="4"/>
+
+    <!-- ═══ Configuration ════════════════════════════════════════════════ -->
+    <menuitem id="menu_commission_config"
+        name="Configuration"
+        parent="menu_commission_root"
+        sequence="99"
+        groups="advanced_commission_engine.group_commission_finance"/>
+
+    <menuitem id="menu_commission_generate_periods"
+        name="Generate Periods"
+        parent="menu_commission_config"
+        action="action_commission_period_generate_wizard"
+        sequence="1"/>
+
+    <menuitem id="menu_commission_generate_settlements"
+        name="Generate Settlements"
+        parent="menu_commission_config"
+        action="action_commission_settlement_wizard"
+        sequence="2"/>
+
+    <menuitem id="menu_commission_recalculate"
+        name="Recalculate Commissions"
+        parent="menu_commission_config"
+        action="action_commission_recalculate_wizard"
+        sequence="3"/>
+
+</odoo>
