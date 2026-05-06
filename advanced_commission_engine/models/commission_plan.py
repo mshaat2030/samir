@@ -450,7 +450,6 @@ class CommissionPlan(models.Model):
             'parent_plan_id': self.id,
             'date_from': fields.Date.today(),
             'date_to': False,
-            'code': self.code,
         })
         self.write({'date_to': fields.Date.today(), 'active': False})
         return {

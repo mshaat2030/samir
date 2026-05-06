@@ -10,6 +10,13 @@ class TestCommissionSettlement(TransactionCase):
     def setUp(self):
         super().setUp()
         self.company = self.env.company
+        # Add commission groups to current user for approval tests
+        manager_group = self.env.ref('advanced_commission_engine.group_commission_manager', raise_if_not_found=False)
+        finance_group = self.env.ref('advanced_commission_engine.group_commission_finance', raise_if_not_found=False)
+        if manager_group:
+            self.env.user.sudo().write({'group_ids': [(4, manager_group.id)]})
+        if finance_group:
+            self.env.user.sudo().write({'group_ids': [(4, finance_group.id)]})
 
         self.employee = self.env['hr.employee'].create({
             'name': 'Settlement Test Employee',
@@ -125,15 +132,17 @@ class TestCommissionPeriod(TransactionCase):
 
     def test_period_generation_monthly(self):
         """Test auto-generation of monthly periods."""
+        # Use a far-future year to avoid conflicts with demo data periods
         periods = self.env['commission.period'].generate_periods(
-            'monthly', datetime.date.today().year, company_id=self.company.id
+            'monthly', 2099, company_id=self.company.id
         )
         self.assertEqual(len(periods), 12)
 
     def test_period_generation_quarterly(self):
         """Test auto-generation of quarterly periods."""
+        # Use a far-future year to avoid conflicts with demo data periods
         periods = self.env['commission.period'].generate_periods(
-            'quarterly', datetime.date.today().year, company_id=self.company.id
+            'quarterly', 2099, company_id=self.company.id
         )
         self.assertEqual(len(periods), 4)
 
@@ -182,6 +191,10 @@ class TestCommissionAdjustment(TransactionCase):
     def setUp(self):
         super().setUp()
         self.company = self.env.company
+        # Add commission manager group for approval tests
+        manager_group = self.env.ref('advanced_commission_engine.group_commission_manager', raise_if_not_found=False)
+        if manager_group:
+            self.env.user.sudo().write({'group_ids': [(4, manager_group.id)]})
         self.employee = self.env['hr.employee'].create({
             'name': 'Adjustment Test Employee',
             'company_id': self.company.id,
