@@ -81,7 +81,7 @@ class TestCommissionEngine(TransactionCase):
             'name': 'Test Sales User',
             'login': 'test_sales_commission',
             'email': 'test_sales@example.com',
-            'groups_id': [(4, self.env.ref('sales_team.group_sale_salesman').id)],
+            'group_ids': [(4, self.env.ref('sales_team.group_sale_salesman').id)],
         })
         self.employee = self.env['hr.employee'].create({
             'name': 'Test Sales Employee',

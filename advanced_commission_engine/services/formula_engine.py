@@ -120,6 +120,26 @@ class FormulaEngine:
                 'Unsafe operation in formula: %s. '
                 'Only basic arithmetic and comparisons are allowed.' % type(node).__name__
             )
+        # For function calls, verify the function name is in the safe list
+        if isinstance(node, ast.Call):
+            func = node.func
+            safe_names = set(SAFE_BUILTINS.keys()) | set(SAFE_MATH.keys())
+            if isinstance(func, ast.Name):
+                if func.id not in safe_names:
+                    raise ValidationError(
+                        'Unsafe function call in formula: %s. '
+                        'Only safe math and builtin functions are allowed.' % func.id
+                    )
+            elif isinstance(func, ast.Attribute):
+                raise ValidationError(
+                    'Attribute access not allowed in formula: %s. '
+                    'Only safe math and builtin functions are allowed.' % func.attr
+                )
+            else:
+                raise ValidationError(
+                    'Unsafe function call pattern in formula. '
+                    'Only safe math and builtin functions are allowed.'
+                )
         for child in ast.iter_child_nodes(node):
             self._check_ast_safety(child)
 
