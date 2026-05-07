@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import models, fields, api, Command, _
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -26,48 +26,53 @@ class HrPayslip(models.Model):
             )
             slip.commission_total = sum(settlements.mapped('net_commission'))
 
-    @api.model
-    def get_inputs(self, contract_ids, date_from, date_to):
-        """Override to inject commission inputs into payslip."""
-        res = super().get_inputs(contract_ids, date_from, date_to)
+    @api.depends('employee_id', 'date_from', 'date_to', 'struct_id')
+    def _compute_input_line_ids(self):
+        """Override to inject approved commission settlement inputs into payslips."""
+        super()._compute_input_line_ids()
+
         commission_input_type = self.env.ref(
             'advanced_commission_engine.commission_payslip_input_type',
             raise_if_not_found=False,
         )
         if not commission_input_type:
-            return res
+            return
 
-        for contract in self.env['hr.contract'].browse(contract_ids):
-            employee = contract.employee_id
-            # Find approved settlements in the payslip period
+        for slip in self:
+            if not slip.employee_id or not slip.date_from or not slip.date_to:
+                continue
+
+            # Find approved commission settlements for this employee in the payslip period
             settlements = self.env['commission.settlement'].search([
-                ('employee_id', '=', employee.id),
+                ('employee_id', '=', slip.employee_id.id),
                 ('state', '=', 'approved'),
                 ('settlement_method', '=', 'payroll'),
-                ('payment_date', '>=', date_from),
-                ('payment_date', '<=', date_to),
                 ('payslip_id', '=', False),
             ])
-            if settlements:
-                commission_amount = sum(settlements.mapped('net_commission'))
-                existing = next(
-                    (r for r in res if r.get('code') == commission_input_type.code),
-                    None,
-                )
-                if existing:
-                    existing['amount'] += commission_amount
-                else:
-                    res.append({
+            if not settlements:
+                continue
+
+            commission_amount = sum(settlements.mapped('net_commission'))
+
+            # Check if a commission input line already exists
+            existing = slip.input_line_ids.filtered(
+                lambda l: l.input_type_id == commission_input_type
+            )
+            if existing:
+                slip.update({
+                    'input_line_ids': [Command.update(existing[0].id, {'amount': commission_amount})]
+                })
+            else:
+                slip.update({
+                    'input_line_ids': [Command.create({
                         'name': commission_input_type.name,
-                        'code': commission_input_type.code,
                         'amount': commission_amount,
-                        'contract_id': contract.id,
                         'input_type_id': commission_input_type.id,
-                    })
-        return res
+                    })]
+                })
 
     def action_payslip_done(self):
-        res = super().action_payslip_done()
+        super().action_payslip_done()
         for slip in self:
             settlements = self.env['commission.settlement'].search([
                 ('employee_id', '=', slip.employee_id.id),
@@ -82,4 +87,3 @@ class HrPayslip(models.Model):
             })
             for s in settlements:
                 s.line_ids.write({'state': 'paid'})
-        return res

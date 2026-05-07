@@ -2,9 +2,8 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { Component, useState, onMounted, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@odoo/owl";
 import { CommissionKpiCard } from "./commission_kpi_card";
-import { formatMonetary } from "@web/views/fields/formatters";
 
 const { DateTime } = luxon;
 
@@ -42,10 +41,10 @@ export class CommissionDashboard extends Component {
             currency: { symbol: "", position: "before" },
             companyId: null,
         });
-    }
 
-    async willStart() {
-        await this._loadInitialData();
+        onWillStart(async () => {
+            await this._loadInitialData();
+        });
     }
 
     async _loadInitialData() {
