@@ -80,7 +80,7 @@ class CommissionTarget(models.Model):
 
     # ── Progress ──────────────────────────────────────────────────────────────
     progress_bar_value = fields.Float(
-        string='Progress', compute='_compute_achievement_percent'
+        string='Progress', compute='_compute_achievement_percent', store=True
     )
     color = fields.Integer(string='Color', compute='_compute_color')
     status_label = fields.Char(string='Status Label', compute='_compute_color')
