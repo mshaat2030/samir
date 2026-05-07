@@ -420,7 +420,6 @@ class CommissionPlan(models.Model):
             applicable = min(remaining, tier_max - rule.from_amount)
             if applicable > 0 and amount >= rule.from_amount:
                 if rule.rule_type == 'slab':
-                    # Slab: rate applies to total amount if it falls in bracket
                     if rule.from_amount <= amount <= (rule.to_amount or float('inf')):
                         return amount * rule.rate / 100.0
                 else:
@@ -444,9 +443,12 @@ class CommissionPlan(models.Model):
     def action_new_version(self):
         """Create a new version of this plan."""
         self.ensure_one()
+        new_version = self.version + 1
+        new_code = ('%s-v%s' % (self.code, new_version)) if self.code else False
         new_plan = self.copy({
             'name': self.name,
-            'version': self.version + 1,
+            'code': new_code,
+            'version': new_version,
             'parent_plan_id': self.id,
             'date_from': fields.Date.today(),
             'date_to': False,
