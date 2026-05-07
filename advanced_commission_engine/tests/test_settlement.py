@@ -17,6 +17,8 @@ class TestCommissionSettlement(TransactionCase):
             self.env.user.sudo().write({'group_ids': [(4, manager_group.id)]})
         if finance_group:
             self.env.user.sudo().write({'group_ids': [(4, finance_group.id)]})
+            # Invalidate user cache so has_group() picks up the new groups
+        self.env.user.invalidate_recordset(['group_ids'])
 
         self.employee = self.env['hr.employee'].create({
             'name': 'Settlement Test Employee',
