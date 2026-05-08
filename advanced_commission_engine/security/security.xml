@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ======================================================
+         MODULE CATEGORY
+    ====================================================== -->
+    <record id="module_category_commission" model="ir.module.category">
+        <field name="name">Commission Management</field>
+        <field name="description">Manage commission plans, rules, settlements, and analytics.</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- ======================================================
+         PRIVILEGE (Odoo 19: replaces category_id on res.groups)
+    ====================================================== -->
+    <record id="res_groups_privilege_commission" model="res.groups.privilege">
+        <field name="name">Commission</field>
+        <field name="sequence">30</field>
+        <field name="category_id" ref="module_category_commission"/>
+    </record>
+
+    <!-- ======================================================
+         SECURITY GROUPS
+    ====================================================== -->
+
+    <!-- Commission User: can view own commissions, submit disputes -->
+    <record id="group_commission_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_commission"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Can view own commission statements and submit disputes.</field>
+    </record>
+
+    <!-- Commission Manager: can manage plans, rules, generate settlements -->
+    <record id="group_commission_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_commission"/>
+        <field name="implied_ids" eval="[(4, ref('group_commission_user'))]"/>
+        <field name="comment">Can create plans, rules, periods, generate settlements, and submit for approval.</field>
+    </record>
+
+    <!-- Commission Finance Manager: financial approval, journal entries, payroll push -->
+    <record id="group_commission_finance_manager" model="res.groups">
+        <field name="name">Finance Manager</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_commission"/>
+        <field name="implied_ids" eval="[(4, ref('group_commission_manager'))]"/>
+        <field name="comment">Can approve settlements financially, create journal entries, push to payroll.</field>
+    </record>
+
+    <!-- Commission HR Manager: payroll integration, salary rules, payslip push -->
+    <record id="group_commission_hr_manager" model="res.groups">
+        <field name="name">HR Manager</field>
+        <field name="sequence">40</field>
+        <field name="privilege_id" ref="res_groups_privilege_commission"/>
+        <field name="implied_ids" eval="[(4, ref('group_commission_manager'))]"/>
+        <field name="comment">Can push commissions to payroll and manage HR integration.</field>
+    </record>
+
+    <!-- Commission Executive Viewer: read-only access to all analytics and reports -->
+    <record id="group_commission_executive_viewer" model="res.groups">
+        <field name="name">Executive Viewer</field>
+        <field name="sequence">50</field>
+        <field name="privilege_id" ref="res_groups_privilege_commission"/>
+        <field name="implied_ids" eval="[(4, ref('group_commission_user'))]"/>
+        <field name="comment">Read-only access to all commission data and analytics dashboards.</field>
+    </record>
+
+    <!-- Commission Admin: full access including configuration -->
+    <record id="group_commission_admin" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="sequence">60</field>
+        <field name="privilege_id" ref="res_groups_privilege_commission"/>
+        <field name="implied_ids" eval="[(4, ref('group_commission_finance_manager')), (4, ref('group_commission_hr_manager')), (4, ref('group_commission_executive_viewer'))]"/>
+        <field name="comment">Full access to all commission features including system configuration.</field>
+    </record>
+</odoo>

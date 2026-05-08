@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_commission_simulation_form" model="ir.ui.view">
+        <field name="name">commission.simulation.form</field>
+        <field name="model">commission.simulation</field>
+        <field name="arch" type="xml">
+            <form string="Commission Simulation">
+                <header>
+                    <button name="action_run" string="Run Simulation" type="object"
+                            class="btn-primary" invisible="state == 'done'"/>
+                    <button name="action_reset" string="Reset" type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Parameters">
+                            <field name="plan_id"/>
+                            <field name="employee_id"/>
+                            <field name="period_id"/>
+                            <field name="use_actual_data"/>
+                        </group>
+                        <group string="Scenario Values" invisible="use_actual_data">
+                            <field name="base_amount"/>
+                            <field name="margin_pct"/>
+                            <field name="kpi_score"/>
+                        </group>
+                    </group>
+                    <group string="Result" invisible="state == 'draft'">
+                        <field name="total_commission" widget="monetary" readonly="1"
+                               class="text-success fw-bold fs-4"/>
+                    </group>
+                    <field name="line_ids" readonly="1" invisible="state == 'draft'">
+                        <list>
+                            <field name="description"/>
+                            <field name="base_amount"/>
+                            <field name="commission_rate"/>
+                            <field name="commission_amount" sum="Total"/>
+                            <field name="notes"/>
+                        </list>
+                    </field>
+                    <field name="notes" placeholder="Notes..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commission_simulation_list" model="ir.ui.view">
+        <field name="name">commission.simulation.list</field>
+        <field name="model">commission.simulation</field>
+        <field name="arch" type="xml">
+            <list string="Simulations">
+                <field name="name"/>
+                <field name="plan_id"/>
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="base_amount"/>
+                <field name="total_commission" sum="Total Commission"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_commission_simulation" model="ir.actions.act_window">
+        <field name="name">Commission Simulations</field>
+        <field name="res_model">commission.simulation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

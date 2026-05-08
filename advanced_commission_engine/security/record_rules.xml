@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ======================================================
+         MULTI-COMPANY ISOLATION (Plans and Periods – all users)
+    ====================================================== -->
+
+    <record id="rule_commission_plan_company" model="ir.rule">
+        <field name="name">Commission Plan: Multi-Company</field>
+        <field name="model_id" ref="model_commission_plan"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_user'))]"/>
+    </record>
+
+    <record id="rule_commission_period_company" model="ir.rule">
+        <field name="name">Commission Period: Multi-Company</field>
+        <field name="model_id" ref="model_commission_period"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_user'))]"/>
+    </record>
+
+    <!-- ======================================================
+         SETTLEMENT ACCESS RULES
+         - Plain users: own settlements only (company isolation implicit)
+         - Managers: all settlements in company
+    ====================================================== -->
+
+    <record id="rule_commission_settlement_own" model="ir.rule">
+        <field name="name">Commission Settlement: Own Only (User)</field>
+        <field name="model_id" ref="model_commission_settlement"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_commission_settlement_manager_all" model="ir.rule">
+        <field name="name">Commission Settlement: All (Manager)</field>
+        <field name="model_id" ref="model_commission_settlement"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_manager'))]"/>
+    </record>
+
+    <!-- ======================================================
+         COMMISSION LINE ACCESS RULES
+    ====================================================== -->
+
+    <record id="rule_commission_line_own" model="ir.rule">
+        <field name="name">Commission Line: Own Only (User)</field>
+        <field name="model_id" ref="model_commission_line"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_commission_line_manager_all" model="ir.rule">
+        <field name="name">Commission Line: All (Manager)</field>
+        <field name="model_id" ref="model_commission_line"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_manager'))]"/>
+    </record>
+
+    <!-- ======================================================
+         COMMISSION TARGET ACCESS RULES
+    ====================================================== -->
+
+    <record id="rule_commission_target_own" model="ir.rule">
+        <field name="name">Commission Target: Own Only (User)</field>
+        <field name="model_id" ref="model_commission_target"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_commission_target_manager_all" model="ir.rule">
+        <field name="name">Commission Target: All (Manager)</field>
+        <field name="model_id" ref="model_commission_target"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_manager'))]"/>
+    </record>
+
+    <!-- ======================================================
+         DISPUTE ACCESS RULES
+    ====================================================== -->
+
+    <record id="rule_commission_dispute_own" model="ir.rule">
+        <field name="name">Commission Dispute: Own Only (User)</field>
+        <field name="model_id" ref="model_commission_dispute"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_user'))]"/>
+    </record>
+
+    <record id="rule_commission_dispute_manager_all" model="ir.rule">
+        <field name="name">Commission Dispute: All (Manager)</field>
+        <field name="model_id" ref="model_commission_dispute"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_commission_manager'))]"/>
+    </record>
+</odoo>

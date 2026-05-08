@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal home counter -->
+    <template id="portal_my_home_commission" name="Portal: Commission Statements"
+              inherit_id="portal.portal_my_home" priority="25">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon">/advanced_commission_engine/static/src/img/icon.png</t>
+                <t t-set="title">Commission Statements</t>
+                <t t-set="url">/my/commissions</t>
+                <t t-set="placeholder_count">commission_count</t>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Commission list page -->
+    <template id="portal_commission_list" name="My Commission Statements">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Commission Statements</t>
+            </t>
+            <t t-if="not settlements">
+                <div class="alert alert-info">
+                    <p class="mb-0">You have no commission statements yet.</p>
+                </div>
+            </t>
+            <t t-else="">
+                <!-- KPI cards -->
+                <div class="row g-3 mb-4">
+                    <t t-if="current_target">
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Current Period Target</h6>
+                                    <h4 class="fw-bold">
+                                        <t t-out="'{:,.2f}'.format(current_target.commission_target)"/>
+                                        <span class="text-muted fs-6">
+                                            <t t-out="current_target.currency_id.symbol"/>
+                                        </span>
+                                    </h4>
+                                    <div class="progress mt-2" style="height:8px">
+                                        <div class="progress-bar bg-success"
+                                             t-attf-style="width:#{current_target.progress_bar_value}%"/>
+                                    </div>
+                                    <small class="text-muted">
+                                        <t t-out="'{:.0f}'.format(current_target.overall_attainment)"/>% attained
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="leaderboard_entry">
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Current Rank</h6>
+                                    <h4 class="fw-bold">
+                                        #<t t-out="leaderboard_entry.rank"/>
+                                        <span class="text-muted fs-6 ms-2">
+                                            <t t-out="leaderboard_entry.rank_change_icon"/>
+                                        </span>
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Settlements table -->
+                <div class="card shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Reference</th>
+                                    <th>Period</th>
+                                    <th>Plan</th>
+                                    <th class="text-end">Gross</th>
+                                    <th class="text-end">Final Payable</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="settlements" t-as="s">
+                                    <td>
+                                        <a t-attf-href="/my/commissions/#{s.id}">
+                                            <t t-out="s.name"/>
+                                        </a>
+                                    </td>
+                                    <td><t t-out="s.period_id.name"/></td>
+                                    <td><t t-out="s.plan_id.name"/></td>
+                                    <td class="text-end">
+                                        <t t-out="s.currency_id.symbol"/>
+                                        <t t-out="'{:,.2f}'.format(s.gross_amount)"/>
+                                    </td>
+                                    <td class="text-end fw-bold">
+                                        <t t-out="s.currency_id.symbol"/>
+                                        <t t-out="'{:,.2f}'.format(s.payable_amount)"/>
+                                    </td>
+                                    <td>
+                                        <t t-if="s.state == 'paid'">
+                                            <span class="badge text-bg-success">Paid</span>
+                                        </t>
+                                        <t t-elif="s.state in ('approved', 'finance_approved', 'payroll_processed')">
+                                            <span class="badge text-bg-info">Approved</span>
+                                        </t>
+                                        <t t-elif="s.state == 'submitted'">
+                                            <span class="badge text-bg-warning">Pending</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge text-bg-secondary">
+                                                <t t-out="s.state.replace('_', ' ').title()"/>
+                                            </span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <a t-attf-href="/my/commissions/#{s.id}/pdf"
+                                           class="btn btn-sm btn-outline-secondary" target="_blank">
+                                            <i class="fa fa-file-pdf-o"/> PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Settlement detail page -->
+    <template id="portal_commission_detail" name="Commission Statement Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert">
+                <t t-if="settlement.is_anomaly">
+                    <div class="alert alert-warning">
+                        <strong>⚠ Note:</strong> An anomaly has been detected on this statement.
+                        Please contact your commission manager.
+                    </div>
+                </t>
+            </t>
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>
+                            <t t-out="settlement.name"/>
+                            <t t-if="settlement.state == 'paid'">
+                                <span class="badge text-bg-success ms-2">Paid</span>
+                            </t>
+                        </h3>
+                        <a t-attf-href="/my/commissions/#{settlement.id}/pdf"
+                           class="btn btn-primary" target="_blank">
+                            <i class="fa fa-download me-1"/> Download PDF
+                        </a>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="text-muted small">Gross Commission</div>
+                                    <div class="h5 fw-bold">
+                                        <t t-out="settlement.currency_id.symbol"/>
+                                        <t t-out="'{:,.2f}'.format(settlement.gross_amount)"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="text-muted small">Adjustments</div>
+                                    <div class="h5 fw-bold">
+                                        <t t-out="settlement.currency_id.symbol"/>
+                                        <t t-out="'{:,.2f}'.format(settlement.total_adjustment)"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="text-muted small">Final Payable</div>
+                                    <div class="h5 fw-bold text-success">
+                                        <t t-out="settlement.currency_id.symbol"/>
+                                        <t t-out="'{:,.2f}'.format(settlement.payable_amount)"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="text-muted small">Lines</div>
+                                    <div class="h5 fw-bold"><t t-out="settlement.line_count"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lines table -->
+                    <h5>Commission Details</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Document</th>
+                                    <th>Customer</th>
+                                    <th class="text-end">Base</th>
+                                    <th class="text-end">Rate</th>
+                                    <th class="text-end">Commission</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="settlement.line_ids.filtered(lambda l: l.state != 'cancelled')" t-as="line">
+                                    <td><t t-out="line.date"/></td>
+                                    <td><t t-out="line.res_name or '—'"/></td>
+                                    <td><t t-out="line.partner_id.name if line.partner_id else '—'"/></td>
+                                    <td class="text-end"><t t-out="'{:,.2f}'.format(line.base_amount)"/></td>
+                                    <td class="text-end"><t t-out="'{:.2f}%'.format(line.commission_rate)"/></td>
+                                    <td class="text-end fw-bold"><t t-out="'{:,.2f}'.format(line.commission_amount)"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Dispute form -->
+                    <t t-if="settlement.state in ('approved', 'finance_approved', 'calculated', 'submitted')">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5 class="mb-0">Raise a Dispute</h5>
+                            </div>
+                            <div class="card-body">
+                                <form t-attf-action="/my/commissions/#{settlement.id}/dispute" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="mb-3">
+                                        <label for="dispute_type">Dispute Type</label>
+                                        <select name="dispute_type" class="form-select" id="dispute_type">
+                                            <option value="wrong_amount">Wrong Amount</option>
+                                            <option value="missing_line">Missing Commission Line</option>
+                                            <option value="wrong_rate">Wrong Rate Applied</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="requested_amount">Requested Amount</label>
+                                        <input type="number" name="requested_amount" id="requested_amount"
+                                               class="form-control" step="0.01"
+                                               t-att-value="settlement.final_amount"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="reason">Reason *</label>
+                                        <textarea name="reason" id="reason" rows="3"
+                                                  class="form-control" required="required"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fa fa-exclamation-triangle me-1"/> Submit Dispute
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Leaderboard page -->
+    <template id="portal_commission_leaderboard" name="Commission Leaderboard">
+        <t t-call="portal.portal_layout">
+            <div class="container">
+                <h3 class="mb-4">
+                    🏆 Commission Leaderboard
+                    <t t-if="period">
+                        <span class="text-muted fs-5 ms-2">
+                            – <t t-out="period.name"/>
+                        </span>
+                    </t>
+                </h3>
+                <t t-if="my_entry">
+                    <div class="alert alert-info">
+                        <strong>Your Rank:</strong> #<t t-out="my_entry.rank"/>
+                        <span class="ms-2"><t t-out="my_entry.rank_change_icon"/></span>
+                        <span class="ms-3">
+                            <strong>Commission:</strong>
+                            <t t-out="'{:,.2f}'.format(my_entry.total_commission)"/>
+                        </span>
+                    </div>
+                </t>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Employee</th>
+                                <th class="text-end">Commission</th>
+                                <th class="text-end">Revenue</th>
+                                <th class="text-end">Attainment</th>
+                                <th>Streak</th>
+                                <th>Badges</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="leaderboard" t-as="entry"
+                                t-attf-class="#{('table-warning' if entry.rank == 1 else ('table-light' if entry.rank == 2 else ''))}">
+                                <td>
+                                    <t t-if="entry.rank == 1">🥇</t>
+                                    <t t-elif="entry.rank == 2">🥈</t>
+                                    <t t-elif="entry.rank == 3">🥉</t>
+                                    <t t-else="">#<t t-out="entry.rank"/></t>
+                                </td>
+                                <td>
+                                    <t t-out="entry.employee_id.name"/>
+                                    <t t-if="my_entry and entry.employee_id == my_entry.employee_id">
+                                        <span class="badge text-bg-info ms-1">You</span>
+                                    </t>
+                                </td>
+                                <td class="text-end fw-bold">
+                                    <t t-out="'{:,.2f}'.format(entry.total_commission)"/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(entry.total_base_amount)"/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:.0f}%'.format(entry.target_attainment)"/>
+                                </td>
+                                <td><t t-out="entry.streak or '—'"/></td>
+                                <td>
+                                    <t t-if="entry.badge_count">
+                                        🏅 <t t-out="entry.badge_count"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- No employee template -->
+    <template id="portal_no_employee" name="Portal: No Employee Linked">
+        <t t-call="portal.portal_layout">
+            <div class="alert alert-warning mt-3">
+                <strong>Commission Portal</strong><br/>
+                No employee profile is linked to your account. Please contact HR.
+            </div>
+        </t>
+    </template>
+</odoo>

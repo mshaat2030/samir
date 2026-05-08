@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ======================================================
+         COMMISSION STATEMENT TEMPLATE
+    ====================================================== -->
+    <template id="commission_statement_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="settlement">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <h2>Commission Statement</h2>
+                                <p class="text-muted">Reference: <strong t-out="settlement.name"/></p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <t t-if="settlement.state == 'paid'">
+                                    <span class="badge bg-success fs-6">PAID</span>
+                                </t>
+                                <t t-elif="settlement.state in ('approved', 'finance_approved')">
+                                    <span class="badge bg-info fs-6">APPROVED</span>
+                                </t>
+                                <t t-else="">
+                                    <span class="badge bg-secondary fs-6"><t t-out="dict(settlement._fields['state'].selection).get(settlement.state, settlement.state).upper()"/></span>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Employee & Period Info -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <table class="table table-borderless table-sm">
+                                    <tr>
+                                        <td class="fw-bold" style="width:140px">Employee:</td>
+                                        <td><t t-out="settlement.employee_id.name"/></td>
+                                    </tr>
+                                    <t t-if="settlement.employee_id.department_id">
+                                        <tr>
+                                            <td class="fw-bold">Department:</td>
+                                            <td><t t-out="settlement.employee_id.department_id.name"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td class="fw-bold">Job Position:</td>
+                                        <td><t t-out="settlement.employee_id.job_id.name or '—'"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-borderless table-sm">
+                                    <tr>
+                                        <td class="fw-bold" style="width:140px">Commission Plan:</td>
+                                        <td><t t-out="settlement.plan_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Period:</td>
+                                        <td><t t-out="settlement.period_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Period Dates:</td>
+                                        <td>
+                                            <t t-out="settlement.period_id.date_start"/>
+                                            –
+                                            <t t-out="settlement.period_id.date_end"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Commission Lines -->
+                        <h4 class="mt-3">Commission Details</h4>
+                        <table class="table table-striped table-bordered table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Source Document</th>
+                                    <th>Customer</th>
+                                    <th class="text-end">Base Amount</th>
+                                    <th class="text-end">Rate %</th>
+                                    <th class="text-end">Commission</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="settlement.line_ids.filtered(lambda l: l.state != 'cancelled')" t-as="line">
+                                    <tr>
+                                        <td><t t-out="line.date"/></td>
+                                        <td><t t-out="line.res_name or '—'"/></td>
+                                        <td><t t-out="line.partner_id.name if line.partner_id else '—'"/></td>
+                                        <td class="text-end">
+                                            <t t-out="'{:,.2f}'.format(line.base_amount)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-out="'{:.2f}%'.format(line.commission_rate)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-out="'{:,.2f}'.format(line.commission_amount)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Adjustments -->
+                        <t t-if="settlement.adjustment_ids.filtered(lambda a: a.state != 'cancelled')">
+                            <h4 class="mt-3">Adjustments</h4>
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="settlement.adjustment_ids.filtered(lambda a: a.state != 'cancelled')" t-as="adj">
+                                        <tr>
+                                            <td><t t-out="adj.name"/></td>
+                                            <td><t t-out="dict(adj._fields['adjustment_type'].selection).get(adj.adjustment_type, adj.adjustment_type)"/></td>
+                                            <td><t t-out="adj.date"/></td>
+                                            <td class="text-end">
+                                                <t t-if="adj.adjustment_type in ('penalty', 'clawback')">
+                                                    <span class="text-danger">–<t t-out="'{:,.2f}'.format(adj.amount)"/></span>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-out="'+{:,.2f}'.format(adj.amount)"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Summary Box -->
+                        <div class="row justify-content-end mt-4">
+                            <div class="col-5">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td>Gross Commission</td>
+                                        <td class="text-end">
+                                            <t t-out="settlement.currency_id.symbol"/>
+                                            <t t-out="'{:,.2f}'.format(settlement.gross_amount)"/>
+                                        </td>
+                                    </tr>
+                                    <t t-if="settlement.total_adjustment != 0">
+                                        <tr>
+                                            <td>Adjustments</td>
+                                            <td class="text-end">
+                                                <t t-out="settlement.currency_id.symbol"/>
+                                                <t t-out="'{:,.2f}'.format(settlement.total_adjustment)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="settlement.held_amount">
+                                        <tr>
+                                            <td>Held</td>
+                                            <td class="text-end text-warning">
+                                                –<t t-out="settlement.currency_id.symbol"/>
+                                                <t t-out="'{:,.2f}'.format(settlement.held_amount)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr class="table-success fw-bold">
+                                        <td>Final Payable</td>
+                                        <td class="text-end">
+                                            <t t-out="settlement.currency_id.symbol"/>
+                                            <t t-out="'{:,.2f}'.format(settlement.payable_amount)"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-4 text-center">
+                                <p style="border-top:1px solid #333; padding-top:5px; margin-top:40px;">
+                                    Employee Signature
+                                </p>
+                            </div>
+                            <div class="col-4 text-center">
+                                <p style="border-top:1px solid #333; padding-top:5px; margin-top:40px;">
+                                    Manager Signature
+                                </p>
+                            </div>
+                            <div class="col-4 text-center">
+                                <p style="border-top:1px solid #333; padding-top:5px; margin-top:40px;">
+                                    Finance Approval
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Footer note -->
+                        <p class="text-muted text-center mt-3" style="font-size:10px;">
+                            Generated on <t t-out="context.get('date', '')"/> by
+                            <t t-out="settlement.company_id.name"/>
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ======================================================
+         PAYOUT SUMMARY TEMPLATE
+    ====================================================== -->
+    <template id="commission_payout_summary_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="period">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Commission Payout Summary</h2>
+                        <h4 class="text-muted"><t t-out="period.name"/></h4>
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Plan</th>
+                                    <th class="text-end">Gross</th>
+                                    <th class="text-end">Adjustments</th>
+                                    <th class="text-end">Final Payable</th>
+                                    <th>State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="period.settlement_ids.filtered(lambda s: s.state != 'cancelled')" t-as="s">
+                                    <tr>
+                                        <td><t t-out="s.employee_id.name"/></td>
+                                        <td><t t-out="s.plan_id.name"/></td>
+                                        <td class="text-end"><t t-out="'{:,.2f}'.format(s.gross_amount)"/></td>
+                                        <td class="text-end"><t t-out="'{:,.2f}'.format(s.total_adjustment)"/></td>
+                                        <td class="text-end fw-bold"><t t-out="'{:,.2f}'.format(s.payable_amount)"/></td>
+                                        <td><t t-out="dict(s._fields['state'].selection).get(s.state, s.state)"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot class="table-secondary fw-bold">
+                                <tr>
+                                    <td colspan="4">Total</td>
+                                    <td class="text-end"><t t-out="'{:,.2f}'.format(sum(period.settlement_ids.filtered(lambda s: s.state != 'cancelled').mapped('payable_amount')))"/></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

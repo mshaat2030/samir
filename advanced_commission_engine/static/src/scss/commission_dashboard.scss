@@ -1,0 +1,120 @@
+// Commission Dashboard Styles
+
+.o_commission_dashboard {
+    background: #f8f9fa;
+    min-height: calc(100vh - 100px);
+
+    .o_commission_dashboard_header {
+        background: white;
+        border-bottom: 2px solid #dee2e6;
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+    }
+
+    // KPI Cards
+    .commission-kpi-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .commission-kpi-icon {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        &.commission-kpi-success .commission-kpi-icon { background: rgba(25, 135, 84, 0.1) !important; }
+        &.commission-kpi-warning .commission-kpi-icon { background: rgba(255, 193, 7, 0.1) !important; }
+        &.commission-kpi-info .commission-kpi-icon { background: rgba(13, 202, 240, 0.1) !important; }
+        &.commission-kpi-primary .commission-kpi-icon { background: rgba(13, 110, 253, 0.1) !important; }
+    }
+
+    // Leaderboard
+    .leaderboard-rank-1 { background: linear-gradient(135deg, #fff9c4, #fff); }
+    .leaderboard-rank-2 { background: linear-gradient(135deg, #f5f5f5, #fff); }
+    .leaderboard-rank-3 { background: linear-gradient(135deg, #ffe8cc, #fff); }
+
+    // Progress bars
+    .o_commission_progress {
+        min-width: 120px;
+
+        .progress {
+            border-radius: 4px;
+        }
+    }
+
+    // State badges
+    .badge-sm {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+
+    // Recent settlements
+    .list-group-item {
+        transition: background 0.15s;
+
+        &:hover { background: #f8f9fa; }
+    }
+
+    // Trend bar chart
+    .trend-bar {
+        border-radius: 4px 4px 0 0;
+        min-width: 20px;
+        transition: height 0.3s ease;
+    }
+
+    // Cards
+    .card {
+        border-radius: 12px;
+        border: none;
+    }
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 12px 12px 0 0 !important;
+    }
+}
+
+// Portal styles
+.o_portal_commission {
+    .commission-summary-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+
+        .amount {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+    }
+
+    .commission-progress-ring {
+        position: relative;
+
+        svg circle {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .o_commission_dashboard {
+        .commission-kpi-card {
+            margin-bottom: 0.5rem;
+        }
+    }
+}

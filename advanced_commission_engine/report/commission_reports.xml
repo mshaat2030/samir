@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Commission Statement PDF -->
+    <record id="action_report_commission_statement" model="ir.actions.report">
+        <field name="name">Commission Statement</field>
+        <field name="model">commission.settlement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">advanced_commission_engine.commission_statement_template</field>
+        <field name="report_file">advanced_commission_engine.commission_statement_template</field>
+        <field name="binding_model_id" ref="model_commission_settlement"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Commission Payout Summary PDF -->
+    <record id="action_report_commission_payout_summary" model="ir.actions.report">
+        <field name="name">Commission Payout Summary</field>
+        <field name="model">commission.period</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">advanced_commission_engine.commission_payout_summary_template</field>
+        <field name="report_file">advanced_commission_engine.commission_payout_summary_template</field>
+        <field name="binding_model_id" ref="model_commission_period"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

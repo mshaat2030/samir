@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <!-- ── KPI Card Template ── -->
+    <t t-name="advanced_commission_engine.KPICard">
+        <div t-attf-class="card border-0 shadow-sm h-100 commission-kpi-card commission-kpi-#{props.color or 'primary'}">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div t-attf-class="commission-kpi-icon rounded-circle bg-#{props.color or 'primary'} bg-opacity-10 p-3">
+                    <i t-attf-class="fa #{props.icon or 'fa-chart-bar'} fa-2x text-#{props.color or 'primary'}"/>
+                </div>
+                <div>
+                    <div class="text-muted small"><t t-out="props.title"/></div>
+                    <div class="h4 fw-bold mb-0"><t t-out="props.value || '—'"/></div>
+                    <t t-if="props.subtitle">
+                        <div class="text-muted small"><t t-out="props.subtitle"/></div>
+                    </t>
+                    <t t-if="props.trend !== undefined">
+                        <div t-attf-class="small #{props.trend >= 0 ? 'text-success' : 'text-danger'}">
+                            <i t-attf-class="fa fa-arrow-#{props.trend >= 0 ? 'up' : 'down'}"/>
+                            <t t-out="Math.abs(props.trend).toFixed(1)"/>%
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- ── Top Performer Row ── -->
+    <t t-name="advanced_commission_engine.TopPerformerRow">
+        <tr>
+            <td class="fw-bold">
+                <t t-if="props.rank === 1">🥇</t>
+                <t t-elif="props.rank === 2">🥈</t>
+                <t t-elif="props.rank === 3">🥉</t>
+                <t t-else="">#<t t-out="props.rank"/></t>
+            </td>
+            <td><t t-out="props.name"/></td>
+            <td class="text-end fw-bold text-success">
+                <t t-out="props.currencySymbol || '$'"/>
+                <t t-out="Number(props.amount || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"/>
+            </td>
+            <td class="text-end">
+                <div class="progress" style="min-width:80px; height:6px;">
+                    <div class="progress-bar bg-success"
+                         t-attf-style="width: #{Math.min(100, props.attainment)}%"/>
+                </div>
+                <small><t t-out="(props.attainment || 0).toFixed(0)"/>%</small>
+            </td>
+        </tr>
+    </t>
+
+    <!-- ── Progress Bar Widget Template ── -->
+    <t t-name="advanced_commission_engine.CommissionProgressBar">
+        <div class="o_commission_progress d-flex align-items-center gap-2">
+            <div class="progress flex-grow-1" style="height: 8px; min-width: 60px;">
+                <div t-attf-class="progress-bar #{component.colorClass}"
+                     t-attf-style="width: #{component.percentage}%"
+                     role="progressbar"/>
+            </div>
+            <span class="text-nowrap small fw-bold">
+                <t t-out="component.value.toFixed(1)"/>%
+            </span>
+        </div>
+    </t>
+
+    <!-- ── State Badge Widget Template ── -->
+    <t t-name="advanced_commission_engine.CommissionStateBadge">
+        <span t-attf-class="#{component.badgeClass}">
+            <t t-out="component.label"/>
+        </span>
+    </t>
+
+    <!-- ── Main Dashboard Template ── -->
+    <t t-name="advanced_commission_engine.CommissionDashboard">
+        <div class="o_action o_commission_dashboard">
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-3 text-muted">Loading dashboard...</span>
+                </div>
+            </t>
+
+            <!-- Error State -->
+            <t t-elif="state.error">
+                <div class="alert alert-danger m-3">
+                    <strong>Error:</strong> <t t-out="state.error"/>
+                </div>
+            </t>
+
+            <!-- Dashboard Content -->
+            <t t-else="">
+                <!-- Header -->
+                <div class="o_commission_dashboard_header d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <div>
+                        <h3 class="mb-0">
+                            <i class="fa fa-bar-chart me-2 text-primary"/>
+                            Commission Dashboard
+                        </h3>
+                        <t t-if="state.currentPeriodName">
+                            <small class="text-muted">
+                                Current Period: <strong><t t-out="state.currentPeriodName"/></strong>
+                                (<t t-out="state.currentPeriodStart"/> – <t t-out="state.currentPeriodEnd"/>)
+                            </small>
+                        </t>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary" t-on-click="openGenerateWizard">
+                            <i class="fa fa-plus me-1"/> Generate Settlements
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" t-on-click="refreshDashboard">
+                            <i class="fa fa-refresh me-1"/> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Row -->
+                <div class="row g-3 p-3">
+                    <div class="col-sm-6 col-lg-3">
+                        <KPICard
+                            title="'Paid This Month'"
+                            value="formatAmount(state.totalPaidThisMonth)"
+                            icon="'fa-money'"
+                            color="'success'"
+                        />
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <KPICard
+                            title="'Pending Approval'"
+                            value="formatAmount(state.totalPendingApproval)"
+                            icon="'fa-clock-o'"
+                            color="'warning'"
+                        />
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <KPICard
+                            title="'Draft Settlements'"
+                            value="state.totalDraft"
+                            icon="'fa-file-o'"
+                            color="'info'"
+                        />
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <KPICard
+                            title="'Open Periods'"
+                            value="state.openPeriods"
+                            icon="'fa-calendar'"
+                            color="'primary'"
+                        />
+                    </div>
+                </div>
+
+                <!-- Anomaly Banner -->
+                <t t-if="state.totalAnomalies > 0">
+                    <div class="alert alert-warning mx-3 d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fa fa-exclamation-triangle me-2"/>
+                            <strong><t t-out="state.totalAnomalies"/> anomal<t t-if="state.totalAnomalies === 1">y</t><t t-else="">ies</t></strong>
+                            detected in recent settlements.
+                        </span>
+                        <button class="btn btn-sm btn-warning" t-on-click="openAnomalies">
+                            Review Anomalies
+                        </button>
+                    </div>
+                </t>
+
+                <!-- Main Content Row -->
+                <div class="row g-3 px-3 pb-3">
+
+                    <!-- Leaderboard -->
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fa fa-trophy me-2 text-warning"/>Leaderboard</h5>
+                                <small class="text-muted">
+                                    <t t-out="state.currentPeriodName || 'Current Period'"/>
+                                </small>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="state.topPerformers.length === 0">
+                                    <div class="text-center text-muted p-4">
+                                        No leaderboard data yet.
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width:50px">Rank</th>
+                                                <th>Employee</th>
+                                                <th class="text-end">Commission</th>
+                                                <th class="text-end" style="width:100px">Attainment</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="state.topPerformers" t-as="performer">
+                                                <TopPerformerRow
+                                                    rank="performer.rank"
+                                                    name="performer.name"
+                                                    amount="performer.amount"
+                                                    attainment="performer.attainment"
+                                                    currencySymbol="state.currencySymbol"
+                                                />
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Settlements -->
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-file-text-o me-2 text-primary"/>
+                                    Recent Settlements
+                                </h5>
+                                <button class="btn btn-link btn-sm p-0" t-on-click="openSettlements">
+                                    View All →
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="state.recentSettlements.length === 0">
+                                    <div class="text-center text-muted p-4">No settlements yet.</div>
+                                </t>
+                                <t t-else="">
+                                    <div class="list-group list-group-flush">
+                                        <t t-foreach="state.recentSettlements" t-as="settlement">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <div class="fw-bold small">
+                                                        <t t-out="settlement.name"/>
+                                                    </div>
+                                                    <div class="text-muted small">
+                                                        <t t-out="settlement.employee_id[1]"/>
+                                                        · <t t-out="settlement.period_id[1]"/>
+                                                    </div>
+                                                </div>
+                                                <div class="text-end">
+                                                    <div class="fw-bold text-success small">
+                                                        <t t-out="state.currencySymbol"/>
+                                                        <t t-out="Number(settlement.final_amount || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"/>
+                                                    </div>
+                                                    <span t-attf-class="#{stateClass(settlement.state)} badge-sm">
+                                                        <t t-out="stateLabel(settlement.state)"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Trend -->
+                    <t t-if="state.monthlyTrend.length > 0">
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-line-chart me-2 text-info"/>
+                                        Commission Trend (Last 6 Periods)
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-end gap-2" style="height: 100px;">
+                                        <t t-foreach="state.monthlyTrend" t-as="point">
+                                            <div class="d-flex flex-column align-items-center flex-grow-1">
+                                                <small class="text-success fw-bold"
+                                                       t-out="state.currencySymbol + ' ' + Number((point.value / 1000) || 0).toFixed(0) + 'K'"/>
+                                                <div class="bg-primary rounded w-100"
+                                                     t-attf-style="height: #{Math.max(4, (point.value / Math.max(...state.monthlyTrend.map(p => p.value || 1))) * 80)}px"/>
+                                                <small class="text-muted text-truncate" style="max-width:60px; font-size:9px;"
+                                                       t-out="point.label"/>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

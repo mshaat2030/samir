@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Demo: Formulas -->
+    <record id="demo_formula_standard" model="commission.formula">
+        <field name="name">Standard Sales Formula</field>
+        <field name="code">STD_SALES</field>
+        <field name="formula_type">python</field>
+        <field name="formula_code">result = base_amount * rate / 100</field>
+        <field name="description">Standard fixed-percentage formula.</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="demo_formula_margin" model="commission.formula">
+        <field name="name">Margin-Boosted Formula</field>
+        <field name="code">MARGIN_BOOST</field>
+        <field name="formula_type">python</field>
+        <field name="formula_code">
+margin_factor = 1.0
+if margin_pct >= 40:
+    margin_factor = 1.5
+elif margin_pct >= 25:
+    margin_factor = 1.2
+result = base_amount * rate / 100 * margin_factor
+        </field>
+        <field name="description">Boosts commission by 20-50% when margin exceeds thresholds.</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Demo: Commission Plans -->
+    <record id="demo_plan_standard_sales" model="commission.plan">
+        <field name="name">Standard Sales Commission</field>
+        <field name="commission_type">sales</field>
+        <field name="calculation_method">fixed_percent</field>
+        <field name="period_type">monthly</field>
+        <field name="approval_required">True</field>
+        <field name="finance_approval_required">True</field>
+        <field name="active">True</field>
+        <field name="description">Standard 5% sales commission on confirmed invoices.</field>
+    </record>
+
+    <record id="demo_plan_tiered_sales" model="commission.plan">
+        <field name="name">Tiered Sales Commission</field>
+        <field name="commission_type">sales</field>
+        <field name="calculation_method">tiered</field>
+        <field name="period_type">monthly</field>
+        <field name="approval_required">True</field>
+        <field name="finance_approval_required">True</field>
+        <field name="active">True</field>
+        <field name="description">Tiered commission: 3% up to 50K, 5% up to 100K, 7% above.</field>
+    </record>
+
+    <record id="demo_plan_kpi_incentive" model="commission.plan">
+        <field name="name">KPI Incentive Plan</field>
+        <field name="commission_type">kpi_incentive</field>
+        <field name="calculation_method">weighted_kpi</field>
+        <field name="period_type">quarterly</field>
+        <field name="approval_required">True</field>
+        <field name="finance_approval_required">True</field>
+        <field name="active">True</field>
+        <field name="description">Quarterly KPI-based incentive tied to multiple performance indicators.</field>
+    </record>
+
+    <!-- Demo: Rules for Standard Sales Plan -->
+    <record id="demo_rule_standard_5pct" model="commission.rule">
+        <field name="name">5% Standard Rate</field>
+        <field name="plan_id" ref="demo_plan_standard_sales"/>
+        <field name="sequence">10</field>
+        <field name="calculation_method">fixed_percent</field>
+        <field name="rate">5.0</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Demo: Rules for Tiered Plan -->
+    <record id="demo_rule_tiered_3pct" model="commission.rule">
+        <field name="name">3% on first 50,000</field>
+        <field name="plan_id" ref="demo_plan_tiered_sales"/>
+        <field name="sequence">10</field>
+        <field name="calculation_method">tiered</field>
+        <field name="rate">3.0</field>
+        <field name="slab_from">0</field>
+        <field name="slab_to">50000</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="demo_rule_tiered_5pct" model="commission.rule">
+        <field name="name">5% on 50,001–100,000</field>
+        <field name="plan_id" ref="demo_plan_tiered_sales"/>
+        <field name="sequence">20</field>
+        <field name="calculation_method">tiered</field>
+        <field name="rate">5.0</field>
+        <field name="slab_from">50000</field>
+        <field name="slab_to">100000</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="demo_rule_tiered_7pct" model="commission.rule">
+        <field name="name">7% above 100,000</field>
+        <field name="plan_id" ref="demo_plan_tiered_sales"/>
+        <field name="sequence">30</field>
+        <field name="calculation_method">tiered</field>
+        <field name="rate">7.0</field>
+        <field name="slab_from">100000</field>
+        <field name="slab_to">0</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Demo: KPIs -->
+    <record id="demo_kpi_revenue" model="commission.kpi">
+        <field name="name">Monthly Revenue</field>
+        <field name="code">MONTHLY_REV</field>
+        <field name="category">sales</field>
+        <field name="weight">40</field>
+        <field name="unit">currency</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="demo_kpi_new_customers" model="commission.kpi">
+        <field name="name">New Customers Acquired</field>
+        <field name="code">NEW_CUST</field>
+        <field name="category">sales</field>
+        <field name="weight">30</field>
+        <field name="unit">count</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="demo_kpi_collection_rate" model="commission.kpi">
+        <field name="name">Collection Rate</field>
+        <field name="code">COLL_RATE</field>
+        <field name="category">finance</field>
+        <field name="weight">30</field>
+        <field name="unit">percent</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Demo: Badges -->
+    <record id="demo_badge_top_performer" model="commission.badge">
+        <field name="name">Top Performer</field>
+        <field name="code">TOP_PERF</field>
+        <field name="description">Awarded to the #1 commission earner of the month.</field>
+        <field name="badge_type">monthly_top</field>
+        <field name="criteria_type">rank</field>
+        <field name="criteria_value">1</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="demo_badge_century_club" model="commission.badge">
+        <field name="name">Century Club</field>
+        <field name="code">CENT_CLUB</field>
+        <field name="description">Awarded when total commission exceeds 100,000 in a single period.</field>
+        <field name="badge_type">milestone</field>
+        <field name="criteria_type">amount</field>
+        <field name="criteria_value">100000</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="demo_badge_streak_3" model="commission.badge">
+        <field name="name">Hat Trick</field>
+        <field name="code">HAT_TRICK</field>
+        <field name="description">Achieved target for 3 consecutive periods.</field>
+        <field name="badge_type">streak</field>
+        <field name="criteria_type">streak</field>
+        <field name="criteria_value">3</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

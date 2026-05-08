@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ======================================================
+         PAYROLL INPUT TYPES FOR COMMISSIONS
+    ====================================================== -->
+    <record id="payslip_input_commission" model="hr.payslip.input.type">
+        <field name="name">Commission Earnings</field>
+        <field name="code">COMM_EARN</field>
+        <field name="country_id" eval="False"/>
+    </record>
+
+    <record id="payslip_input_commission_bonus" model="hr.payslip.input.type">
+        <field name="name">Commission Bonus</field>
+        <field name="code">COMM_BONUS</field>
+        <field name="country_id" eval="False"/>
+    </record>
+
+    <record id="payslip_input_commission_clawback" model="hr.payslip.input.type">
+        <field name="name">Commission Clawback</field>
+        <field name="code">COMM_CLAWBACK</field>
+        <field name="country_id" eval="False"/>
+    </record>
+
+    <!-- ======================================================
+         SYSTEM PARAMETERS
+    ====================================================== -->
+    <record id="param_commission_auto_approve_threshold" model="ir.config_parameter">
+        <field name="key">advanced_commission_engine.auto_approve_threshold</field>
+        <field name="value">0</field>
+    </record>
+
+    <record id="param_commission_formula_timeout" model="ir.config_parameter">
+        <field name="key">advanced_commission_engine.formula_timeout</field>
+        <field name="value">5</field>
+    </record>
+
+    <record id="param_commission_batch_size" model="ir.config_parameter">
+        <field name="key">advanced_commission_engine.batch_size</field>
+        <field name="value">1000</field>
+    </record>
+
+    <record id="param_commission_forecast_months" model="ir.config_parameter">
+        <field name="key">advanced_commission_engine.forecast_months</field>
+        <field name="value">3</field>
+    </record>
+</odoo>

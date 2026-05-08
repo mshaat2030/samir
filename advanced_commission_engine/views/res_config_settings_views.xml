@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_config_settings_commission" model="ir.ui.view">
+        <field name="name">res.config.settings.commission</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Commission Engine"
+                     string="Commission Engine"
+                     name="advanced_commission_engine"
+                     groups="advanced_commission_engine.group_commission_admin">
+
+                    <block title="Periods" name="commission_periods_setting_container">
+                        <setting id="commission_auto_create_periods"
+                                 string="Auto-Create Periods"
+                                 help="Automatically create commission periods via scheduled job.">
+                            <field name="commission_auto_create_periods"/>
+                        </setting>
+                    </block>
+
+                    <block title="Approvals" name="commission_approvals_setting_container">
+                        <setting id="commission_auto_approve_threshold"
+                                 string="Auto-Approve Threshold"
+                                 help="Settlements below this amount are auto-approved (0 = disabled).">
+                            <field name="commission_auto_approve_threshold"/>
+                        </setting>
+                    </block>
+
+                    <block title="Portal" name="commission_portal_setting_container">
+                        <setting id="commission_portal_enabled"
+                                 string="Employee Portal"
+                                 help="Allow employees to view commission statements on the portal.">
+                            <field name="commission_portal_enabled"/>
+                        </setting>
+                        <setting id="commission_portal_show_leaderboard"
+                                 string="Show Leaderboard on Portal"
+                                 help="Show the leaderboard on the employee portal."
+                                 invisible="not commission_portal_enabled">
+                            <field name="commission_portal_show_leaderboard"/>
+                        </setting>
+                    </block>
+
+                    <block title="Analytics" name="commission_analytics_setting_container">
+                        <setting id="commission_forecast_months"
+                                 string="Forecast Horizon (months)"
+                                 help="Number of months to forecast ahead.">
+                            <field name="commission_forecast_months"/>
+                        </setting>
+                        <setting id="commission_anomaly_threshold_pct"
+                                 string="Anomaly Detection Threshold (%)"
+                                 help="Flag settlements deviating by more than this % from average.">
+                            <field name="commission_anomaly_threshold_pct"/>
+                        </setting>
+                    </block>
+
+                    <block title="Performance" name="commission_performance_setting_container">
+                        <setting id="commission_formula_timeout"
+                                 string="Formula Timeout (seconds)"
+                                 help="Maximum seconds allowed for formula evaluation.">
+                            <field name="commission_formula_timeout"/>
+                        </setting>
+                        <setting id="commission_batch_size"
+                                 string="Batch Size"
+                                 help="Number of commission lines to process per batch.">
+                            <field name="commission_batch_size"/>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>
