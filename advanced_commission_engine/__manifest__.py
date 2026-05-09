@@ -44,7 +44,6 @@ Key Features:
         'web',
         'gamification',
         'board',
-        'report_xlsx',
     ],
     'data': [
         # Security - must be first
