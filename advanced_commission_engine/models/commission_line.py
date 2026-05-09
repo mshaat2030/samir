@@ -51,7 +51,7 @@ class CommissionLine(models.Model):
         ondelete='set null', index=True,
     )
     subscription_id = fields.Many2one(
-        'sale.subscription', string='Subscription',
+        'sale.order', string='Subscription',
         ondelete='set null', index=True,
     )
     project_task_id = fields.Many2one(

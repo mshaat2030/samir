@@ -251,7 +251,7 @@ class CommissionCalculationService(models.AbstractModel):
             ('stage_id.is_won', '=', True),
             ('user_id', '=', employee.user_id.id),
         ]
-        subscriptions = self.env['sale.subscription'].search(domain)
+        subscriptions = self.env['sale.order'].search(domain)
         for sub in subscriptions:
             base = sub.recurring_monthly or 0.0
             rules = plan.get_applicable_rules(employee=employee)
