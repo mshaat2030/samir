@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Default commission journal -->
+        <record id="account_journal_commission" model="account.journal">
+            <field name="name">Commission Journal</field>
+            <field name="code">COMM</field>
+            <field name="type">general</field>
+        </record>
+
+        <!-- Sample formula: Basic percentage -->
+        <record id="formula_basic_percent" model="commission.formula">
+            <field name="name">Basic Percentage</field>
+            <field name="code">BASIC_PCT</field>
+            <field name="description">Simple percentage of base amount</field>
+            <field name="expression">base_amount * rate / 100</field>
+            <field name="variables">base_amount,rate</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Sample formula: Tiered progressive -->
+        <record id="formula_tiered_progressive" model="commission.formula">
+            <field name="name">Tiered Progressive</field>
+            <field name="code">TIERED_PROG</field>
+            <field name="description">Progressive rate based on achievement percentage</field>
+            <field name="expression">base_amount * (0.02 if achievement_pct &lt; 80 else 0.04 if achievement_pct &lt; 100 else 0.06 if achievement_pct &lt; 120 else 0.08)</field>
+            <field name="variables">base_amount,achievement_pct</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Sample formula: Margin-based -->
+        <record id="formula_margin_based" model="commission.formula">
+            <field name="name">Margin Based</field>
+            <field name="code">MARGIN_BASED</field>
+            <field name="description">Commission based on gross margin</field>
+            <field name="expression">max(0, (revenue - cost) * rate / 100)</field>
+            <field name="variables">revenue,cost,rate</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Sample formula: Collection with aging penalty -->
+        <record id="formula_collection_aging" model="commission.formula">
+            <field name="name">Collection with Aging Penalty</field>
+            <field name="code">COLL_AGING</field>
+            <field name="description">Commission reduced by aging penalty for late collection</field>
+            <field name="expression">base_amount * rate / 100 * max(0, 1 - (days_overdue / 365 * penalty_rate / 100))</field>
+            <field name="variables">base_amount,rate,days_overdue,penalty_rate</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Sample formula: KPI weighted score -->
+        <record id="formula_kpi_weighted" model="commission.formula">
+            <field name="name">KPI Weighted Score</field>
+            <field name="code">KPI_WEIGHTED</field>
+            <field name="description">Commission based on weighted KPI score</field>
+            <field name="expression">base_pool * (kpi_score / 100)</field>
+            <field name="variables">base_pool,kpi_score</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Leaderboard list view -->
+    <record id="view_commission_leaderboard_list" model="ir.ui.view">
+        <field name="name">commission.leaderboard.list</field>
+        <field name="model">commission.leaderboard</field>
+        <field name="arch" type="xml">
+            <list string="Leaderboard" create="false" edit="false" delete="false"
+                  decoration-success="rank == 1"
+                  decoration-warning="rank &lt;= 3 and rank != 1">
+                <field name="rank" string="#"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="period_id"/>
+                <field name="plan_id"/>
+                <field name="total_commission" sum="Total" string="Commission"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="total_base_amount" string="Revenue"/>
+                <field name="achievement_pct" string="Ach. %"/>
+                <field name="transaction_count" string="Deals"/>
+                <field name="rank_change_icon" string="Change"/>
+                <field name="streak_badge" string="Streak"/>
+                <field name="consecutive_top10" string="Top-10 Streak" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_commission_leaderboard" model="ir.actions.act_window">
+        <field name="name">Commission Leaderboard</field>
+        <field name="res_model">commission.leaderboard</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_commission_leaderboard_list"/>
+        <field name="context">{'search_default_group_period': 1}</field>
+    </record>
+
+    <!-- Dispute views -->
+    <record id="view_commission_dispute_list" model="ir.ui.view">
+        <field name="name">commission.dispute.list</field>
+        <field name="model">commission.dispute</field>
+        <field name="arch" type="xml">
+            <list string="Commission Disputes"
+                  decoration-danger="state == 'escalated'"
+                  decoration-success="state in ('resolved_accepted','closed')"
+                  decoration-warning="state == 'under_review'">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="reason"/>
+                <field name="disputed_amount"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"/>
+                <field name="deadline"/>
+                <field name="assigned_to"/>
+                <field name="resolution_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commission_dispute_form" model="ir.ui.view">
+        <field name="name">commission.dispute.form</field>
+        <field name="model">commission.dispute</field>
+        <field name="arch" type="xml">
+            <form string="Commission Dispute">
+                <header>
+                    <button name="action_start_review" type="object" string="Start Review"
+                            class="btn-primary" attrs="{'invisible': [('state','!=','draft')]}"/>
+                    <button name="action_accept" type="object" string="Accept Dispute"
+                            class="btn-success" attrs="{'invisible': [('state','!=','under_review')]}"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            class="btn-danger" attrs="{'invisible': [('state','!=','under_review')]}"/>
+                    <button name="action_escalate" type="object" string="Escalate"
+                            attrs="{'invisible': [('state','not in',['draft','under_review'])]}"/>
+                    <button name="action_close" type="object" string="Close"
+                            attrs="{'invisible': [('state','not in',['resolved_accepted','resolved_rejected','escalated'])]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,under_review,resolved_accepted,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <field name="priority" widget="priority"/>
+                    </div>
+                    <group>
+                        <group string="Dispute Details">
+                            <field name="settlement_id"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="period_id" readonly="1"/>
+                            <field name="reason"/>
+                            <field name="disputed_amount"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="deadline"/>
+                        </group>
+                        <group string="Assignment">
+                            <field name="assigned_to"/>
+                            <field name="adjusted_amount"
+                                   attrs="{'invisible': [('state','not in',['resolved_accepted'])]}"/>
+                            <field name="resulting_adjustment_id" readonly="1"
+                                   attrs="{'invisible': [('resulting_adjustment_id','=',False)]}"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1" placeholder="Detailed dispute description..."/>
+                    </group>
+                    <group string="Resolution" attrs="{'invisible': [('state','not in',['resolved_accepted','resolved_rejected','closed'])]}">
+                        <field name="resolution_notes" nolabel="1" placeholder="Resolution explanation..."/>
+                        <field name="resolution_date" readonly="1"/>
+                    </group>
+                    <field name="attachment_ids" widget="many2many_binary"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_commission_dispute" model="ir.actions.act_window">
+        <field name="name">Commission Disputes</field>
+        <field name="res_model">commission.dispute</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_commission_dispute_my" model="ir.actions.act_window">
+        <field name="name">My Disputes</field>
+        <field name="res_model">commission.dispute</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('employee_id.user_id','=',uid)]</field>
+    </record>
+
+    <!-- Adjustment views -->
+    <record id="view_commission_adjustment_list" model="ir.ui.view">
+        <field name="name">commission.adjustment.list</field>
+        <field name="model">commission.adjustment</field>
+        <field name="arch" type="xml">
+            <list string="Commission Adjustments"
+                  decoration-danger="amount &lt; 0"
+                  decoration-success="amount &gt; 0">
+                <field name="name"/>
+                <field name="settlement_id"/>
+                <field name="adjustment_type"/>
+                <field name="amount" sum="Total"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="date"/>
+                <field name="state" widget="badge"/>
+                <field name="reason"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_commission_adjustment" model="ir.actions.act_window">
+        <field name="name">Commission Adjustments</field>
+        <field name="res_model">commission.adjustment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Dashboard client action -->
+    <record id="action_commission_dashboard" model="ir.actions.client">
+        <field name="name">Commission Dashboard</field>
+        <field name="tag">commission_dashboard</field>
+    </record>
+
+    <!-- Formula views -->
+    <record id="view_commission_formula_list" model="ir.ui.view">
+        <field name="name">commission.formula.list</field>
+        <field name="model">commission.formula</field>
+        <field name="arch" type="xml">
+            <list string="Commission Formulas"
+                  decoration-muted="not active"
+                  decoration-danger="not is_valid">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="description"/>
+                <field name="variables"/>
+                <field name="is_valid" string="Valid" widget="boolean"/>
+                <field name="version" string="v"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commission_formula_form" model="ir.ui.view">
+        <field name="name">commission.formula.form</field>
+        <field name="model">commission.formula</field>
+        <field name="arch" type="xml">
+            <form string="Commission Formula">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <field name="active" widget="boolean_button"/>
+                        <button name="action_test_formula" type="object" string="Test Formula"
+                                class="oe_stat_button" icon="fa-play"
+                                attrs="{'invisible': [('test_values','=',False)]}"/>
+                        <button name="action_increment_version" type="object" string="Bump Version"
+                                class="oe_stat_button" icon="fa-code-fork"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Formula Name"/></h1>
+                        <h4 class="text-muted">
+                            <field name="code" placeholder="FORMULA_CODE"/>
+                            &amp;nbsp;v<field name="version" readonly="1"/>
+                        </h4>
+                    </div>
+                    <div class="alert alert-danger" attrs="{'invisible': [('is_valid','=',True)]}">
+                        ⚠ Formula contains syntax or security errors. Check the expression.
+                    </div>
+                    <div class="alert alert-success" attrs="{'invisible': [('is_valid','=',False)]}">
+                        ✓ Formula is valid.
+                    </div>
+                    <group>
+                        <field name="description" placeholder="What does this formula compute?"/>
+                        <field name="variables" placeholder="comma,separated,variable,names"/>
+                    </group>
+                    <separator string="Expression"/>
+                    <field name="expression" widget="text"
+                           placeholder="base_amount * rate / 100"
+                           style="font-family: monospace; font-size: 0.95em; min-height: 80px;"/>
+                    <separator string="Testing"/>
+                    <group>
+                        <field name="test_values" widget="text"
+                               placeholder='{"base_amount": 10000, "rate": 5}'
+                               style="font-family: monospace;"/>
+                        <field name="last_test_result" readonly="1"/>
+                        <field name="last_test_error" readonly="1"
+                               attrs="{'invisible': [('last_test_error','=',False)]}"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_commission_formula" model="ir.actions.act_window">
+        <field name="name">Commission Formulas</field>
+        <field name="res_model">commission.formula</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wizard_recalculate_commission_form" model="ir.ui.view">
+        <field name="name">wizard.commission.recalculate.form</field>
+        <field name="model">wizard.commission.recalculate</field>
+        <field name="arch" type="xml">
+            <form string="Recalculate Commission Settlements">
+                <sheet>
+                    <group>
+                        <group string="Scope">
+                            <field name="recalculate_mode" widget="radio"/>
+                            <field name="settlement_ids" widget="many2many_tags"
+                                   attrs="{'invisible': [('recalculate_mode', '!=', 'selected')], 'required': [('recalculate_mode', '=', 'selected')]}"/>
+                            <field name="period_id"
+                                   attrs="{'invisible': [('recalculate_mode', '!=', 'period')], 'required': [('recalculate_mode', '=', 'period')]}"/>
+                            <field name="employee_id"
+                                   attrs="{'invisible': [('recalculate_mode', '!=', 'employee')], 'required': [('recalculate_mode', '=', 'employee')]}"/>
+                        </group>
+                        <group string="Options">
+                            <field name="reset_to_draft"/>
+                            <field name="count" string="Settlements to Recalculate"/>
+                        </group>
+                    </group>
+                    <group string="Reason">
+                        <field name="reason" nolabel="1" placeholder="Why are these settlements being recalculated?"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_recalculate" type="object" string="Recalculate" class="btn-primary"
+                            confirm="This will reset and recalculate all selected settlements. Continue?"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_recalculate_commission" model="ir.actions.act_window">
+        <field name="name">Recalculate Commission</field>
+        <field name="res_model">wizard.commission.recalculate</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

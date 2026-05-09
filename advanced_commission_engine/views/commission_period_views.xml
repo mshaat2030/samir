@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_commission_period_search" model="ir.ui.view">
+        <field name="name">commission.period.search</field>
+        <field name="model">commission.period</field>
+        <field name="arch" type="xml">
+            <search string="Commission Periods">
+                <field name="name"/>
+                <field name="period_type"/>
+                <filter string="Open" name="open" domain="[('state','=','open')]"/>
+                <filter string="Closed" name="closed" domain="[('state','=','closed')]"/>
+                <filter string="Locked" name="locked" domain="[('state','=','locked')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_type" context="{'group_by': 'period_type'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_commission_period_list" model="ir.ui.view">
+        <field name="name">commission.period.list</field>
+        <field name="model">commission.period</field>
+        <field name="arch" type="xml">
+            <list string="Commission Periods"
+                  decoration-success="state == 'open'"
+                  decoration-muted="state == 'locked'"
+                  decoration-warning="state == 'closed'">
+                <field name="name"/>
+                <field name="period_type"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="payment_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'open'"
+                       decoration-warning="state == 'closed'"
+                       decoration-danger="state == 'locked'"/>
+                <field name="settlement_count" string="Settlements"/>
+                <field name="total_commission" sum="Total" string="Total Commission"/>
+                <field name="currency_id" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commission_period_form" model="ir.ui.view">
+        <field name="name">commission.period.form</field>
+        <field name="model">commission.period</field>
+        <field name="arch" type="xml">
+            <form string="Commission Period">
+                <header>
+                    <button name="action_open" type="object" string="Open" class="btn-primary"
+                            attrs="{'invisible': [('state','!=','draft')]}"/>
+                    <button name="action_close" type="object" string="Close"
+                            attrs="{'invisible': [('state','!=','open')]}"/>
+                    <button name="action_lock" type="object" string="Lock" class="btn-warning"
+                            attrs="{'invisible': [('state','not in',['open','closed'])]}"
+                            confirm="Locking this period prevents further changes. Continue?"/>
+                    <button name="action_reopen" type="object" string="Re-Open"
+                            groups="advanced_commission_engine.group_commission_admin"
+                            attrs="{'invisible': [('state','not in',['closed','locked'])]}"/>
+                    <button name="action_generate_settlements" type="object" string="Generate Settlements"
+                            class="btn-success" attrs="{'invisible': [('state','=','locked')]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,open,closed,locked"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_settlements" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="settlement_count" widget="statinfo" string="Settlements"/>
+                        </button>
+                        <button name="action_view_settlements" type="object" class="oe_stat_button" icon="fa-money">
+                            <field name="total_commission" widget="statinfo" string="Total Commission"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Period Name"/></h1>
+                        <h4 class="text-muted"><field name="code"/></h4>
+                    </div>
+                    <group>
+                        <group string="Period">
+                            <field name="period_type"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="payment_date"/>
+                            <field name="lock_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Summary">
+                            <field name="total_commission"/>
+                            <field name="paid_commission"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Applicable Plans">
+                        <field name="plan_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                    <field name="notes" placeholder="Period notes..."/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_commission_period" model="ir.actions.act_window">
+        <field name="name">Commission Periods</field>
+        <field name="res_model">commission.period</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+
+</odoo>

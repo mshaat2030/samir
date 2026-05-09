@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_commission_kpi_search" model="ir.ui.view">
+        <field name="name">commission.kpi.search</field>
+        <field name="model">commission.kpi</field>
+        <field name="arch" type="xml">
+            <search string="Commission KPIs">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="plan_id"/>
+                <filter string="Auto-Compute" name="auto" domain="[('auto_compute','=',True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Period" name="group_period" context="{'group_by': 'period_id'}"/>
+                    <filter string="KPI Type" name="group_type" context="{'group_by': 'kpi_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_commission_kpi_list" model="ir.ui.view">
+        <field name="name">commission.kpi.list</field>
+        <field name="model">commission.kpi</field>
+        <field name="arch" type="xml">
+            <list string="Commission KPIs" editable="top">
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="plan_id"/>
+                <field name="name"/>
+                <field name="kpi_type"/>
+                <field name="weight" string="Weight %"/>
+                <field name="target_value"/>
+                <field name="achieved_value"/>
+                <field name="unit"/>
+                <field name="achievement_pct" string="Ach. %" widget="progressbar"
+                       options="{'max_value': 100, 'editable': False}"/>
+                <field name="weighted_score" string="Weighted Score" sum="Total Score"/>
+                <field name="auto_compute"/>
+                <button name="action_refresh_value" type="object" string="↻ Refresh"
+                        icon="fa-refresh" attrs="{'invisible': [('auto_compute','=',False)]}"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commission_kpi_form" model="ir.ui.view">
+        <field name="name">commission.kpi.form</field>
+        <field name="model">commission.kpi</field>
+        <field name="arch" type="xml">
+            <form string="Commission KPI">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="KPI Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="employee_id"/>
+                            <field name="period_id"/>
+                            <field name="plan_id"/>
+                            <field name="kpi_type"/>
+                        </group>
+                        <group string="Weight &amp; Target">
+                            <field name="weight"/>
+                            <field name="target_value"/>
+                            <field name="unit"/>
+                            <field name="achievement_cap_pct"/>
+                            <field name="achievement_floor_pct"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Achievement">
+                            <field name="achieved_value"/>
+                            <field name="achievement_pct" readonly="1" widget="progressbar"
+                                   options="{'max_value': 100, 'editable': False}"/>
+                            <field name="weighted_score" readonly="1"/>
+                        </group>
+                        <group string="Auto-Compute">
+                            <field name="auto_compute"/>
+                            <field name="compute_domain" attrs="{'invisible': [('auto_compute','=',False)]}"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Notes about this KPI..."/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commission_kpi_pivot" model="ir.ui.view">
+        <field name="name">commission.kpi.pivot</field>
+        <field name="model">commission.kpi</field>
+        <field name="arch" type="xml">
+            <pivot string="KPI Analysis">
+                <field name="period_id" type="row"/>
+                <field name="employee_id" type="row"/>
+                <field name="kpi_type" type="col"/>
+                <field name="weighted_score" type="measure"/>
+                <field name="achievement_pct" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_commission_kpi_graph" model="ir.ui.view">
+        <field name="name">commission.kpi.graph</field>
+        <field name="model">commission.kpi</field>
+        <field name="arch" type="xml">
+            <graph string="KPI Scores" type="bar">
+                <field name="employee_id" type="row"/>
+                <field name="weighted_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_commission_kpi" model="ir.actions.act_window">
+        <field name="name">Commission KPIs</field>
+        <field name="res_model">commission.kpi</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+
+</odoo>

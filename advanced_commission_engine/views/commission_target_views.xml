@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_commission_target_search" model="ir.ui.view">
+        <field name="name">commission.target.search</field>
+        <field name="model">commission.target</field>
+        <field name="arch" type="xml">
+            <search string="Commission Targets">
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="plan_id"/>
+                <filter string="My Targets" name="my_targets"
+                        domain="[('employee_id.user_id','=',uid)]"/>
+                <separator/>
+                <filter string="Active" name="active_targets" domain="[('state','=','active')]"/>
+                <filter string="Achieved" name="achieved" domain="[('state','in',['achieved','overachieved'])]"/>
+                <filter string="Missed" name="missed" domain="[('state','=','missed')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Period" name="group_period" context="{'group_by': 'period_id'}"/>
+                    <filter string="Plan" name="group_plan" context="{'group_by': 'plan_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_commission_target_list" model="ir.ui.view">
+        <field name="name">commission.target.list</field>
+        <field name="model">commission.target</field>
+        <field name="arch" type="xml">
+            <list string="Commission Targets"
+                  decoration-success="state in ('achieved','overachieved')"
+                  decoration-danger="state == 'missed'"
+                  decoration-info="state == 'active'">
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="plan_id"/>
+                <field name="target_amount" sum="Total Target"/>
+                <field name="achieved_amount" sum="Total Achieved"/>
+                <field name="remaining_amount" sum="Remaining"/>
+                <field name="achievement_pct" widget="progressbar"
+                       options="{'max_value': 100, 'editable': False}" string="Achievement"/>
+                <field name="estimated_commission" sum="Est. Commission"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('achieved','overachieved')"
+                       decoration-danger="state == 'missed'"/>
+                <field name="consecutive_periods_achieved" string="Streak"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commission_target_form" model="ir.ui.view">
+        <field name="name">commission.target.form</field>
+        <field name="model">commission.target</field>
+        <field name="arch" type="xml">
+            <form string="Commission Target">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <!-- Achievement Progress Bar -->
+                    <div class="o_commission_progress_container mb-3">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar"
+                                         t-attf-style="width: #{min(record.achievement_pct, 100)}%"
+                                         role="progressbar">
+                                        <field name="achievement_pct"/>%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="employee_id"/>
+                            <field name="period_id"/>
+                            <field name="plan_id"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Targets">
+                            <field name="target_amount"/>
+                            <field name="stretch_target"/>
+                            <field name="state" readonly="1" widget="badge"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Achievement">
+                            <field name="achieved_amount" readonly="1"/>
+                            <field name="remaining_amount" readonly="1"/>
+                            <field name="achievement_pct" readonly="1"/>
+                            <field name="stretch_achievement_pct" readonly="1"/>
+                        </group>
+                        <group string="Commission Estimate">
+                            <field name="estimated_commission" readonly="1"/>
+                            <field name="consecutive_periods_achieved" readonly="1" string="Streak (Periods)"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Target notes..."/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commission_target_graph" model="ir.ui.view">
+        <field name="name">commission.target.graph</field>
+        <field name="model">commission.target</field>
+        <field name="arch" type="xml">
+            <graph string="Target Achievement" type="bar" stacked="True">
+                <field name="period_id" type="row"/>
+                <field name="employee_id" type="col"/>
+                <field name="achievement_pct" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_commission_target_pivot" model="ir.ui.view">
+        <field name="name">commission.target.pivot</field>
+        <field name="model">commission.target</field>
+        <field name="arch" type="xml">
+            <pivot string="Target Analysis">
+                <field name="period_id" type="col"/>
+                <field name="employee_id" type="row"/>
+                <field name="target_amount" type="measure"/>
+                <field name="achieved_amount" type="measure"/>
+                <field name="achievement_pct" type="measure"/>
+                <field name="estimated_commission" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_commission_target" model="ir.actions.act_window">
+        <field name="name">Commission Targets</field>
+        <field name="res_model">commission.target</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+    </record>
+
+    <record id="action_commission_target_my" model="ir.actions.act_window">
+        <field name="name">My Targets</field>
+        <field name="res_model">commission.target</field>
+        <field name="view_mode">list,form,graph</field>
+        <field name="domain">[('employee_id.user_id','=',uid)]</field>
+        <field name="context">{'search_default_my_targets': 1}</field>
+    </record>
+
+</odoo>

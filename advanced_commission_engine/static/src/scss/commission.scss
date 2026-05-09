@@ -1,0 +1,262 @@
+// ============================================================
+// Advanced Commission Engine — SCSS styles
+// ============================================================
+
+// Variables
+$commission-primary:   #2c3e50;
+$commission-success:   #27ae60;
+$commission-warning:   #f39c12;
+$commission-danger:    #e74c3c;
+$commission-info:      #2980b9;
+$commission-card-shadow: 0 1px 4px rgba(0,0,0,0.08);
+$commission-border-radius: 8px;
+
+// ── Dashboard Layout ─────────────────────────────────────────────────────────
+
+.o_commission_dashboard {
+    padding: 20px;
+    background: #f4f6f9;
+    min-height: 100vh;
+
+    .o_commission_dashboard_header {
+        background: $commission-primary;
+        color: white;
+        padding: 16px 20px;
+        border-radius: $commission-border-radius;
+        margin-bottom: 20px;
+
+        h2.o_commission_title {
+            color: white;
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .text-muted {
+            color: rgba(255,255,255,0.7) !important;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline-secondary {
+            color: rgba(255,255,255,0.85);
+            border-color: rgba(255,255,255,0.4);
+            &:hover { background: rgba(255,255,255,0.15); }
+        }
+
+        select.form-control {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-color: rgba(255,255,255,0.4);
+            option { color: $commission-primary; background: white; }
+        }
+    }
+
+    .o_commission_loading {
+        background: white;
+        border-radius: $commission-border-radius;
+        padding: 60px 20px;
+    }
+}
+
+// ── KPI Cards ────────────────────────────────────────────────────────────────
+
+.o_commission_kpi_row { margin-bottom: 4px; }
+
+.o_commission_kpi_card {
+    border-radius: $commission-border-radius;
+    box-shadow: $commission-card-shadow;
+    border: none;
+    border-left: 4px solid #ccc;
+    transition: transform 0.15s, box-shadow 0.15s;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    &.border-left-primary  { border-left-color: $commission-info; }
+    &.border-left-success  { border-left-color: $commission-success; }
+    &.border-left-warning  { border-left-color: $commission-warning; }
+    &.border-left-danger   { border-left-color: $commission-danger; }
+    &.border-left-info     { border-left-color: $commission-info; }
+
+    .o_commission_kpi_label {
+        color: #7f8c8d;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+    }
+
+    .o_commission_kpi_value {
+        color: $commission-primary;
+        font-size: 1.4rem;
+    }
+
+    .o_commission_kpi_icon {
+        opacity: 0.25;
+        font-size: 1.8rem !important;
+    }
+}
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+
+.o_commission_card {
+    border-radius: $commission-border-radius;
+    box-shadow: $commission-card-shadow;
+    border: none;
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #e8ecef;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: $commission-primary;
+        border-radius: $commission-border-radius $commission-border-radius 0 0 !important;
+    }
+}
+
+// ── Leaderboard Rank Badges ───────────────────────────────────────────────────
+
+.o_commission_rank_badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 0.8rem;
+    background: #ecf0f1;
+    color: $commission-primary;
+    flex-shrink: 0;
+
+    &.gold   { background: #FFD700; color: #7d5a00; }
+    &.silver { background: #C0C0C0; color: #444; }
+    &.bronze { background: #CD7F32; color: white; }
+}
+
+// ── Achievement Grid ──────────────────────────────────────────────────────────
+
+.o_commission_achievement_grid {
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 4px 0;
+
+    .o_achievement_row {
+        padding: 2px 0;
+
+        .progress {
+            background: #ecf0f1;
+            border-radius: 4px;
+        }
+    }
+}
+
+// ── Trend Chart ───────────────────────────────────────────────────────────────
+
+.o_commission_trend_chart {
+    position: relative;
+    min-height: 220px;
+
+    canvas {
+        max-height: 220px;
+    }
+}
+
+// ── Settlement Form Styling ───────────────────────────────────────────────────
+
+.o_commission_progress_container {
+    .progress {
+        background: #ecf0f1;
+        border-radius: 6px;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+
+        .progress-bar {
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: width 0.5s ease;
+        }
+    }
+}
+
+// ── Status Badges ─────────────────────────────────────────────────────────────
+
+.o_field_widget .badge {
+    &.badge-draft        { background: #95a5a6; }
+    &.badge-calculated   { background: $commission-info; }
+    &.badge-submitted    { background: #3498db; }
+    &.badge-approved     { background: $commission-success; }
+    &.badge-paid         { background: $commission-success; }
+    &.badge-disputed     { background: $commission-danger; }
+    &.badge-cancelled    { background: #bdc3c7; }
+}
+
+// ── Portal Styles ─────────────────────────────────────────────────────────────
+
+.o_portal_sidebar {
+    .o_portal_sidebar_items {
+        border: 1px solid #dee2e6;
+        border-radius: $commission-border-radius;
+        overflow: hidden;
+
+        .o_portal_sidebar_item {
+            display: block;
+            padding: 10px 16px;
+            color: $commission-primary;
+            text-decoration: none;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 0.9rem;
+            transition: background 0.15s;
+
+            &:last-child { border-bottom: none; }
+            &:hover { background: #f8f9fa; }
+
+            i { width: 20px; text-align: center; margin-right: 6px; color: $commission-info; }
+        }
+    }
+}
+
+.o_portal_document.card {
+    transition: box-shadow 0.15s;
+    &:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+}
+
+// ── Formula Editor ────────────────────────────────────────────────────────────
+
+.o_field_text[name="expression"],
+.o_field_text[name="test_values"] {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.88rem;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 4px;
+    padding: 8px;
+    line-height: 1.5;
+}
+
+// ── Anomaly Alert in Form ─────────────────────────────────────────────────────
+
+.o_form_sheet .alert-warning {
+    border-left: 4px solid $commission-warning;
+    border-radius: 4px;
+}
+
+// ── Kanban Column Colors ──────────────────────────────────────────────────────
+
+.o_kanban_group[data-group-id] {
+    &[data-group-id="draft"]            .o_column_title { color: #95a5a6; }
+    &[data-group-id="calculated"]       .o_column_title { color: $commission-info; }
+    &[data-group-id="submitted"]        .o_column_title { color: #3498db; }
+    &[data-group-id="approved"]         .o_column_title { color: $commission-success; }
+    &[data-group-id="finance_approved"] .o_column_title { color: $commission-success; }
+    &[data-group-id="paid"]             .o_column_title { color: #1abc9c; }
+    &[data-group-id="disputed"]         .o_column_title { color: $commission-danger; }
+    &[data-group-id="cancelled"]        .o_column_title { color: #bdc3c7; }
+}
+
+// ── Responsive adjustments ────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+    .o_commission_dashboard { padding: 12px; }
+    .o_commission_kpi_card .o_commission_kpi_value { font-size: 1.1rem; }
+    .o_commission_dashboard_header { text-align: center; }
+}

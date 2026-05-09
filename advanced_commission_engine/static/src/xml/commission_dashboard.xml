@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <!-- ── Main Dashboard ─────────────────────────────────────────────────────── -->
+    <t t-name="commission.Dashboard" owl="1">
+        <div class="o_commission_dashboard">
+            <!-- Header -->
+            <div class="o_commission_dashboard_header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h2 class="o_commission_title">
+                            <i class="fa fa-money mr-2"/>Commission Dashboard
+                        </h2>
+                        <span class="text-muted" t-esc="state.currentPeriodName"/>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    t-on-click="onRefresh">
+                                <i class="fa fa-refresh"/> Refresh
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary"
+                                    t-on-click="openSimulator">
+                                <i class="fa fa-calculator"/> Simulator
+                            </button>
+                        </div>
+                        <select class="form-control form-control-sm d-inline-block ml-2"
+                                style="width: auto;"
+                                t-on-change="onPeriodChange">
+                            <t t-foreach="state.periods" t-as="period" t-key="period.id">
+                                <option t-att-value="period.id"
+                                        t-att-selected="period.id === state.activePeriodId">
+                                    <t t-esc="period.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <t t-if="state.loading">
+                <div class="o_commission_loading text-center py-5">
+                    <i class="fa fa-spinner fa-spin fa-2x text-primary"/>
+                    <p class="mt-2 text-muted">Loading commission data...</p>
+                </div>
+            </t>
+
+            <t t-if="!state.loading">
+                <!-- KPI Cards Row -->
+                <div class="row o_commission_kpi_row">
+                    <CommissionKPICard
+                        t-foreach="state.kpiCards"
+                        t-as="card"
+                        t-key="card.key"
+                        title="card.title"
+                        value="card.value"
+                        change="card.change"
+                        icon="card.icon"
+                        color="card.color"
+                        subtext="card.subtext"/>
+                </div>
+
+                <!-- Charts & Leaderboard Row -->
+                <div class="row mt-3">
+                    <!-- Trend Chart -->
+                    <div class="col-lg-8">
+                        <div class="card o_commission_card">
+                            <div class="card-header d-flex justify-content-between">
+                                <span><i class="fa fa-line-chart mr-1"/> Commission Trend</span>
+                                <div class="btn-group btn-group-sm">
+                                    <button t-att-class="'btn btn-outline-secondary' + (state.trendMode === '6m' ? ' active' : '')"
+                                            t-on-click="() => this.setTrendMode('6m')">6M</button>
+                                    <button t-att-class="'btn btn-outline-secondary' + (state.trendMode === '12m' ? ' active' : '')"
+                                            t-on-click="() => this.setTrendMode('12m')">12M</button>
+                                    <button t-att-class="'btn btn-outline-secondary' + (state.trendMode === 'ytd' ? ' active' : '')"
+                                            t-on-click="() => this.setTrendMode('ytd')">YTD</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <CommissionTrendChart data="state.trendData"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Mini Leaderboard -->
+                    <div class="col-lg-4">
+                        <div class="card o_commission_card">
+                            <div class="card-header">
+                                <i class="fa fa-trophy mr-1 text-warning"/> Top Performers
+                            </div>
+                            <div class="card-body p-0">
+                                <CommissionLeaderboardWidget entries="state.topPerformers"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievement Heat Map Row -->
+                <div class="row mt-3">
+                    <div class="col-lg-6">
+                        <div class="card o_commission_card">
+                            <div class="card-header">
+                                <i class="fa fa-bullseye mr-1"/> Target Achievement by Employee
+                            </div>
+                            <div class="card-body">
+                                <CommissionAchievementGrid data="state.achievementData"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card o_commission_card">
+                            <div class="card-header d-flex justify-content-between">
+                                <span><i class="fa fa-clock-o mr-1"/> Pending Approvals</span>
+                                <span class="badge badge-warning">
+                                    <t t-esc="state.pendingCount"/>
+                                </span>
+                            </div>
+                            <div class="card-body p-0">
+                                <CommissionPendingList entries="state.pendingApprovals"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anomalies -->
+                <t t-if="state.anomalies.length">
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card border-warning o_commission_card">
+                                <div class="card-header bg-warning text-dark">
+                                    <i class="fa fa-exclamation-triangle mr-1"/>
+                                    <strong><t t-esc="state.anomalies.length"/> Anomaly Alert(s)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <t t-foreach="state.anomalies" t-as="anomaly" t-key="anomaly.id">
+                                        <div class="alert alert-warning mb-1 py-1">
+                                            <strong><t t-esc="anomaly.employee"/></strong>
+                                            — <t t-esc="anomaly.reason"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </t>
+
+    <!-- ── KPI Card ────────────────────────────────────────────────────────────── -->
+    <t t-name="commission.KPICard" owl="1">
+        <div class="col-sm-6 col-xl-3 mb-3">
+            <div t-attf-class="card o_commission_kpi_card border-left-{{ props.color }}">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1 o_commission_kpi_label">
+                                <t t-esc="props.title"/>
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold o_commission_kpi_value">
+                                <t t-esc="props.value"/>
+                            </div>
+                            <t t-if="props.subtext">
+                                <div class="text-muted small mt-1">
+                                    <t t-esc="props.subtext"/>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="col-auto">
+                            <i t-attf-class="fa fa-#{props.icon} fa-2x o_commission_kpi_icon text-{{ props.color }}"/>
+                        </div>
+                    </div>
+                    <t t-if="props.change !== undefined">
+                        <div t-attf-class="mt-2 small {{ props.change >= 0 ? 'text-success' : 'text-danger' }}">
+                            <i t-attf-class="fa fa-arrow-{{ props.change >= 0 ? 'up' : 'down' }}"/>
+                            <t t-esc="Math.abs(props.change).toFixed(1) + '%'"/> vs last period
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- ── Trend Chart ─────────────────────────────────────────────────────────── -->
+    <t t-name="commission.TrendChart" owl="1">
+        <div class="o_commission_trend_chart">
+            <canvas t-ref="chartCanvas" height="220"/>
+        </div>
+    </t>
+
+    <!-- ── Leaderboard Widget ──────────────────────────────────────────────────── -->
+    <t t-name="commission.LeaderboardWidget" owl="1">
+        <ul class="list-group list-group-flush">
+            <t t-foreach="props.entries" t-as="entry" t-key="entry.rank">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
+                    <div class="d-flex align-items-center">
+                        <span t-attf-class="o_commission_rank_badge {{ entry.rank === 1 ? 'gold' : entry.rank === 2 ? 'silver' : entry.rank === 3 ? 'bronze' : '' }} mr-2">
+                            <t t-esc="entry.rank"/>
+                        </span>
+                        <div>
+                            <div class="font-weight-bold" t-esc="entry.employee"/>
+                            <div class="text-muted small" t-esc="entry.streak_badge"/>
+                        </div>
+                    </div>
+                    <span class="font-weight-bold" t-esc="entry.commission_formatted"/>
+                </li>
+            </t>
+            <li t-if="!props.entries.length" class="list-group-item text-center text-muted">
+                No data available
+            </li>
+        </ul>
+    </t>
+
+    <!-- ── Achievement Grid ────────────────────────────────────────────────────── -->
+    <t t-name="commission.AchievementGrid" owl="1">
+        <div class="o_commission_achievement_grid">
+            <t t-foreach="props.data" t-as="row" t-key="row.employee_id">
+                <div class="o_achievement_row mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-4 text-truncate small" t-esc="row.employee"/>
+                        <div class="col-6">
+                            <div class="progress" style="height: 14px;">
+                                <div t-attf-class="progress-bar {{ row.pct >= 100 ? 'bg-success' : row.pct >= 70 ? 'bg-warning' : 'bg-danger' }}"
+                                     t-attf-style="width: #{Math.min(row.pct, 100)}%"/>
+                            </div>
+                        </div>
+                        <div class="col-2 text-right small font-weight-bold"
+                             t-esc="row.pct.toFixed(0) + '%'"/>
+                    </div>
+                </div>
+            </t>
+            <div t-if="!props.data.length" class="text-center text-muted py-3">
+                No target data for this period.
+            </div>
+        </div>
+    </t>
+
+    <!-- ── Pending Approvals List ──────────────────────────────────────────────── -->
+    <t t-name="commission.PendingList" owl="1">
+        <ul class="list-group list-group-flush">
+            <t t-foreach="props.entries" t-as="entry" t-key="entry.id">
+                <li class="list-group-item px-3 py-2">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong t-esc="entry.employee"/>
+                            <div class="text-muted small" t-esc="entry.name"/>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-weight-bold" t-esc="entry.amount_formatted"/>
+                            <div>
+                                <span t-attf-class="badge badge-{{ entry.state === 'submitted' ? 'primary' : 'success' }} small">
+                                    <t t-esc="entry.state"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </t>
+            <li t-if="!props.entries.length" class="list-group-item text-center text-muted">
+                No pending approvals
+            </li>
+        </ul>
+    </t>
+
+    <!-- ── Commission Progress Bar Widget ─────────────────────────────────────── -->
+    <t t-name="commission.ProgressBar" owl="1">
+        <div class="o_commission_progress_bar_widget">
+            <div class="d-flex justify-content-between mb-1">
+                <span class="small text-muted" t-esc="props.label"/>
+                <span class="small font-weight-bold"
+                      t-esc="props.value.toFixed(1) + '%'"/>
+            </div>
+            <div class="progress" t-att-style="'height: ' + (props.height || 10) + 'px'">
+                <div t-attf-class="progress-bar {{ props.value >= 100 ? 'bg-success' : props.value >= 70 ? 'bg-warning' : 'bg-danger' }}"
+                     t-attf-style="width: #{Math.min(props.value, 100)}%"
+                     role="progressbar"/>
+            </div>
+        </div>
+    </t>
+
+</templates>

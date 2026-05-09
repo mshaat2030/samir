@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wizard_generate_settlement_form" model="ir.ui.view">
+        <field name="name">wizard.commission.generate.settlement.form</field>
+        <field name="model">wizard.commission.generate.settlement</field>
+        <field name="arch" type="xml">
+            <form string="Generate Commission Settlements">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Generate Settlements</h1>
+                    </div>
+                    <group>
+                        <group string="Scope">
+                            <field name="period_id" options="{'no_create': True}"/>
+                            <field name="plan_ids" widget="many2many_tags"/>
+                            <field name="employee_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Options">
+                            <field name="recalculate_existing"/>
+                            <field name="auto_submit"/>
+                            <field name="send_notification"/>
+                        </group>
+                    </group>
+                    <group string="Preview">
+                        <group>
+                            <field name="plan_count" string="Plans"/>
+                            <field name="employee_count" string="Employees"/>
+                            <field name="estimated_settlements" string="Estimated Settlements"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate" type="object" string="Generate" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_generate_settlement" model="ir.actions.act_window">
+        <field name="name">Generate Settlements</field>
+        <field name="res_model">wizard.commission.generate.settlement</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

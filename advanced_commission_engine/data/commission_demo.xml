@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Demo Commission Plan: Sales Basic -->
+        <record id="demo_plan_sales_basic" model="commission.plan">
+            <field name="name">Sales Commission — Basic</field>
+            <field name="code">SALES-BASIC</field>
+            <field name="commission_type">sales</field>
+            <field name="calculation_method">fixed_percent</field>
+            <field name="base_on">invoice</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Demo Commission Plan: Sales Progressive -->
+        <record id="demo_plan_sales_progressive" model="commission.plan">
+            <field name="name">Sales Commission — Progressive Slabs</field>
+            <field name="code">SALES-PROG</field>
+            <field name="commission_type">sales</field>
+            <field name="calculation_method">progressive_slabs</field>
+            <field name="base_on">invoice</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Demo Commission Plan: Collection -->
+        <record id="demo_plan_collection" model="commission.plan">
+            <field name="name">Collection Commission</field>
+            <field name="code">COLL-BASE</field>
+            <field name="commission_type">collection</field>
+            <field name="calculation_method">fixed_percent</field>
+            <field name="base_on">payment</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Demo Commission Plan: KPI Incentive -->
+        <record id="demo_plan_kpi" model="commission.plan">
+            <field name="name">KPI Incentive Plan</field>
+            <field name="code">KPI-INC</field>
+            <field name="commission_type">kpi_incentive</field>
+            <field name="calculation_method">weighted_kpi</field>
+            <field name="base_on">kpi</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Demo rules for sales basic plan -->
+        <record id="demo_rule_sales_basic_standard" model="commission.rule">
+            <field name="plan_id" ref="demo_plan_sales_basic"/>
+            <field name="name">Standard Rate 5%</field>
+            <field name="sequence">10</field>
+            <field name="calculation_method">fixed_percent</field>
+            <field name="rate">5.0</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Demo rules for progressive plan -->
+        <record id="demo_rule_progressive_slab1" model="commission.rule">
+            <field name="plan_id" ref="demo_plan_sales_progressive"/>
+            <field name="name">Slab 1 — Up to 50k</field>
+            <field name="sequence">10</field>
+            <field name="calculation_method">progressive_slabs</field>
+            <field name="rate">3.0</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="demo_rule_progressive_slab2" model="commission.rule">
+            <field name="plan_id" ref="demo_plan_sales_progressive"/>
+            <field name="name">Slab 2 — 50k to 100k</field>
+            <field name="sequence">20</field>
+            <field name="calculation_method">progressive_slabs</field>
+            <field name="rate">5.0</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="demo_rule_progressive_slab3" model="commission.rule">
+            <field name="plan_id" ref="demo_plan_sales_progressive"/>
+            <field name="name">Slab 3 — Above 100k</field>
+            <field name="sequence">30</field>
+            <field name="calculation_method">progressive_slabs</field>
+            <field name="rate">7.0</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>

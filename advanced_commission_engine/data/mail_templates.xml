@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Settlement Submitted notification -->
+        <record id="mail_template_settlement_submitted" model="mail.template">
+            <field name="name">Commission Settlement: Submitted for Approval</field>
+            <field name="model_id" ref="model_commission_settlement"/>
+            <field name="subject">Commission Statement Ready for Review — {{ object.name }}</field>
+            <field name="body_html"><![CDATA[
+<p>Dear {{ object.employee_id.name }},</p>
+<p>Your commission settlement <strong>{{ object.name }}</strong> for period <strong>{{ object.period_id.name }}</strong> has been submitted for approval.</p>
+<table style="width:100%;border-collapse:collapse">
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Period</strong></td><td style="padding:4px 8px">{{ object.period_id.name }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Total Commission</strong></td><td style="padding:4px 8px">{{ format_amount(object.total_commission, object.currency_id) }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Status</strong></td><td style="padding:4px 8px">{{ object.state }}</td></tr>
+</table>
+<p>You will be notified once it is approved.</p>
+<p>View your statement: <a href="{{ object.get_portal_url() }}">Click here</a></p>
+]]></field>
+            <field name="email_from">{{ (object.company_id.email or '') | safe }}</field>
+            <field name="email_to">{{ (object.employee_id.work_email or object.employee_id.private_email or '') | safe }}</field>
+        </record>
+
+        <!-- Settlement Approved notification -->
+        <record id="mail_template_settlement_approved" model="mail.template">
+            <field name="name">Commission Settlement: Approved</field>
+            <field name="model_id" ref="model_commission_settlement"/>
+            <field name="subject">Commission Approved — {{ object.name }}</field>
+            <field name="body_html"><![CDATA[
+<p>Dear {{ object.employee_id.name }},</p>
+<p>Great news! Your commission settlement <strong>{{ object.name }}</strong> has been <strong style="color:green">approved</strong>.</p>
+<table style="width:100%;border-collapse:collapse">
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Period</strong></td><td style="padding:4px 8px">{{ object.period_id.name }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Approved Amount</strong></td><td style="padding:4px 8px">{{ format_amount(object.total_commission, object.currency_id) }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Approved By</strong></td><td style="padding:4px 8px">{{ object.approved_by_id.name }}</td></tr>
+</table>
+<p>Your commission will be processed in the next payroll cycle.</p>
+]]></field>
+            <field name="email_from">{{ (object.company_id.email or '') | safe }}</field>
+            <field name="email_to">{{ (object.employee_id.work_email or object.employee_id.private_email or '') | safe }}</field>
+        </record>
+
+        <!-- Settlement Paid notification -->
+        <record id="mail_template_settlement_paid" model="mail.template">
+            <field name="name">Commission Settlement: Paid</field>
+            <field name="model_id" ref="model_commission_settlement"/>
+            <field name="subject">Commission Paid — {{ object.name }}</field>
+            <field name="body_html"><![CDATA[
+<p>Dear {{ object.employee_id.name }},</p>
+<p>Your commission settlement <strong>{{ object.name }}</strong> has been <strong style="color:blue">paid</strong>.</p>
+<table style="width:100%;border-collapse:collapse">
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Amount Paid</strong></td><td style="padding:4px 8px">{{ format_amount(object.total_commission, object.currency_id) }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Payment Date</strong></td><td style="padding:4px 8px">{{ object.payment_date }}</td></tr>
+</table>
+<p>Thank you for your performance!</p>
+<p>Download your statement: <a href="{{ object.get_portal_url() }}">Click here</a></p>
+]]></field>
+            <field name="email_from">{{ (object.company_id.email or '') | safe }}</field>
+            <field name="email_to">{{ (object.employee_id.work_email or object.employee_id.private_email or '') | safe }}</field>
+        </record>
+
+        <!-- Dispute Received notification -->
+        <record id="mail_template_dispute_received" model="mail.template">
+            <field name="name">Commission Dispute: Received</field>
+            <field name="model_id" ref="model_commission_dispute"/>
+            <field name="subject">Commission Dispute Received — {{ object.name }}</field>
+            <field name="body_html"><![CDATA[
+<p>A commission dispute has been submitted.</p>
+<table style="width:100%;border-collapse:collapse">
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Employee</strong></td><td style="padding:4px 8px">{{ object.settlement_id.employee_id.name }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Settlement</strong></td><td style="padding:4px 8px">{{ object.settlement_id.name }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Disputed Amount</strong></td><td style="padding:4px 8px">{{ format_amount(object.disputed_amount, object.settlement_id.currency_id) }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Reason</strong></td><td style="padding:4px 8px">{{ object.reason }}</td></tr>
+</table>
+<p>Please review and resolve this dispute at your earliest convenience.</p>
+]]></field>
+        </record>
+
+        <!-- Target Achievement notification -->
+        <record id="mail_template_target_achieved" model="mail.template">
+            <field name="name">Commission Target: Achieved</field>
+            <field name="model_id" ref="model_commission_target"/>
+            <field name="subject">🎯 Target Achieved — {{ object.period_id.name }}</field>
+            <field name="body_html"><![CDATA[
+<p>Congratulations {{ object.employee_id.name }}!</p>
+<p>You have achieved <strong>{{ '%.1f'|format(object.achievement_pct) }}%</strong> of your target for <strong>{{ object.period_id.name }}</strong>.</p>
+<table style="width:100%;border-collapse:collapse">
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Target</strong></td><td style="padding:4px 8px">{{ format_amount(object.target_amount, object.currency_id) }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Achieved</strong></td><td style="padding:4px 8px">{{ format_amount(object.achieved_amount, object.currency_id) }}</td></tr>
+    <tr><td style="padding:4px 8px;background:#f5f5f5"><strong>Achievement</strong></td><td style="padding:4px 8px">{{ '%.1f'|format(object.achievement_pct) }}%</td></tr>
+</table>
+<p>Keep up the excellent work!</p>
+]]></field>
+        </record>
+
+    </data>
+</odoo>

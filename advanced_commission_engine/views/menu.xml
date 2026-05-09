@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         TOP-LEVEL MENU
+    ============================================================ -->
+    <menuitem id="menu_commission_root"
+              name="Commission"
+              web_icon="advanced_commission_engine,static/src/img/icon.png"
+              sequence="50"
+              groups="group_commission_user,group_commission_executive_viewer"/>
+
+    <!-- ============================================================
+         MY COMMISSION (Employee Self-Service)
+    ============================================================ -->
+    <menuitem id="menu_commission_my"
+              name="My Commission"
+              parent="menu_commission_root"
+              sequence="10"
+              groups="group_commission_user"/>
+
+    <menuitem id="menu_commission_my_settlements"
+              name="My Statements"
+              parent="menu_commission_my"
+              action="action_commission_settlement_my"
+              sequence="10"/>
+
+    <menuitem id="menu_commission_my_targets"
+              name="My Targets"
+              parent="menu_commission_my"
+              action="action_commission_target_my"
+              sequence="20"/>
+
+    <menuitem id="menu_commission_my_disputes"
+              name="My Disputes"
+              parent="menu_commission_my"
+              action="action_commission_dispute_my"
+              sequence="30"/>
+
+    <!-- ============================================================
+         COMMISSION (Manager)
+    ============================================================ -->
+    <menuitem id="menu_commission_management"
+              name="Commission"
+              parent="menu_commission_root"
+              sequence="20"
+              groups="group_commission_manager"/>
+
+    <menuitem id="menu_commission_settlements"
+              name="Settlements"
+              parent="menu_commission_management"
+              action="action_commission_settlement"
+              sequence="10"/>
+
+    <menuitem id="menu_commission_periods"
+              name="Periods"
+              parent="menu_commission_management"
+              action="action_commission_period"
+              sequence="20"/>
+
+    <menuitem id="menu_commission_targets"
+              name="Targets"
+              parent="menu_commission_management"
+              action="action_commission_target"
+              sequence="30"/>
+
+    <menuitem id="menu_commission_kpi"
+              name="KPIs"
+              parent="menu_commission_management"
+              action="action_commission_kpi"
+              sequence="40"/>
+
+    <menuitem id="menu_commission_adjustments"
+              name="Adjustments"
+              parent="menu_commission_management"
+              action="action_commission_adjustment"
+              sequence="50"/>
+
+    <menuitem id="menu_commission_disputes"
+              name="Disputes"
+              parent="menu_commission_management"
+              action="action_commission_dispute"
+              sequence="60"/>
+
+    <!-- ============================================================
+         ANALYTICS
+    ============================================================ -->
+    <menuitem id="menu_commission_analytics"
+              name="Analytics"
+              parent="menu_commission_root"
+              sequence="30"
+              groups="group_commission_manager,group_commission_executive_viewer"/>
+
+    <menuitem id="menu_commission_dashboard"
+              name="Dashboard"
+              parent="menu_commission_analytics"
+              action="action_commission_dashboard"
+              sequence="10"/>
+
+    <menuitem id="menu_commission_leaderboard"
+              name="Leaderboard"
+              parent="menu_commission_analytics"
+              action="action_commission_leaderboard"
+              sequence="20"/>
+
+    <menuitem id="menu_commission_forecasts"
+              name="Forecasts"
+              parent="menu_commission_analytics"
+              action="action_commission_forecast"
+              sequence="30"/>
+
+    <menuitem id="menu_commission_simulations"
+              name="Simulations"
+              parent="menu_commission_analytics"
+              action="action_commission_simulation"
+              sequence="40"/>
+
+    <!-- ============================================================
+         CONFIGURATION
+    ============================================================ -->
+    <menuitem id="menu_commission_config"
+              name="Configuration"
+              parent="menu_commission_root"
+              sequence="100"
+              groups="group_commission_admin"/>
+
+    <menuitem id="menu_commission_plans"
+              name="Commission Plans"
+              parent="menu_commission_config"
+              action="action_commission_plan"
+              sequence="10"/>
+
+    <menuitem id="menu_commission_formulas"
+              name="Formulas"
+              parent="menu_commission_config"
+              action="action_commission_formula"
+              sequence="20"/>
+
+    <menuitem id="menu_commission_settings"
+              name="Settings"
+              parent="menu_commission_config"
+              action="action_commission_settings"
+              sequence="100"/>
+
+</odoo>

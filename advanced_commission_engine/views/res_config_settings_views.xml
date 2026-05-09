@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_commission_res_config_settings_form" model="ir.ui.view">
+        <field name="name">res.config.settings.commission.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority">10</field>
+        <field name="inherit_id" ref="base_setup.action_general_configuration"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Commission" string="Commission"
+                     data-key="advanced_commission_engine">
+                    <h2>Commission Engine</h2>
+
+                    <!-- General -->
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_portal_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_portal_enabled"/>
+                                <div class="text-muted">Allow employees to view statements, download PDFs, and submit disputes via the web portal.</div>
+                                <div class="content-group" attrs="{'invisible': [('commission_portal_enabled','=',False)]}">
+                                    <div class="mt8">
+                                        <field name="commission_portal_allow_disputes" class="o_light_label"/>
+                                        <label for="commission_portal_allow_disputes" string="Allow portal disputes"/>
+                                    </div>
+                                    <div class="mt8">
+                                        <field name="commission_leaderboard_public" class="o_light_label"/>
+                                        <label for="commission_leaderboard_public" string="Public leaderboard"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_enable_gamification"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_enable_gamification"/>
+                                <div class="text-muted">Enable badges, leaderboards, streaks, and achievement notifications.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accounting -->
+                    <h3>Accounting Defaults</h3>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="commission_default_account_id"/>
+                                <field name="commission_default_account_id"/>
+                                <label for="commission_default_journal_id"/>
+                                <field name="commission_default_journal_id"/>
+                                <label for="commission_default_analytic_id"/>
+                                <field name="commission_default_analytic_id"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Approval Workflow -->
+                    <h3>Approval Workflow</h3>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_require_manager_approval"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_require_manager_approval"/>
+                                <div class="text-muted">Require line manager approval for new commission plans by default.</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_require_finance_approval"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_require_finance_approval"/>
+                                <div class="text-muted">Require finance manager approval by default.</div>
+                                <div class="mt8">
+                                    <field name="commission_auto_approve_threshold" class="o_light_label"/>
+                                    <label for="commission_auto_approve_threshold" string="Auto-approve threshold"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Periods -->
+                    <h3>Period Management</h3>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_auto_create_periods"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_auto_create_periods"/>
+                                <div class="text-muted">Automatically create the next monthly period via scheduled cron.</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_auto_lock_periods"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_auto_lock_periods"/>
+                                <div class="text-muted">Automatically lock closed periods after the delay.</div>
+                                <div class="mt8">
+                                    <field name="commission_period_lock_delay_days" class="o_light_label"/>
+                                    <label for="commission_period_lock_delay_days" string="Lock delay (days)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payroll & Clawback -->
+                    <h3>Payroll &amp; Clawback</h3>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_payroll_integration"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_payroll_integration"/>
+                                <div class="text-muted">Automatically create payslip inputs when settlements are processed.</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_enable_clawback"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_enable_clawback"/>
+                                <div class="text-muted">Enable clawback adjustments for returned / defaulted commissions.</div>
+                                <div class="mt8" attrs="{'invisible': [('commission_enable_clawback','=',False)]}">
+                                    <field name="commission_clawback_period_months" class="o_light_label"/>
+                                    <label for="commission_clawback_period_months" string="Clawback window (months)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics / AI -->
+                    <h3>Analytics &amp; AI</h3>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_anomaly_detection"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_anomaly_detection"/>
+                                <div class="text-muted">Daily cron flags statistically unusual settlement amounts.</div>
+                                <div class="mt8" attrs="{'invisible': [('commission_anomaly_detection','=',False)]}">
+                                    <field name="commission_anomaly_std_threshold" class="o_light_label"/>
+                                    <label for="commission_anomaly_std_threshold" string="Threshold (std devs)"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_forecast_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_forecast_enabled"/>
+                                <div class="text-muted">Weekly automated payout forecasting using historical trends and pipeline data.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <h3>Notifications</h3>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_notify_on_approval"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_notify_on_approval"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="commission_notify_on_payment"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="commission_notify_on_payment"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_commission_settings" model="ir.actions.act_window">
+        <field name="name">Commission Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'advanced_commission_engine'}</field>
+    </record>
+
+</odoo>

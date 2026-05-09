@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================
+             MODULE CATEGORY
+        ============================================================ -->
+        <record id="module_category_commission" model="ir.module.category">
+            <field name="name">Commission</field>
+            <field name="description">Commission management and analytics</field>
+            <field name="sequence">25</field>
+        </record>
+
+        <!-- ============================================================
+             SECURITY GROUPS
+        ============================================================ -->
+
+        <!-- Commission User: view own commissions, submit disputes -->
+        <record id="group_commission_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="module_category_commission"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Can view own commission statements, track targets, submit disputes and download PDFs.</field>
+        </record>
+
+        <!-- Commission Manager: manage plans, approve settlements -->
+        <record id="group_commission_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_category_commission"/>
+            <field name="implied_ids" eval="[(4, ref('group_commission_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+            <field name="comment">Can create/edit commission plans, rules, periods. Approves settlement submissions.</field>
+        </record>
+
+        <!-- Commission Finance Manager: finance approval, journal entries -->
+        <record id="group_commission_finance_manager" model="res.groups">
+            <field name="name">Finance Manager</field>
+            <field name="category_id" ref="module_category_commission"/>
+            <field name="implied_ids" eval="[(4, ref('group_commission_manager'))]"/>
+            <field name="comment">Finance-level approval for settlements. Creates accounting entries, manages payouts.</field>
+        </record>
+
+        <!-- Commission HR Manager: payroll integration -->
+        <record id="group_commission_hr_manager" model="res.groups">
+            <field name="name">HR Manager</field>
+            <field name="category_id" ref="module_category_commission"/>
+            <field name="implied_ids" eval="[(4, ref('group_commission_manager'))]"/>
+            <field name="comment">Processes payroll integration, manages payslip inputs, handles HR approvals.</field>
+        </record>
+
+        <!-- Commission Executive Viewer: read-only executive dashboards -->
+        <record id="group_commission_executive_viewer" model="res.groups">
+            <field name="name">Executive Viewer</field>
+            <field name="category_id" ref="module_category_commission"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Read-only access to all dashboards, leaderboards, and analytics.</field>
+        </record>
+
+        <!-- Commission Admin: full access -->
+        <record id="group_commission_admin" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="category_id" ref="module_category_commission"/>
+            <field name="implied_ids" eval="[(4, ref('group_commission_finance_manager')), (4, ref('group_commission_hr_manager')), (4, ref('group_commission_executive_viewer'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+            <field name="comment">Full access to all commission features, configuration, formulas, and audit logs.</field>
+        </record>
+
+    </data>
+</odoo>
