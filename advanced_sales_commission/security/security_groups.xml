@@ -41,5 +41,10 @@
             <field name="privilege_id" ref="res_groups_privilege_asc"/>
             <field name="implied_ids" eval="[(4, ref('group_asc_finance'))]"/>
         </record>
+
+        <!-- Grant full ASC access to Odoo Technical Administrators -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_asc_admin'))]"/>
+        </record>
     </data>
 </odoo>
