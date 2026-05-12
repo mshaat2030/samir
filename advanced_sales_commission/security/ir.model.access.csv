@@ -1,0 +1,26 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+asc_plan_salesperson,asc.commission.plan salesperson,model_asc_commission_plan,group_asc_salesperson,1,0,0,0
+asc_plan_manager,asc.commission.plan manager,model_asc_commission_plan,group_asc_manager,1,1,1,0
+asc_plan_admin,asc.commission.plan admin,model_asc_commission_plan,group_asc_admin,1,1,1,1
+asc_rule_salesperson,asc.commission.rule salesperson,model_asc_commission_rule,group_asc_salesperson,1,0,0,0
+asc_rule_manager,asc.commission.rule manager,model_asc_commission_rule,group_asc_manager,1,1,1,0
+asc_rule_admin,asc.commission.rule admin,model_asc_commission_rule,group_asc_admin,1,1,1,1
+asc_rule_tier_salesperson,asc.commission.rule.tier salesperson,model_asc_commission_rule_tier,group_asc_salesperson,1,0,0,0
+asc_rule_tier_manager,asc.commission.rule.tier manager,model_asc_commission_rule_tier,group_asc_manager,1,1,1,1
+asc_line_salesperson,asc.commission.line salesperson,model_asc_commission_line,group_asc_salesperson,1,0,0,0
+asc_line_manager,asc.commission.line manager,model_asc_commission_line,group_asc_manager,1,1,1,0
+asc_line_finance,asc.commission.line finance,model_asc_commission_line,group_asc_finance,1,1,1,1
+asc_settlement_salesperson,asc.commission.settlement salesperson,model_asc_commission_settlement,group_asc_salesperson,1,0,0,0
+asc_settlement_manager,asc.commission.settlement manager,model_asc_commission_settlement,group_asc_manager,1,1,1,0
+asc_settlement_finance,asc.commission.settlement finance,model_asc_commission_settlement,group_asc_finance,1,1,1,1
+asc_target_salesperson,asc.target salesperson,model_asc_target,group_asc_salesperson,1,0,0,0
+asc_target_manager,asc.target manager,model_asc_target,group_asc_manager,1,1,1,1
+asc_target_accelerator_manager,asc.target.accelerator manager,model_asc_target_accelerator,group_asc_manager,1,1,1,1
+asc_bonus_salesperson,asc.bonus salesperson,model_asc_bonus,group_asc_salesperson,1,0,0,0
+asc_bonus_manager,asc.bonus manager,model_asc_bonus,group_asc_manager,1,1,1,0
+asc_bonus_admin,asc.bonus admin,model_asc_bonus,group_asc_admin,1,1,1,1
+asc_snapshot_salesperson,asc.dashboard.snapshot salesperson,model_asc_dashboard_snapshot,group_asc_salesperson,1,0,0,0
+asc_snapshot_manager,asc.dashboard.snapshot manager,model_asc_dashboard_snapshot,group_asc_manager,1,1,1,1
+asc_simulate_wizard,asc.commission.simulate.wizard,model_asc_commission_simulate_wizard,group_asc_salesperson,1,1,1,1
+asc_simulate_result,asc.commission.simulate.result,model_asc_commission_simulate_result,group_asc_salesperson,1,1,1,1
+asc_batch_wizard,asc.commission.batch.wizard,model_asc_commission_batch_wizard,group_asc_manager,1,1,1,1

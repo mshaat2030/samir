@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_asc" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.asc</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Advanced Sales Commission" name="advanced_sales_commission"
+                     groups="advanced_sales_commission.group_asc_admin">
+                    <block title="Commission Engine">
+                        <setting id="asc_auto_calculate">
+                            <field name="asc_auto_calculate"/>
+                            <div class="content">
+                                <label for="asc_auto_calculate"/>
+                                <div class="text-muted">
+                                    Automatically calculate commissions when invoices are validated.
+                                </div>
+                            </div>
+                        </setting>
+                        <setting id="asc_require_approval">
+                            <field name="asc_require_approval"/>
+                            <div class="content">
+                                <label for="asc_require_approval"/>
+                                <div class="text-muted">
+                                    Require manager approval before settlements can be processed.
+                                </div>
+                            </div>
+                        </setting>
+                        <setting id="asc_clawback_enabled">
+                            <field name="asc_clawback_enabled"/>
+                            <div class="content">
+                                <label for="asc_clawback_enabled"/>
+                            </div>
+                        </setting>
+                        <setting id="asc_payroll_integration">
+                            <field name="asc_payroll_integration"/>
+                            <div class="content">
+                                <label for="asc_payroll_integration"/>
+                                <div class="text-muted">
+                                    Push approved commissions directly to HR Payroll slips.
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Defaults">
+                        <setting>
+                            <field name="asc_default_plan_id"/>
+                            <div class="content">
+                                <label for="asc_default_plan_id"/>
+                                <div class="text-muted">
+                                    Default plan applied when no specific plan matches a salesperson.
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

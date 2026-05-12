@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── List View ─────────────────────────────────────────────────── -->
+    <record id="view_asc_plan_list" model="ir.ui.view">
+        <field name="name">asc.commission.plan.list</field>
+        <field name="model">asc.commission.plan</field>
+        <field name="arch" type="xml">
+            <list string="Commission Plans" decoration-muted="not active">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="plan_type"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="commission_rate" optional="show"/>
+                <field name="settlement_frequency" optional="show"/>
+                <field name="rule_count" string="Rules"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Kanban View ────────────────────────────────────────────────── -->
+    <record id="view_asc_plan_kanban" model="ir.ui.view">
+        <field name="name">asc.commission.plan.kanban</field>
+        <field name="model">asc.commission.plan</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="plan_type">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="plan_type"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="commission_rate"/>
+                <field name="rule_count"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="oe_kanban_color_#{record.color.raw_value} p-2">
+                            <div class="fw-bold fs-6">
+                                <field name="name"/>
+                            </div>
+                            <div class="text-muted small">
+                                <field name="code"/> · <field name="plan_type"/>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-primary me-1">
+                                    <field name="rule_count"/> Rules
+                                </span>
+                                <span class="badge bg-secondary">
+                                    <field name="settlement_frequency"/>
+                                </span>
+                            </div>
+                            <div class="text-muted small mt-1">
+                                <field name="date_from"/> — <field name="date_to"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ── Form View ──────────────────────────────────────────────────── -->
+    <record id="view_asc_plan_form" model="ir.ui.view">
+        <field name="name">asc.commission.plan.form</field>
+        <field name="model">asc.commission.plan</field>
+        <field name="arch" type="xml">
+            <form string="Commission Plan">
+                <header>
+                    <button name="action_view_rules" type="object"
+                            string="View Rules" class="btn-secondary"
+                            invisible="rule_count == 0"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Standard Sales Commission"/></h1>
+                    </div>
+                    <group>
+                        <group string="Identity">
+                            <field name="code" readonly="id != False"/>
+                            <field name="plan_type"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                        <group string="Validity">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="calculation_base"/>
+                            <field name="settlement_frequency"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- ── Rate Config ── -->
+                        <page string="Commission Rate" name="rate">
+                            <group>
+                                <group string="Fixed Amount" invisible="plan_type != 'fixed'">
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="fixed_amount"/>
+                                </group>
+                                <group string="Percentage" invisible="plan_type not in ['percentage', 'mixed']">
+                                    <field name="commission_rate"/>
+                                </group>
+                                <group string="Margin" invisible="plan_type != 'margin_based'">
+                                    <field name="margin_rate"/>
+                                    <field name="min_margin_pct"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ── Rules ── -->
+                        <page string="Rules" name="rules">
+                            <field name="rule_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="priority"/>
+                                    <field name="name"/>
+                                    <field name="rule_type"/>
+                                    <field name="rate"/>
+                                    <field name="fixed_amount" optional="hide"/>
+                                    <field name="date_from" optional="hide"/>
+                                    <field name="date_to" optional="hide"/>
+                                    <field name="is_exclusive"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- ── Assignment ── -->
+                        <page string="Assignment" name="assignment">
+                            <group>
+                                <field name="user_ids" widget="many2many_tags"/>
+                                <field name="team_ids" widget="many2many_tags"/>
+                                <field name="job_position_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+
+                        <!-- ── Targets & Bonuses ── -->
+                        <page string="Targets &amp; Bonuses" name="targets">
+                            <group>
+                                <group string="Target">
+                                    <field name="has_target"/>
+                                    <field name="target_period" invisible="not has_target"/>
+                                </group>
+                                <group string="Accelerators / Clawback">
+                                    <field name="has_clawback"/>
+                                    <field name="clawback_days" invisible="not has_clawback"/>
+                                    <field name="clawback_trigger" invisible="not has_clawback"/>
+                                    <field name="allow_manager_override"/>
+                                    <field name="max_override_pct" invisible="not allow_manager_override"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ── Accounting ── -->
+                        <page string="Accounting" name="accounting"
+                              groups="advanced_sales_commission.group_asc_finance">
+                            <group>
+                                <field name="commission_account_id"/>
+                                <field name="payable_account_id"/>
+                                <field name="journal_id"/>
+                                <field name="payroll_input_type_id"/>
+                            </group>
+                        </page>
+
+                        <!-- ── Notes ── -->
+                        <page string="Notes" name="notes">
+                            <field name="description"/>
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Search View ────────────────────────────────────────────────── -->
+    <record id="view_asc_plan_search" model="ir.ui.view">
+        <field name="name">asc.commission.plan.search</field>
+        <field name="model">asc.commission.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Fixed" name="fixed" domain="[('plan_type', '=', 'fixed')]"/>
+                <filter string="Percentage" name="pct" domain="[('plan_type', '=', 'percentage')]"/>
+                <filter string="Tiered" name="tiered" domain="[('plan_type', '=', 'tiered')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Plan Type" name="by_type" context="{'group_by': 'plan_type'}"/>
+                    <filter string="Company" name="by_company" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ─────────────────────────────────────────────────────── -->
+    <record id="action_asc_commission_plan" model="ir.actions.act_window">
+        <field name="name">Commission Plans</field>
+        <field name="res_model">asc.commission.plan</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_asc_plan_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Commission Plan
+            </p>
+        </field>
+    </record>
+
+</odoo>

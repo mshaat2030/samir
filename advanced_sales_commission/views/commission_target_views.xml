@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_asc_target_list" model="ir.ui.view">
+        <field name="name">asc.target.list</field>
+        <field name="model">asc.target</field>
+        <field name="arch" type="xml">
+            <list string="Targets"
+                  decoration-success="achievement_status == 'exceeded'"
+                  decoration-info="achievement_status == 'achieved'"
+                  decoration-warning="achievement_status == 'on_track'"
+                  decoration-danger="achievement_status == 'below'">
+                <field name="name"/>
+                <field name="salesperson_id"/>
+                <field name="team_id" optional="hide"/>
+                <field name="plan_id"/>
+                <field name="period_type"/>
+                <field name="year"/>
+                <field name="month" optional="show"/>
+                <field name="target_revenue"/>
+                <field name="achieved_revenue"/>
+                <field name="achievement_pct" string="Achievement %"/>
+                <field name="achievement_status" widget="badge"
+                       decoration-success="achievement_status in ['achieved','exceeded']"
+                       decoration-warning="achievement_status == 'on_track'"
+                       decoration-danger="achievement_status == 'below'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_asc_target_form" model="ir.ui.view">
+        <field name="name">asc.target.form</field>
+        <field name="model">asc.target</field>
+        <field name="arch" type="xml">
+            <form string="Sales Target">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="salesperson_id"/>
+                            <field name="team_id"/>
+                            <field name="plan_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Period">
+                            <field name="period_type"/>
+                            <field name="year"/>
+                            <field name="month" invisible="period_type != 'monthly'"/>
+                            <field name="quarter" invisible="period_type != 'quarterly'"/>
+                        </group>
+                    </group>
+                    <group string="Targets">
+                        <group>
+                            <field name="currency_id" readonly="1"/>
+                            <field name="target_revenue"/>
+                            <field name="target_margin"/>
+                            <field name="target_units"/>
+                        </group>
+                        <group string="Achievement">
+                            <field name="achieved_revenue" readonly="1"/>
+                            <field name="achievement_pct" readonly="1"/>
+                            <field name="achievement_status" readonly="1" widget="badge"/>
+                        </group>
+                    </group>
+                    <field name="accelerator_ids">
+                        <list editable="bottom" string="Accelerator Tiers">
+                            <field name="from_pct"/>
+                            <field name="to_pct"/>
+                            <field name="accelerator_rate"/>
+                            <field name="bonus_fixed" optional="hide"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_asc_target" model="ir.actions.act_window">
+        <field name="name">Sales Targets</field>
+        <field name="res_model">asc.target</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

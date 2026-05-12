@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_asc_settlement_list" model="ir.ui.view">
+        <field name="name">asc.commission.settlement.list</field>
+        <field name="model">asc.commission.settlement</field>
+        <field name="arch" type="xml">
+            <list string="Settlements"
+                  decoration-success="state == 'paid'"
+                  decoration-info="state == 'approved'"
+                  decoration-warning="state == 'submitted'">
+                <field name="name"/>
+                <field name="month"/>
+                <field name="year"/>
+                <field name="line_count" string="Lines"/>
+                <field name="total_base_amount"/>
+                <field name="total_commission"/>
+                <field name="total_bonus" optional="hide"/>
+                <field name="total_clawback" optional="hide"/>
+                <field name="net_payable"/>
+                <field name="state" widget="badge"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_asc_settlement_form" model="ir.ui.view">
+        <field name="name">asc.commission.settlement.form</field>
+        <field name="model">asc.commission.settlement</field>
+        <field name="arch" type="xml">
+            <form string="Commission Settlement">
+                <header>
+                    <button name="action_calculate" type="object" string="Calculate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state != 'calculated'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-success" invisible="state != 'submitted'"
+                            groups="advanced_sales_commission.group_asc_manager"/>
+                    <button name="action_generate_journal_entry" type="object"
+                            string="Post Journal Entry" class="btn-secondary"
+                            invisible="state != 'approved' or move_id != False"
+                            groups="advanced_sales_commission.group_asc_finance"/>
+                    <button name="action_push_to_payroll" type="object"
+                            string="Push to Payroll" class="btn-secondary"
+                            invisible="state != 'approved'"
+                            groups="advanced_sales_commission.group_asc_finance"/>
+                    <button name="action_mark_paid" type="object" string="Mark as Paid"
+                            class="btn-success" invisible="state != 'approved'"
+                            groups="advanced_sales_commission.group_asc_finance"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger" invisible="state in ['paid','cancelled']"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,calculated,submitted,approved,paid"/>
+                </header>
+                <sheet>
+                    <div class="row mb-3">
+                        <div class="col-3">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="line_count" readonly="1"/>
+                                </span>
+                                <span class="o_stat_text">Lines</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value text-success">
+                                    <field name="net_payable" readonly="1"/>
+                                </span>
+                                <span class="o_stat_text">Net Payable</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <button name="action_view_journal_entry" type="object"
+                                    class="btn-sm btn-outline-primary"
+                                    invisible="not move_id">
+                                Journal Entry
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button name="action_view_payroll_slips" type="object"
+                                    class="btn-sm btn-outline-secondary"
+                                    invisible="payroll_slip_count == 0">
+                                Payroll Slips (<field name="payroll_slip_count" readonly="1"/>)
+                            </button>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Period">
+                            <field name="name" readonly="1"/>
+                            <field name="month"/>
+                            <field name="year"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="currency_id" readonly="1"/>
+                            <field name="total_base_amount" readonly="1"/>
+                            <field name="total_commission" readonly="1"/>
+                            <field name="total_bonus" readonly="1"/>
+                            <field name="total_clawback" readonly="1"/>
+                            <field name="net_payable" readonly="1" class="fw-bold text-primary"/>
+                        </group>
+                    </group>
+
+                    <field name="line_ids">
+                        <list string="Commission Lines">
+                            <field name="name"/>
+                            <field name="salesperson_id"/>
+                            <field name="plan_id"/>
+                            <field name="date"/>
+                            <field name="base_amount"/>
+                            <field name="commission_amount" sum="Commission"/>
+                            <field name="bonus_amount" sum="Bonus"/>
+                            <field name="clawback_amount"/>
+                            <field name="net_commission" sum="Net"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                    <field name="notes"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_asc_commission_settlement" model="ir.actions.act_window">
+        <field name="name">Settlements</field>
+        <field name="res_model">asc.commission.settlement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

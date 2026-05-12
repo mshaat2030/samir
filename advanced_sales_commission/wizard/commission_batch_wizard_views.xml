@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_asc_batch_wizard_form" model="ir.ui.view">
+        <field name="name">asc.commission.batch.wizard.form</field>
+        <field name="model">asc.commission.batch.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Batch Recalculation">
+                <group>
+                    <field name="month"/>
+                    <field name="year"/>
+                    <field name="plan_ids" widget="many2many_tags"/>
+                    <field name="salesperson_ids" widget="many2many_tags"/>
+                    <field name="recalculate_approved"/>
+                </group>
+                <footer>
+                    <button name="action_run" type="object"
+                            string="Run Recalculation" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_asc_batch_wizard" model="ir.actions.act_window">
+        <field name="name">Batch Recalculation</field>
+        <field name="res_model">asc.commission.batch.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

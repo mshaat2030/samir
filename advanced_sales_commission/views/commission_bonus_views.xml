@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_asc_bonus_list" model="ir.ui.view">
+        <field name="name">asc.bonus.list</field>
+        <field name="model">asc.bonus</field>
+        <field name="arch" type="xml">
+            <list string="Bonuses / SPIFs"
+                  decoration-success="state == 'approved'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="bonus_type"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="amount_type"/>
+                <field name="amount"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_asc_bonus_form" model="ir.ui.view">
+        <field name="name">asc.bonus.form</field>
+        <field name="model">asc.bonus</field>
+        <field name="arch" type="xml">
+            <form string="Bonus / SPIF">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state != 'calculated'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-success" invisible="state != 'submitted'"
+                            groups="advanced_sales_commission.group_asc_manager"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger" invisible="state in ['paid','cancelled']"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,calculated,submitted,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" readonly="1"/>
+                            <field name="bonus_type"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Period">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <group string="Amount">
+                        <field name="currency_id"/>
+                        <field name="amount_type"/>
+                        <field name="amount" invisible="amount_type != 'fixed'"/>
+                        <field name="percentage" invisible="amount_type != 'percentage'"/>
+                        <field name="per_unit_amount" invisible="amount_type != 'per_unit'"/>
+                        <field name="min_qty"/>
+                        <field name="min_revenue"/>
+                        <field name="max_payout"/>
+                    </group>
+                    <group string="Eligibility">
+                        <field name="user_ids" widget="many2many_tags"/>
+                        <field name="team_ids" widget="many2many_tags"/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                    </group>
+                    <field name="description"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_asc_bonus" model="ir.actions.act_window">
+        <field name="name">Bonuses / SPIFs</field>
+        <field name="res_model">asc.bonus</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

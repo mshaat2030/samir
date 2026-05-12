@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Root Menu ───────────────────────────────────────────────── -->
+    <menuitem id="menu_asc_root"
+              name="Commissions"
+              sequence="75"
+              web_icon="advanced_sales_commission,static/description/icon.png"
+              groups="advanced_sales_commission.group_asc_salesperson"/>
+
+    <!-- ── Dashboard ───────────────────────────────────────────────── -->
+    <menuitem id="menu_asc_dashboard"
+              name="Dashboard"
+              parent="menu_asc_root"
+              action="action_asc_dashboard"
+              sequence="1"
+              groups="advanced_sales_commission.group_asc_salesperson"/>
+
+    <!-- ── My Commissions ──────────────────────────────────────────── -->
+    <menuitem id="menu_asc_my_commissions"
+              name="My Commissions"
+              parent="menu_asc_root"
+              action="action_asc_commission_line_mine"
+              sequence="5"
+              groups="advanced_sales_commission.group_asc_salesperson"/>
+
+    <!-- ── Commissions (Manager+) ─────────────────────────────────── -->
+    <menuitem id="menu_asc_commissions_root"
+              name="Commission Lines"
+              parent="menu_asc_root"
+              action="action_asc_commission_line"
+              sequence="10"
+              groups="advanced_sales_commission.group_asc_manager"/>
+
+    <!-- ── Settlements ─────────────────────────────────────────────── -->
+    <menuitem id="menu_asc_settlements"
+              name="Settlements"
+              parent="menu_asc_root"
+              action="action_asc_commission_settlement"
+              sequence="20"
+              groups="advanced_sales_commission.group_asc_manager"/>
+
+    <!-- ── Targets ──────────────────────────────────────────────────── -->
+    <menuitem id="menu_asc_targets"
+              name="Targets"
+              parent="menu_asc_root"
+              action="action_asc_target"
+              sequence="25"
+              groups="advanced_sales_commission.group_asc_salesperson"/>
+
+    <!-- ── Bonuses ──────────────────────────────────────────────────── -->
+    <menuitem id="menu_asc_bonuses"
+              name="Bonuses / SPIFs"
+              parent="menu_asc_root"
+              action="action_asc_bonus"
+              sequence="30"
+              groups="advanced_sales_commission.group_asc_manager"/>
+
+    <!-- ── Configuration ─────────────────────────────────────────────── -->
+    <menuitem id="menu_asc_config"
+              name="Configuration"
+              parent="menu_asc_root"
+              sequence="90"
+              groups="advanced_sales_commission.group_asc_admin"/>
+
+    <menuitem id="menu_asc_plans"
+              name="Commission Plans"
+              parent="menu_asc_config"
+              action="action_asc_commission_plan"
+              sequence="1"/>
+
+    <menuitem id="menu_asc_rules"
+              name="Commission Rules"
+              parent="menu_asc_config"
+              action="action_asc_commission_rule"
+              sequence="2"/>
+
+    <menuitem id="menu_asc_simulate"
+              name="Simulate Commission"
+              parent="menu_asc_config"
+              action="action_asc_simulate_wizard"
+              sequence="10"/>
+
+    <menuitem id="menu_asc_batch"
+              name="Batch Recalculate"
+              parent="menu_asc_config"
+              action="action_asc_batch_wizard"
+              sequence="11"/>
+
+    <menuitem id="menu_asc_snapshots"
+              name="Dashboard Snapshots"
+              parent="menu_asc_config"
+              action="action_asc_snapshot"
+              sequence="20"
+              groups="advanced_sales_commission.group_asc_admin"/>
+
+    <menuitem id="menu_asc_settings"
+              name="Settings"
+              parent="menu_asc_config"
+              action="base_setup.action_general_configuration"
+              sequence="99"/>
+
+</odoo>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_asc_line_list" model="ir.ui.view">
+        <field name="name">asc.commission.line.list</field>
+        <field name="model">asc.commission.line</field>
+        <field name="arch" type="xml">
+            <list string="Commission Lines"
+                  decoration-success="state == 'approved'"
+                  decoration-info="state == 'calculated'"
+                  decoration-warning="state == 'submitted'"
+                  decoration-muted="state in ['cancelled', 'paid']"
+                  multi_edit="1">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="salesperson_id"/>
+                <field name="plan_id"/>
+                <field name="sale_order_id" optional="show"/>
+                <field name="invoice_id" optional="hide"/>
+                <field name="base_amount" sum="Total Base"/>
+                <field name="commission_amount" sum="Commission"/>
+                <field name="bonus_amount" optional="hide" sum="Bonus"/>
+                <field name="clawback_amount" optional="hide"/>
+                <field name="net_commission" sum="Net Commission"/>
+                <field name="rate_applied" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state in ['calculated', 'draft']"
+                       decoration-warning="state == 'submitted'"
+                       decoration-danger="state == 'cancelled'"/>
+                <field name="is_settled" optional="hide"/>
+                <field name="currency_id" optional="hide"/>
+                <button name="action_calculate" type="object" string="Recalc"
+                        icon="fa-refresh" invisible="state != 'draft'" class="btn-sm"/>
+                <button name="action_submit" type="object" string="Submit"
+                        icon="fa-send" invisible="state != 'calculated'" class="btn-sm"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_asc_line_form" model="ir.ui.view">
+        <field name="name">asc.commission.line.form</field>
+        <field name="model">asc.commission.line</field>
+        <field name="arch" type="xml">
+            <form string="Commission Line">
+                <header>
+                    <button name="action_calculate" type="object" string="Calculate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_submit" type="object" string="Submit for Approval"
+                            class="btn-primary" invisible="state != 'calculated'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-success"
+                            invisible="state != 'submitted'"
+                            groups="advanced_sales_commission.group_asc_manager"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger"
+                            invisible="state in ['paid', 'cancelled']"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,calculated,submitted,approved,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="salesperson_id"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="team_id"/>
+                            <field name="plan_id"/>
+                            <field name="rule_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Source">
+                            <field name="date"/>
+                            <field name="sale_order_id"/>
+                            <field name="invoice_id"/>
+                            <field name="product_id"/>
+                            <field name="settlement_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Amounts">
+                        <group>
+                            <field name="currency_id" options="{'no_create': True}"/>
+                            <field name="base_amount"/>
+                            <field name="margin_amount"/>
+                            <field name="rate_applied" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="commission_amount"/>
+                            <field name="bonus_amount"/>
+                            <field name="override_amount"
+                                   groups="advanced_sales_commission.group_asc_manager"/>
+                            <field name="clawback_amount"/>
+                            <field name="net_commission" readonly="1" class="fw-bold"/>
+                        </group>
+                    </group>
+                    <group string="Calculation Info">
+                        <field name="calculation_method" readonly="1"/>
+                        <field name="is_simulation"/>
+                        <field name="simulation_note" invisible="not is_simulation"/>
+                    </group>
+                    <field name="notes"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_asc_line_search" model="ir.ui.view">
+        <field name="name">asc.commission.line.search</field>
+        <field name="model">asc.commission.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="salesperson_id"/>
+                <field name="plan_id"/>
+                <field name="sale_order_id"/>
+                <filter string="My Commissions" name="my" domain="[('salesperson_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Calculated" name="calculated" domain="[('state', '=', 'calculated')]"/>
+                <filter string="Awaiting Approval" name="submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Paid" name="paid" domain="[('state', '=', 'paid')]"/>
+                <separator/>
+                <filter string="Not Settled" name="unsettled" domain="[('is_settled', '=', False)]"/>
+                <filter string="Simulations" name="simulation" domain="[('is_simulation', '=', True)]"/>
+                <filter string="This Month" name="this_month"
+                        domain="[('period_month', '=', context_today().month),
+                                  ('period_year', '=', context_today().year)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Salesperson" name="by_sp" context="{'group_by': 'salesperson_id'}"/>
+                    <filter string="Plan" name="by_plan" context="{'group_by': 'plan_id'}"/>
+                    <filter string="Month" name="by_month" context="{'group_by': 'period_month'}"/>
+                    <filter string="Status" name="by_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Graph / Pivot for analytics -->
+    <record id="view_asc_line_graph" model="ir.ui.view">
+        <field name="name">asc.commission.line.graph</field>
+        <field name="model">asc.commission.line</field>
+        <field name="arch" type="xml">
+            <graph string="Commission Analytics" type="bar" stacked="1">
+                <field name="salesperson_id"/>
+                <field name="net_commission" type="measure"/>
+                <field name="commission_amount" type="measure"/>
+                <field name="bonus_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_asc_line_pivot" model="ir.ui.view">
+        <field name="name">asc.commission.line.pivot</field>
+        <field name="model">asc.commission.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Commission Pivot">
+                <field name="period_year" type="row"/>
+                <field name="period_month" type="row"/>
+                <field name="salesperson_id" type="row"/>
+                <field name="net_commission" type="measure"/>
+                <field name="commission_amount" type="measure"/>
+                <field name="base_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_asc_commission_line" model="ir.actions.act_window">
+        <field name="name">Commission Lines</field>
+        <field name="res_model">asc.commission.line</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_asc_line_search"/>
+        <field name="context">{'search_default_my': 0}</field>
+    </record>
+
+    <record id="action_asc_commission_line_mine" model="ir.actions.act_window">
+        <field name="name">My Commissions</field>
+        <field name="res_model">asc.commission.line</field>
+        <field name="view_mode">list,form,graph</field>
+        <field name="search_view_id" ref="view_asc_line_search"/>
+        <field name="context">{'search_default_my': 1}</field>
+    </record>
+
+</odoo>

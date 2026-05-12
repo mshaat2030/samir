@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_commission_statement_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="settlement">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="row">
+                            <div class="col-6">
+                                <h2>Commission Settlement Statement</h2>
+                                <p><strong>Reference:</strong> <t t-esc="settlement.name"/></p>
+                                <p><strong>Period:</strong>
+                                    <t t-esc="settlement.date_from"/> — <t t-esc="settlement.date_to"/>
+                                </p>
+                                <p><strong>Status:</strong>
+                                    <span t-esc="dict(settlement._fields['state'].selection).get(settlement.state)"/>
+                                </p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <h3 class="text-primary">
+                                    <t t-esc="settlement.company_id.name"/>
+                                </h3>
+                                <p t-esc="settlement.company_id.partner_id._display_address()"/>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <!-- Summary KPIs -->
+                        <div class="row mb-4">
+                            <div class="col-3 text-center border rounded p-2">
+                                <div class="text-muted small">Total Base</div>
+                                <div class="fw-bold fs-5">
+                                    <t t-esc="'{:,.2f}'.format(settlement.total_base_amount)"/>
+                                    <t t-esc="settlement.currency_id.symbol"/>
+                                </div>
+                            </div>
+                            <div class="col-3 text-center border rounded p-2">
+                                <div class="text-muted small">Total Commission</div>
+                                <div class="fw-bold fs-5 text-success">
+                                    <t t-esc="'{:,.2f}'.format(settlement.total_commission)"/>
+                                    <t t-esc="settlement.currency_id.symbol"/>
+                                </div>
+                            </div>
+                            <div class="col-3 text-center border rounded p-2">
+                                <div class="text-muted small">Total Bonus</div>
+                                <div class="fw-bold fs-5 text-info">
+                                    <t t-esc="'{:,.2f}'.format(settlement.total_bonus)"/>
+                                    <t t-esc="settlement.currency_id.symbol"/>
+                                </div>
+                            </div>
+                            <div class="col-3 text-center border rounded p-2">
+                                <div class="text-muted small">Net Payable</div>
+                                <div class="fw-bold fs-5 text-primary">
+                                    <t t-esc="'{:,.2f}'.format(settlement.net_payable)"/>
+                                    <t t-esc="settlement.currency_id.symbol"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Commission Lines Table -->
+                        <h4>Commission Details</h4>
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Salesperson</th>
+                                    <th>Plan</th>
+                                    <th>Source</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Base Amount</th>
+                                    <th class="text-end">Commission</th>
+                                    <th class="text-end">Bonus</th>
+                                    <th class="text-end">Clawback</th>
+                                    <th class="text-end">Net</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="settlement.line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line.salesperson_id.name"/></td>
+                                        <td><t t-esc="line.plan_id.name"/></td>
+                                        <td>
+                                            <t t-if="line.invoice_id" t-esc="line.invoice_id.name"/>
+                                            <t t-elif="line.sale_order_id" t-esc="line.sale_order_id.name"/>
+                                        </td>
+                                        <td><t t-esc="line.date"/></td>
+                                        <td class="text-end">
+                                            <t t-esc="'{:,.2f}'.format(line.base_amount)"/>
+                                        </td>
+                                        <td class="text-end text-success">
+                                            <t t-esc="'{:,.2f}'.format(line.commission_amount)"/>
+                                        </td>
+                                        <td class="text-end text-info">
+                                            <t t-esc="'{:,.2f}'.format(line.bonus_amount)"/>
+                                        </td>
+                                        <td class="text-end text-danger">
+                                            <t t-esc="'{:,.2f}'.format(line.clawback_amount)"/>
+                                        </td>
+                                        <td class="text-end fw-bold">
+                                            <t t-esc="'{:,.2f}'.format(line.net_commission)"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="dict(line._fields['state'].selection).get(line.state)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot class="table-secondary fw-bold">
+                                <tr>
+                                    <td colspan="4">TOTAL</td>
+                                    <td class="text-end">
+                                        <t t-esc="'{:,.2f}'.format(settlement.total_base_amount)"/>
+                                    </td>
+                                    <td class="text-end text-success">
+                                        <t t-esc="'{:,.2f}'.format(settlement.total_commission)"/>
+                                    </td>
+                                    <td class="text-end text-info">
+                                        <t t-esc="'{:,.2f}'.format(settlement.total_bonus)"/>
+                                    </td>
+                                    <td class="text-end text-danger">
+                                        <t t-esc="'{:,.2f}'.format(settlement.total_clawback)"/>
+                                    </td>
+                                    <td class="text-end text-primary">
+                                        <t t-esc="'{:,.2f}'.format(settlement.net_payable)"/>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Footer Note -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <p class="text-muted small">
+                                    Generated by Advanced Sales Commission (ASC) on
+                                    <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>.
+                                    This document is confidential.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_commission_plan" model="ir.sequence">
+            <field name="name">Commission Plan</field>
+            <field name="code">asc.commission.plan</field>
+            <field name="prefix">CP</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_commission_line" model="ir.sequence">
+            <field name="name">Commission Line</field>
+            <field name="code">asc.commission.line</field>
+            <field name="prefix">CL</field>
+            <field name="padding">7</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_commission_settlement" model="ir.sequence">
+            <field name="name">Commission Settlement</field>
+            <field name="code">asc.commission.settlement</field>
+            <field name="prefix">CS</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_bonus" model="ir.sequence">
+            <field name="name">Commission Bonus</field>
+            <field name="code">asc.bonus</field>
+            <field name="prefix">BNS</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

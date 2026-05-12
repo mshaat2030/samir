@@ -1,0 +1,178 @@
+// Advanced Sales Commission — Dashboard Styles
+
+.asc_dashboard {
+    padding: 16px;
+    background: var(--o-view-background-color, #f8f9fa);
+
+    .asc-kpi-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .asc-kpi-card {
+        flex: 1;
+        min-width: 180px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid var(--kpi-color, #714B67);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        cursor: pointer;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .asc-kpi-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .asc-kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c2c2c;
+            line-height: 1.1;
+        }
+
+        .asc-kpi-sub {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .asc-kpi-trend {
+            font-size: 12px;
+            margin-top: 6px;
+            &.up { color: #28a745; }
+            &.down { color: #dc3545; }
+        }
+
+        &.primary { --kpi-color: #714B67; }
+        &.success { --kpi-color: #28a745; }
+        &.info    { --kpi-color: #17a2b8; }
+        &.warning { --kpi-color: #ffc107; }
+        &.danger  { --kpi-color: #dc3545; }
+    }
+
+    .asc-section-header {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c2c2c;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .asc-chart-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 16px;
+
+        canvas {
+            max-height: 280px;
+        }
+    }
+
+    .asc-rankings {
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+        .asc-rank-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+
+            &:last-child { border-bottom: none; }
+
+            .asc-rank-pos {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                background: #714B67;
+                color: #fff;
+                font-size: 12px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+
+            .asc-rank-name {
+                flex: 1;
+                font-weight: 500;
+            }
+
+            .asc-rank-amount {
+                font-weight: 700;
+                color: #714B67;
+            }
+
+            .asc-rank-bar {
+                height: 4px;
+                background: #714B67;
+                border-radius: 2px;
+                margin-top: 4px;
+                opacity: 0.3;
+            }
+        }
+    }
+
+    .asc-progress-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 8px;
+
+        .asc-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #714B67, #875a7b);
+            transition: width 0.6s ease;
+        }
+    }
+
+    .asc-filter-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+
+        select, input {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 13px;
+        }
+
+        .btn {
+            font-size: 13px;
+            padding: 4px 12px;
+        }
+    }
+
+    .asc-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+        color: #6c757d;
+        font-size: 14px;
+    }
+}

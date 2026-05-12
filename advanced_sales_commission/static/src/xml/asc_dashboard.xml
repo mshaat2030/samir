@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <!-- ── Main Dashboard Template ─────────────────────────────────── -->
+    <t t-name="asc.Dashboard">
+        <div class="asc_dashboard">
+
+            <!-- Filter Bar -->
+            <div class="asc-filter-bar">
+                <label>Period:</label>
+                <select t-on-change="onMonthChange" t-att-value="state.month">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+                <input type="number" t-on-change="onYearChange"
+                       t-att-value="state.year" min="2020" max="2099"/>
+                <button class="btn btn-sm btn-primary" t-on-click="loadData">
+                    Refresh
+                </button>
+                <t t-if="env.isAdmin">
+                    <button class="btn btn-sm btn-outline-secondary" t-on-click="openBatchWizard">
+                        Batch Recalculate
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" t-on-click="openSimulator">
+                        Simulate
+                    </button>
+                </t>
+            </div>
+
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="asc-loading">
+                    <span class="fa fa-spinner fa-spin me-2"/>
+                    Loading commission data...
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- ── KPI Cards Row ───────────────────────────────── -->
+                <div class="asc-kpi-row">
+                    <div class="asc-kpi-card primary" t-on-click="() => this.openLines('all')">
+                        <div class="asc-kpi-label">Total Commission</div>
+                        <div class="asc-kpi-value">
+                            <t t-esc="formatAmount(state.kpi.totalCommission)"/>
+                        </div>
+                        <div class="asc-kpi-sub">This period</div>
+                    </div>
+                    <div class="asc-kpi-card success" t-on-click="() => this.openLines('approved')">
+                        <div class="asc-kpi-label">Approved</div>
+                        <div class="asc-kpi-value">
+                            <t t-esc="formatAmount(state.kpi.approvedAmount)"/>
+                        </div>
+                        <div class="asc-kpi-sub"><t t-esc="state.kpi.approvedCount"/> lines</div>
+                    </div>
+                    <div class="asc-kpi-card warning" t-on-click="() => this.openLines('submitted')">
+                        <div class="asc-kpi-label">Pending Approval</div>
+                        <div class="asc-kpi-value">
+                            <t t-esc="state.kpi.pendingCount"/>
+                        </div>
+                        <div class="asc-kpi-sub">awaiting review</div>
+                    </div>
+                    <div class="asc-kpi-card info">
+                        <div class="asc-kpi-label">Total Revenue Base</div>
+                        <div class="asc-kpi-value">
+                            <t t-esc="formatAmount(state.kpi.totalRevenue)"/>
+                        </div>
+                        <div class="asc-kpi-sub">commission base</div>
+                    </div>
+                    <div class="asc-kpi-card danger" t-on-click="() => this.openLines('all')">
+                        <div class="asc-kpi-label">Avg Commission Rate</div>
+                        <div class="asc-kpi-value">
+                            <t t-esc="state.kpi.avgRate.toFixed(2)"/>%
+                        </div>
+                        <div class="asc-kpi-sub">across all plans</div>
+                    </div>
+                </div>
+
+                <!-- ── Target Progress ──────────────────────────────── -->
+                <t t-if="state.targets.length">
+                    <div class="mb-4">
+                        <div class="asc-section-header">Target Achievement</div>
+                        <div class="row g-3">
+                            <t t-foreach="state.targets" t-as="target">
+                                <div class="col-md-4">
+                                    <div class="asc-chart-card p-3">
+                                        <div class="fw-bold mb-1">
+                                            <t t-esc="target.salesperson"/>
+                                        </div>
+                                        <div class="d-flex justify-content-between text-muted small mb-1">
+                                            <span>Achieved: <t t-esc="formatAmount(target.achieved)"/></span>
+                                            <span>Target: <t t-esc="formatAmount(target.target)"/></span>
+                                        </div>
+                                        <div class="asc-progress-bar">
+                                            <div class="asc-progress-fill"
+                                                 t-attf-style="width: #{Math.min(target.pct, 100)}%"/>
+                                        </div>
+                                        <div class="text-end small mt-1 fw-bold"
+                                             t-attf-class="#{target.pct >= 100 ? 'text-success' : 'text-warning'}">
+                                            <t t-esc="target.pct.toFixed(1)"/>%
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- ── Charts Row ───────────────────────────────────── -->
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-7">
+                        <div class="asc-chart-card">
+                            <div class="asc-section-header">Monthly Commission Trend</div>
+                            <canvas t-ref="trendChart" height="280"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="asc-chart-card">
+                            <div class="asc-section-header">Commission by Plan Type</div>
+                            <canvas t-ref="planChart" height="280"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Rankings ──────────────────────────────────────── -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="asc-section-header">Top Earners — This Period</div>
+                        <div class="asc-rankings">
+                            <t t-if="!state.rankings.length">
+                                <div class="text-muted text-center py-3">No data for this period.</div>
+                            </t>
+                            <t t-foreach="state.rankings" t-as="sp">
+                                <div class="asc-rank-item">
+                                    <div class="asc-rank-pos"><t t-esc="sp_index + 1"/></div>
+                                    <div class="asc-rank-name"><t t-esc="sp.name"/></div>
+                                    <div class="asc-rank-amount"><t t-esc="formatAmount(sp.amount)"/></div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="asc-section-header">Recent Commission Lines</div>
+                        <div class="asc-rankings">
+                            <t t-foreach="state.recentLines" t-as="line">
+                                <div class="asc-rank-item">
+                                    <div class="asc-rank-name">
+                                        <div><t t-esc="line.salesperson"/></div>
+                                        <div class="text-muted small"><t t-esc="line.order"/></div>
+                                    </div>
+                                    <div>
+                                        <div class="asc-rank-amount"><t t-esc="formatAmount(line.amount)"/></div>
+                                        <div>
+                                            <span t-attf-class="badge #{line.state === 'approved' ? 'bg-success' : line.state === 'submitted' ? 'bg-warning' : 'bg-secondary'}">
+                                                <t t-esc="line.state"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

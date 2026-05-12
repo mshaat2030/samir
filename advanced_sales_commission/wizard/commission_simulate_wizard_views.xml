@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_asc_simulate_wizard_form" model="ir.ui.view">
+        <field name="name">asc.commission.simulate.wizard.form</field>
+        <field name="model">asc.commission.simulate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Commission Simulator">
+                <group>
+                    <field name="simulation_type"/>
+                    <field name="plan_id"/>
+                    <field name="sale_order_id" invisible="simulation_type != 'order'"/>
+                    <field name="invoice_id" invisible="simulation_type != 'invoice'"/>
+                    <field name="salesperson_id" invisible="simulation_type != 'manual'"/>
+                    <field name="manual_amount" invisible="simulation_type != 'manual'"/>
+                    <field name="currency_id" invisible="simulation_type != 'manual'"/>
+                    <field name="simulation_date" invisible="simulation_type != 'manual'"/>
+                </group>
+                <footer>
+                    <button name="action_simulate" type="object"
+                            string="Run Simulation" class="btn-primary"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+                <group string="Results" invisible="not has_results">
+                    <field name="result_ids">
+                        <list string="Simulation Results">
+                            <field name="salesperson_id"/>
+                            <field name="plan_id"/>
+                            <field name="base_amount"/>
+                            <field name="commission_amount"/>
+                            <field name="bonus_amount"/>
+                            <field name="net_commission"/>
+                            <field name="rate_applied"/>
+                            <field name="calculation_method"/>
+                            <field name="currency_id"/>
+                        </list>
+                    </field>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_asc_simulate_wizard" model="ir.actions.act_window">
+        <field name="name">Commission Simulator</field>
+        <field name="res_model">asc.commission.simulate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
