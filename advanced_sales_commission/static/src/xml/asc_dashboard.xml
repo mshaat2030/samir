@@ -90,7 +90,7 @@
                     <div class="mb-4">
                         <div class="asc-section-header">Target Achievement</div>
                         <div class="row g-3">
-                            <t t-foreach="state.targets" t-as="target">
+                            <t t-foreach="state.targets" t-as="target" t-key="target_index">
                                 <div class="col-md-4">
                                     <div class="asc-chart-card p-3">
                                         <div class="fw-bold mb-1">
