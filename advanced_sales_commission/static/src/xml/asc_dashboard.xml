@@ -139,7 +139,7 @@
                             <t t-if="!state.rankings.length">
                                 <div class="text-muted text-center py-3">No data for this period.</div>
                             </t>
-                            <t t-foreach="state.rankings" t-as="sp">
+                            <t t-foreach="state.rankings" t-as="sp" t-key="sp_index">
                                 <div class="asc-rank-item">
                                     <div class="asc-rank-pos"><t t-esc="sp_index + 1"/></div>
                                     <div class="asc-rank-name"><t t-esc="sp.name"/></div>
@@ -151,7 +151,7 @@
                     <div class="col-md-6">
                         <div class="asc-section-header">Recent Commission Lines</div>
                         <div class="asc-rankings">
-                            <t t-foreach="state.recentLines" t-as="line">
+                            <t t-foreach="state.recentLines" t-as="line" t-key="line_index">
                                 <div class="asc-rank-item">
                                     <div class="asc-rank-name">
                                         <div><t t-esc="line.salesperson"/></div>
