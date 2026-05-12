@@ -7,6 +7,7 @@ import { Component, useState, onMounted, onWillUnmount, useRef } from "@odoo/owl
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { loadJS } from "@web/core/assets";
+import { user } from "@web/core/user";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -32,7 +33,6 @@ export class AscDashboard extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
-        this.user = useService("user");
 
         const today = new Date();
         this.state = useState({
@@ -305,8 +305,8 @@ export class AscDashboard extends Component {
         const { month, year } = this.state;
         const domain = [['period_month', '=', month], ['period_year', '=', year]];
         // If not admin/manager, restrict to own records
-        if (!this.env.isAdmin) {
-            domain.push(['salesperson_id', '=', this.user.userId]);
+        if (!user.isAdmin) {
+            domain.push(['salesperson_id', '=', user.userId]);
         }
         return domain;
     }
