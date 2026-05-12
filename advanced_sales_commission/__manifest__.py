@@ -14,7 +14,7 @@
     'license': 'OEEL-1',
     'depends': [
         'sale_management',
-        'sale_team',
+        'sales_team',
         'account',
         'hr',
         'hr_payroll',
@@ -22,7 +22,6 @@
         'mail',
         'base_setup',
         'web',
-        'report_xlsx',
     ],
     'data': [
         # Security
@@ -41,10 +40,11 @@
         'views/commission_bonus_views.xml',
         'views/dashboard_views.xml',
         'views/res_config_settings_views.xml',
-        'views/menu_views.xml',
         # Wizards
         'wizard/commission_simulate_wizard_views.xml',
         'wizard/commission_batch_wizard_views.xml',
+        # Menus (last, so all actions are defined)
+        'views/menu_views.xml',
         # Reports
         'report/commission_statement_template.xml',
         'report/commission_report_actions.xml',

@@ -91,6 +91,7 @@ class AscBonus(models.Model):
             return False
         return True
 
-    _sql_constraints = [
-        ('code_company_uniq', 'UNIQUE(code, company_id)', 'Bonus code must be unique per company.'),
-    ]
+    _code_company_uniq = models.Constraint(
+        'UNIQUE(code, company_id)',
+        'Bonus code must be unique per company.',
+    )

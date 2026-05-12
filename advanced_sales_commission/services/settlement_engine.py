@@ -15,6 +15,15 @@ class AscSettlementEngine(models.AbstractModel):
     _description = 'Commission Settlement Engine'
 
     @api.model
+    def cron_generate_previous_month_settlement(self):
+        """Cron entry point: generate settlement for the previous calendar month."""
+        import datetime
+        today = datetime.date.today()
+        first_of_month = today.replace(day=1)
+        prev_month = first_of_month - datetime.timedelta(days=1)
+        self.generate_monthly_settlement(month=prev_month.month, year=prev_month.year)
+
+    @api.model
     def generate_monthly_settlement(self, month=None, year=None, company=None):
         """
         Auto-generate a monthly settlement for all approved commission lines

@@ -10,7 +10,6 @@
             <field name="code">model.env['asc.commission.engine'].batch_recalculate()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
             <field name="active">True</field>
             <field name="priority">10</field>
         </record>
@@ -20,19 +19,9 @@
             <field name="name">ASC: Generate Monthly Settlements</field>
             <field name="model_id" ref="model_asc_commission_settlement"/>
             <field name="state">code</field>
-            <field name="code">
-import datetime
-today = datetime.date.today()
-# Generate settlement for previous month
-first_of_month = today.replace(day=1)
-prev_month = (first_of_month - datetime.timedelta(days=1))
-model.env['asc.settlement.engine'].generate_monthly_settlement(
-    month=prev_month.month, year=prev_month.year
-)
-            </field>
+            <field name="code">model.env['asc.settlement.engine'].cron_generate_previous_month_settlement()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">months</field>
-            <field name="numbercall">-1</field>
             <field name="active">True</field>
         </record>
 
@@ -47,7 +36,6 @@ for role in ['salesperson', 'manager', 'finance', 'executive']:
             </field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
             <field name="active">True</field>
         </record>
 
@@ -74,7 +62,6 @@ if pending:
             </field>
             <field name="interval_number">1</field>
             <field name="interval_type">weeks</field>
-            <field name="numbercall">-1</field>
             <field name="active">True</field>
         </record>
 

@@ -189,11 +189,12 @@ class AscCommissionLine(models.Model):
             line.message_post(body=_('Clawback applied: %s') % line.clawback_amount)
 
     # ─────────────────────────────────────────────────────────────────────────
-    # SQL Constraints
+    # Constraints
     # ─────────────────────────────────────────────────────────────────────────
-    _sql_constraints = [
-        ('name_uniq', 'UNIQUE(name)', 'Commission line reference must be unique.'),
-    ]
+    _name_uniq = models.Constraint(
+        'UNIQUE(name)',
+        'Commission line reference must be unique.',
+    )
 
     # ─────────────────────────────────────────────────────────────────────────
     # PostgreSQL Indexes (via _auto_init override)

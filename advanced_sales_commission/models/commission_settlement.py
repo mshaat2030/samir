@@ -163,13 +163,16 @@ class AscCommissionSettlement(models.Model):
         }
 
     # ─────────────────────────────────────────────────────────────────────────
-    # SQL Constraints
+    # Constraints
     # ─────────────────────────────────────────────────────────────────────────
-    _sql_constraints = [
-        ('period_company_uniq', 'UNIQUE(month, year, company_id)',
-         'A settlement already exists for this month/year/company.'),
-        ('name_uniq', 'UNIQUE(name)', 'Settlement reference must be unique.'),
-    ]
+    _period_company_uniq = models.Constraint(
+        'UNIQUE(month, year, company_id)',
+        'A settlement already exists for this month/year/company.',
+    )
+    _name_uniq = models.Constraint(
+        'UNIQUE(name)',
+        'Settlement reference must be unique.',
+    )
 
     def _auto_init(self):
         res = super()._auto_init()

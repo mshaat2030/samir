@@ -11,16 +11,4 @@
         <field name="binding_model_id" ref="model_asc_commission_settlement"/>
         <field name="binding_type">report</field>
     </record>
-
-    <!-- XLSX Commission Lines Report -->
-    <record id="action_report_commission_lines_xlsx" model="ir.actions.report">
-        <field name="name">Commission Lines (XLSX)</field>
-        <field name="model">asc.commission.settlement</field>
-        <field name="report_type">xlsx</field>
-        <field name="report_name">advanced_sales_commission.report_commission_lines_xlsx</field>
-        <field name="report_file">advanced_sales_commission.report_commission_lines_xlsx</field>
-        <field name="print_report_name">'Commission_Lines_%s' % object.name</field>
-        <field name="binding_model_id" ref="model_asc_commission_settlement"/>
-        <field name="binding_type">report</field>
-    </record>
 </odoo>

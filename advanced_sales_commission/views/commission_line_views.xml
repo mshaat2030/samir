@@ -131,7 +131,7 @@
                 <filter string="This Month" name="this_month"
                         domain="[('period_month', '=', context_today().month),
                                   ('period_year', '=', context_today().year)]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Salesperson" name="by_sp" context="{'group_by': 'salesperson_id'}"/>
                     <filter string="Plan" name="by_plan" context="{'group_by': 'plan_id'}"/>
                     <filter string="Month" name="by_month" context="{'group_by': 'period_month'}"/>

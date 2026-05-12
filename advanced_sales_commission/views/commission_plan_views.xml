@@ -195,7 +195,7 @@
                 <filter string="Fixed" name="fixed" domain="[('plan_type', '=', 'fixed')]"/>
                 <filter string="Percentage" name="pct" domain="[('plan_type', '=', 'percentage')]"/>
                 <filter string="Tiered" name="tiered" domain="[('plan_type', '=', 'tiered')]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Plan Type" name="by_type" context="{'group_by': 'plan_type'}"/>
                     <filter string="Company" name="by_company" context="{'group_by': 'company_id'}"/>
                 </group>

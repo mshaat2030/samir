@@ -192,9 +192,9 @@ class AscCommissionPlan(models.Model):
         }
 
     # ─────────────────────────────────────────────────────────────────────────
-    # SQL Constraints
+    # Constraints
     # ─────────────────────────────────────────────────────────────────────────
-    _sql_constraints = [
-        ('code_company_uniq', 'UNIQUE(code, company_id)',
-         'Commission plan code must be unique per company.'),
-    ]
+    _code_company_uniq = models.Constraint(
+        'UNIQUE(code, company_id)',
+        'Commission plan code must be unique per company.',
+    )
