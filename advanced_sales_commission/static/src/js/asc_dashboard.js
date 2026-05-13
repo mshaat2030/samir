@@ -27,7 +27,12 @@ function formatCurrency(amount, symbol = '') {
 // ── Dashboard Component ───────────────────────────────────────────────────────
 export class AscDashboard extends Component {
     static template = "asc.Dashboard";
-    static props = {};
+    static props = {
+        action:            { optional: true },
+        actionId:          { optional: true },
+        updateActionState: { optional: true },
+        className:         { optional: true },
+    };
 
     setup() {
         this.orm = useService("orm");
